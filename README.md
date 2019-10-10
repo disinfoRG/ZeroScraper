@@ -6,3 +6,6 @@ Scrape News contents provided in this [target list](https://docs.google.com/spre
 $ cd NewsScraping/Scrapers
 $ python <site_id>.py
 ```
+
+### Note: 
+In order to save memory space, directories Data/Articles and Data/Catalogs currently only contains one file for demonstration purpose only.
