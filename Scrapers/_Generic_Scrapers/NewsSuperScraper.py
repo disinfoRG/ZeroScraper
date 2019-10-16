@@ -1,88 +1,82 @@
-import numpy as np
-import pandas as pd
 from datetime import datetime, timedelta
-import os
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+import sys
+import linecache
 
 
 class NewsSuperScraper:
 
-    def __init__(self, primary_url, site_name, site_id):
+    def __init__(self, site_url, site_name, site_id):
         self.header = {'User-agent': 'Googlebot'}
-        self.primary_url = primary_url
+        self.site_url = site_url
         self.site_name = site_name
         self.site_id = site_id
-        self.datetime = datetime.utcnow() + timedelta(hours=8)
-        self.date = self.datetime.strftime('%Y-%m-%d')
-        self.time = self.datetime.strftime('%H:%M:%S')
-        self.start = datetime.utcnow()
-        self.news_catalog = None
-        self.catalog_csv_path = f'../Data/Catalogs/{self.site_id}.csv'
-        self.article_directory_savepath = f'../Data/Articles/{self.site_id}'
-        self.max_page = 100
-
+        self.start = datetime.utcnow() + timedelta(hours=8)
         print('********** SCRAPE INFORMATION **********\n')
-        print('Today\'s Date:\t' + str(self.date))
-        print('Current Time:\t' + str(self.time))
+        print('Today\'s Date:\t' + str(self.start.strftime('%Y-%m-%d')))
+        print('Current Time:\t' + str(self.start.strftime('%H:%M:%S')))
         print(f'News Website: {site_id}-{site_name}')
-        print(f'News Website url: {self.primary_url}')
+        print(f'News Website url: {self.site_url}')
         print('\n****************************************\n')
         print('Executing scrape...')
 
-        if not os.path.exists(self.article_directory_savepath):
-            print('Creating directory to store articles...')
-            os.makedirs(self.article_directory_savepath)
-
-        if os.path.exists(self.catalog_csv_path):
-            df = pd.read_csv(self.catalog_csv_path, usecols=['News_Date'])
-            previous_dates = np.unique(df)
-            previous_date_obj = [datetime.strptime(x, "%Y-%m-%d") for x in previous_dates]
-            self.last_news_date_obj = max(previous_date_obj)
-            print(f'Previously stopped at date = {datetime.strftime(self.last_news_date_obj, "%Y-%m-%d")}')
-
-        else:
-            print('First Time Scraping...')
-            self.last_news_date_obj = datetime.min
+        self.es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+        if not self.es.exists(index='sites', id=self.site_id):
+            self.es.create(index='sites', id=self.site_id, body={'url': self.site_url, 'name': self.site_name})
 
     def collect_news_url_and_meta(self):
         return dict()
 
-    def save_catalog(self):
-        print('\n Saving Catalog...')
+    def extract_news_content(self, url):
+        html = ''
+        article = ''
+        images = list()
+        return html, article, images
 
-        def assign_news_index(group):
-            group['id'] = range(1, len(group['News_URL']) + 1)
-            return group
+    def _generate_news_and_images_documents(self):
+        # generate data
+        news_count = len(self.all_news_metadata)
+        news_documents = []
+        images_documents = []
+        current_time = datetime.utcnow() + timedelta(hours=8)
+        print(f' Bulk saving {news_count} news...')
+        for i in range(news_count):
+            news = self.all_news_metadata[i]
+            sys.stdout.write(f'\r {str(i+1).zfill(4)}, url = {news["url"]}')
+            news['html'], news['content'], news['content_images'] = self.extract_news_content(news['url'])
+            images_documents.append({'_index': 'images', '_id': news['front_img_url'],
+                                     'string': news['front_img_string'],
+                                     'type': 'front', 'news_id': news['url'], 'scrape_datetime': current_time})
+            images_documents += [{'_index': 'images', **images, 'news_id': news['url'], 'scrape_datetime': current_time}
+                                 for images in news['content_images']]
+            news.pop('front_img_url')
+            news.pop('front_img_string')
+            news.pop('content_images')
+            site_level_info = {'site_id': self.site_id, 'site_name': self.site_name}
+            news_documents.append({"_index": "news", "_id": news['url'],
+                                   'scrape_datetime': current_time,
+                                   **site_level_info, **news})
 
-        new_df = pd.DataFrame.from_dict(self.news_catalog)
-        new_df = new_df.groupby('News_Date').apply(assign_news_index)
-        new_df['News_ID'] = new_df.apply(lambda x: x['News_Date'] + '-' + str(x['id']), axis=1)
-        new_df = new_df.drop('id', axis=1)
-        self.news_catalog = new_df.to_dict('series')
-        columns = list(new_df.columns)
-
-        # format
-        new_df['Scrape_Date'] = self.date
-        new_df['Site_Name'] = self.site_name
-        new_df['Site_ID'] = self.site_id
-        new_df = new_df[['Scrape_Date', 'Site_Name', 'Site_ID'] + columns]
-        # save new catalog csv if none exist or append to previous catalog
-        # TODO: test code
-        if os.path.exists(self.catalog_csv_path):
-            new_df.to_csv(self.catalog_csv_path, mode='a', header=False, index=False)
-        else:
-            new_df.to_csv(self.catalog_csv_path, mode='w', index=False)
-
-    def collect_and_save_news_articles(self):
-        pass
+        return news_documents, images_documents
 
     def run(self):
-        self.news_catalog = self.collect_news_url_and_meta()
-        if self.news_catalog:
-            self.save_catalog()
-            self.collect_and_save_news_articles()
+        try:
+            self.all_news_metadata = self.collect_news_url_and_meta()
+            news_documents, images_documents = self._generate_news_and_images_documents()
+            bulk(self.es, news_documents)
+            bulk(self.es, images_documents)
+        except:
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            filename = f.f_code.co_filename
+            linecache.checkcache(filename)
+            line = linecache.getline(filename, lineno, f.f_globals)
+            print('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+
         else:
-            print('No new articles since last time...')
-        stop = datetime.utcnow()
-        elapsed = stop - self.start
-        print('Total Time:', elapsed)
-        print('\n****************************************')
+            stop = datetime.utcnow() + timedelta(hours=8)
+            elapsed = stop - self.start
+            print('\nTotal Time:', elapsed)
+            print('\n****************************************')
