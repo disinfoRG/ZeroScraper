@@ -1,18 +1,16 @@
-# Import Elasticsearch package
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import bulk, scan
 from datetime import datetime
 
 # Connect to the elastic cluster
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-
 
 # 1. create a new document
 es.create(index='sites', id='N3', body={'url': 'https://', 'name': 'haha tai'})
 # 2. get a document
 doc = es.get(index='sites', id='N3')
 print(doc)
-content = doc['_source'] # document contents
+content = doc['_source']  # document contents
 print(content)
 
 # 3. bulk add
@@ -33,9 +31,29 @@ es.update(index='news', id='1', body={'doc': update_dict})
 current_doc = es.get('news', '2')['_source']
 previous_version = current_doc['previous']
 keys_to_update = ('content', 'scrape_time')
-previous_version.append({k: current_doc[k] for k in keys_to_update if k in current_doc}) # move current doc to previous
+previous_version.append({k: current_doc[k] for k in keys_to_update if k in current_doc})  # move current doc to previous
 updated_dict = {'content': new_article, 'scrape_time': datetime.now(), 'previous': previous_version}
 es.update(index='news', id='2', body={'doc': update_dict})
 
+# 6. delete
+# delete index
+index = 'sites'
+es.indices.delete(index)
+# delete document
+es.delete(index=index, id='1')
+# 7. search query
+# search all
+search_query = {"query": {"match_all": {}}}
+res = es.search(size=10000, index="news", body=search_query)
+print(len(res['hits']['hits']))  # num of documents
+i = 0
+print(res['hits']['hits'][i])  # single documents
 
+# conditional search
+search_query = {"query": {"match": {'date': '2019-10-16'}}}
 
+# use helpers.scan to search
+# https://elasticsearch-py.readthedocs.io/en/master/helpers.html#elasticsearch.helpers.scan
+search_generator = scan(es, query=search_query, index="news")
+# size of search results
+print(sum(1 for _ in search_generator))
