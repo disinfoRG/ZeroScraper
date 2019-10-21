@@ -3,12 +3,16 @@ from elasticsearch.helpers import bulk, scan
 from datetime import datetime
 
 # Connect to the elastic cluster
-es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+es_url = 'your elasticsearch database url'
+es = Elasticsearch(es_url)
+# or, connect with local es database:
+# es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
 # 1. create a new document
-es.create(index='sites', id='N3', body={'url': 'https://', 'name': 'haha tai'})
+es.create(index='sites', id='N3', doc_type='_doc', body={'url': 'https://', 'name': 'haha tai'})
+
 # 2. get a document
-doc = es.get(index='sites', id='N3')
+doc = es.get(index='sites', id='N3')  # or specify doc type
 print(doc)
 content = doc['_source']  # document contents
 print(content)
@@ -57,3 +61,43 @@ search_query = {"query": {"match": {'date': '2019-10-16'}}}
 search_generator = scan(es, query=search_query, index="news")
 # size of search results
 print(sum(1 for _ in search_generator))
+
+#### REST API ####
+import requests
+import json
+es_url = 'your elasticsearch database url'
+
+# A. Document Level
+# A1. retrieve data -> GET request
+r = requests.get(f'{es_url}/{index}/{document_id}')
+r.json()
+
+# A2. modify data of a document -> PUT request
+modified_data = {'name': 'andrea'}
+requests.put(f'{es_url}/{index}/{document_id}', data=json.dumps(modified_data))
+
+# A3. add new data to an index -> POST request (automatically create index if first time)
+new_data = {'name': 'andrea', 'sex': 'female'}
+r = requests.post(f'{es_url}/{index}', data=json.dumps(new_data))
+print(r.json()['_id'])
+
+# A4. Delete -> DELETE request
+requests.delete(f'{es_url}/{index}/{document_id}')
+
+# A5. Bulk add
+json = '{"index": {"_type": "sites"}}\n {"site_name": "udn2", "site_url": "https://udn.com.tw"}\n {"index": {"_type": "sites"}}\n {"site_name": "cctv2", "site_url": "https:/cctv.com.cn"}'
+r = requests.post(f'{es_url}/_bulk', data=json)
+
+# B. Index Level
+# B1. search every record in an index
+r = requests.get(f'{es_url}/{index}/_search?')
+doc_list = r.json()['hits']['hits']
+# B2. special search
+search_query = {"query": {"match": {'site_name': 'qiqi'}}}
+doc_list = r.json()['hits']['hits']
+
+
+
+
+
+
