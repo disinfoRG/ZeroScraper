@@ -1,11 +1,8 @@
 ## NewsScraping
-Scrape News contents provided in this [target list](https://docs.google.com/spreadsheets/d/1p72Dy1NcfdA4_FKk8nbNc_0P-ft7NWoo2ge4j07eRxE/edit#gid=0).
+Scrape News contents provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 
 ```sh
-$ cd NewsScraping/Scrapers
-$ python <site_id>.py
+$ cd scrapy_implementation
+$ python execute_spider.py --site_id <site_id>
 ```
-
-#### Note: 
-In order to save memory space, directories Data/Articles and Data/Catalogs currently only contains one file for demonstration purpose.
