@@ -10,7 +10,7 @@ N12,鬼島狂新聞,http://taiwan-madnews.com,,
 N13,怒吼,http://nooho.net,^https://nooho.net/([0-9]{4})/[0-9]{2}/(.*)/$,/page/([0-9]+)/$
 N14,海峽飛虹,http://www.itaiwannews.cn/,/[0-9]{4}-[0-9]{2}-[0-9]{2}/(.*)\.html$,
 N15,今日頭條,https://www.toutiao.com/,,
-N16,中華全國台灣同胞聯誼會,http://tailian.taiwan.cn/,http://tailian.org.cn/([\w]+)/(\d+)/t(.*)\.htm$,http://tailian.org.cn/([\w]+)/$
+N16,中華全國台灣同胞聯誼會,http://tailian.taiwan.cn/,http://tailian.taiwan.cn/([\w]+)/(\d+)/t(.*)\.htm$,http://tailian.taiwan.cn/([\w]+)/$
 N17,台灣媽祖聯誼會,https://www.taiwanmazu.org/,,
 N19,中時電子報,https://www.chinatimes.com/,,
 N20,東森新聞,https://news.ebc.net.tw/,,
