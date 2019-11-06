@@ -1,6 +1,6 @@
 import argparse
 import os
-import pickle as pk
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--site_id', help="site id to crawl")
@@ -9,7 +9,8 @@ parser.add_argument('--delay', default=1.5, help='time delayed for request.')
 parser.add_argument('--google_bot', action='store_true', help='if mask crawler as googlebot')
 
 args = parser.parse_args()
-url_map = pk.load(open('url_map.pk', 'rb'))
+args.site_id = args.site_id.upper()
+url_map = json.load(open('../url_map.json', 'r'))
 site_url = url_map[args.site_id]['url']
 article_map = url_map[args.site_id]['article']
 
@@ -31,5 +32,5 @@ os.system(f"scrapy crawl news \
             -s DEPTH_LIMIT={args.depth} \
             -s DOWNLOAD_DELAY={args.delay} \
             -s USER_AGENT='{user_agent}' \
-            -o {args.site_id}.csv")
+            -o {args.site_id}.json")
 
