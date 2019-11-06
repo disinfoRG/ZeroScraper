@@ -66,9 +66,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'newsSpiders.pipelines.newsSpidersPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'newsSpiders.pipelines.MultiJSONPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
