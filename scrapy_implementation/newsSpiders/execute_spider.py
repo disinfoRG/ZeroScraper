@@ -26,11 +26,12 @@ except KeyError:
     following_map = ''
 
 os.system(f"scrapy crawl news \
+            -a site_id='{args.site_id}' \
             -a site_url='{site_url}'\
             -a article_url_patterns='{article_map}' \
             -a following_url_patterns='{following_map}' \
             -s DEPTH_LIMIT={args.depth} \
             -s DOWNLOAD_DELAY={args.delay} \
             -s USER_AGENT='{user_agent}' \
-            -o {args.site_id}.json")
+            -o ../../../")
 

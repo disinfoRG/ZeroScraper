@@ -6,8 +6,9 @@ from datetime import datetime, timedelta
 class NewsSpider(CrawlSpider):
     name = 'news'
 
-    def __init__(self, site_url='', article_url_patterns='', following_url_patterns='', *args, **kwargs):
+    def __init__(self, site_id='', site_url='', article_url_patterns='', following_url_patterns='', *args, **kwargs):
         super(NewsSpider, self).__init__(*args, **kwargs)
+        self.site_id = site_id
         self.start_urls = [site_url]
         article_url_patterns = article_url_patterns.split('; ')
         following_url_patterns = following_url_patterns.split('; ')
@@ -20,8 +21,9 @@ class NewsSpider(CrawlSpider):
     def parse_articles(self, response):
         parse_time = datetime.utcnow() + timedelta(hours=8)
         parse_time = str(parse_time.strftime('%Y-%m-%d-%H:%M:%S'))
-        yield {'url': response.url,
-               'title': ' '.join(response.css('h1 *::text').extract()).strip(),
-               # 'html': response.body,
-               'fetched_at': parse_time}
+        yield {"from_site": self.site_id,
+               "url": response.url,
+               "title": " ".join(response.css('h1 *::text').extract()).strip(),
+               "raw_body": response.text,
+               "fetched_at": parse_time}
 
