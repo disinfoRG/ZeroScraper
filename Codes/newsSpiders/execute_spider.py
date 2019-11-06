@@ -15,7 +15,6 @@ data_dir = root_dir+'/Data'
 url_map = json.load(open(f'{data_dir}/url_map.json', 'r'))
 site_url = url_map[args.site_id]['url']
 article_map = url_map[args.site_id]['article']
-
 if args.google_bot:
     user_agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 else:
@@ -34,5 +33,4 @@ os.system(f"scrapy crawl news \
             -a following_url_patterns='{following_map}' \
             -s DEPTH_LIMIT={args.depth} \
             -s DOWNLOAD_DELAY={args.delay} \
-            -s USER_AGENT='{user_agent}' \
-            -o {data_dir}/ArticleSnapshot/{args.site_id}.jl")
+            -s USER_AGENT='{user_agent}'")
