@@ -3,6 +3,6 @@ Scrape News contents provided in this [target list](https://airtable.com/tbl3DrY
 
 
 ```sh
-$ cd scrapy_implementation
+$ cd scrapy_implementation/newsSpiders
 $ python execute_spider.py --site_id <site_id>
 ```
