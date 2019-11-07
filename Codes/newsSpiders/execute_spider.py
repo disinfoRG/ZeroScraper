@@ -14,6 +14,7 @@ root_dir = os.getcwd().split('/NewsScraping/')[0]+'/NewsScraping'
 data_dir = root_dir+'/Data'
 url_map = json.load(open(f'{data_dir}/url_map.json', 'r'))
 site_url = url_map[args.site_id]['url']
+site_type = url_map[args.site_id]['type']
 article_map = url_map[args.site_id]['article']
 if args.google_bot:
     user_agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
@@ -28,7 +29,8 @@ except KeyError:
 
 os.system(f"scrapy crawl news \
             -a site_id='{args.site_id}' \
-            -a site_url='{site_url}'\
+            -a site_url='{site_url}' \
+            -a site_type='{site_type}' \
             -a article_url_patterns='{article_map}' \
             -a following_url_patterns='{following_map}' \
             -s DEPTH_LIMIT={args.depth} \

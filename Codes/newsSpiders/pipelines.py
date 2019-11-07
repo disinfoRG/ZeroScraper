@@ -7,8 +7,6 @@
 
 from scrapy.exceptions import DropItem
 from scrapy.exporters import JsonLinesItemExporter
-from scrapy import signals
-from scrapy.xlib.pydispatch import dispatcher
 import os
 import jsonlines
 
@@ -31,7 +29,8 @@ class MultiJSONPipeline(object):
                       'article_snapshot': open(f'{self.data_dir}/article_snapshot.jl', 'ab')}
         self.exporters = {'article': JsonLinesItemExporter(self.files['article'],
                                                            fields_to_export=['article_id', 'site_id', 'url', 'found_at',
-                                                                             'last_fetched_at', 'redirect_from'],
+                                                                             'last_fetched_at', 'next_fetch_at', 'fetch_count',
+                                                                             'redirect_from'],
                                                            export_empty_fields=False),
                           'article_snapshot': JsonLinesItemExporter(self.files['article_snapshot'],
                                                                     fields_to_export=['article_id', 'fetched_at', 'raw_body'],
@@ -40,7 +39,7 @@ class MultiJSONPipeline(object):
         [e.start_exporting() for e in self.exporters.values()]
 
     def close_spider(self, spider):
-        # finish exporter
+        # close exporter
         [e.finish_exporting() for e in self.exporters.values()]
         [f.close() for f in self.files.values()]
 
