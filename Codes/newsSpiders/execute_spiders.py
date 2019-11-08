@@ -55,3 +55,6 @@ elif args.update:
                 -a article_urls='{urls_of_article_to_update}' \
                 -s DOWNLOAD_DELAY={args.delay} \
                 -s USER_AGENT='{user_agent}'")
+else:
+    raise Exception('Please specify action by adding either --discover or --update flag')
+
