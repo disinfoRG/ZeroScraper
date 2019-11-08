@@ -15,9 +15,13 @@ class ArticleItem(scrapy.Item):
     url_hash = scrapy.Field()
     url_hash_seq = scrapy.Field()
     found_at = scrapy.Field()
-    fetched_at = scrapy.Field()
     last_fetched_at = scrapy.Field()
     next_fetch_at = scrapy.Field()
     fetch_count = scrapy.Field()
     redirect_from = scrapy.Field()
+
+
+class ArticleSnapshotItem(scrapy.Item):
+    article_id = scrapy.Field()
+    fetched_at = scrapy.Field()
     raw_body = scrapy.Field()
