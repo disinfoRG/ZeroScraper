@@ -19,5 +19,4 @@ $ python execute_spiders.py --update --site_id <site_id>
 >1. the update function is not complete yet -- it currently stores article snapshots but does not update the original 
 article list for arguments such as fetch_count and next_fetch_date. Might wait for database connection.
 
->2. need a way to store update frequency for different online content and find a way to connect with the spider so 
-crawl frequency parameters (such as next_fetch_at and fetch_count) could be updated.
+>2. need a way to store [update frequency](https://g0v.hackmd.io/6ZbDhEwbR1mclAh-ws1B9A#Snapshot-scheduling-parsediff-optional) for different online content and find a way to connect with the spider so crawl frequency parameters (such as next_fetch_at and fetch_count) could be updated.
