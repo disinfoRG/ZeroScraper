@@ -38,6 +38,7 @@ class MultiJSONPipeline(object):
                 self.exporters[key].export_item(item[key])
 
         elif spider.name == 'update_contents':
+            print(item['article'])
             self.exporters['article_snapshot'].export_item(item['article_snapshot'])
 
             # todo: how to update article.jsonl
