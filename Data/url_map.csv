@@ -1,23 +1,21 @@
 id,name,url,type,article,following
 N1,中国台湾网,http://www.taiwan.cn/,official_media,^http://www.taiwan.cn/([\w]+)/([\w]+)/[0-9]{6}/t(.*)\.htm$,
-N2,密訊,http://www.mission-tw.com/mission,content_farm,/mission/article/,/mission/category/
+N2,密訊,http://www.mission-tw.com/mission,content_farm,^http://www.mission-tw.com/article/,^http://www.mission-tw.com/category/
 N6,琦琦看新聞,http://cnba.live,content_farm,/show/(.*)$,/?page=[0-9]*\&per-page=24$
 N8,琦琦看新聞,http://qiqi.today,content_farm,/show/(.*)$,/?page=[0-9]*\&per-page=24$
 N9,看頭條,http://fafa01.com,content_farm,/post([0-9]*)$,
 N10,讚新聞,http://hssszn.com,content_farm,/archives/([0-9]+)$,/page/([0-9]+); /category/(.*)
-N11,鬼島狂新聞,http://taiwan-politicalnews.com,content_farm,,
-N12,鬼島狂新聞,http://taiwan-madnews.com,content_farm,,
 N13,怒吼,http://nooho.net,content_farm,^https://nooho.net/([0-9]{4})/[0-9]{2}/(.*)/$,/page/([0-9]+)/$
 N14,海峽飛虹,http://www.itaiwannews.cn/,official_media,/[0-9]{4}-[0-9]{2}-[0-9]{2}/(.*)\.html$,
-N15,今日頭條,https://www.toutiao.com/,content_farm,,
+N15,今日頭條,https://www.toutiao.com/,content_farm,^/group/([0-9]+)/,/ch/news_([\w]+)/$
 N16,中華全國台灣同胞聯誼會,http://tailian.taiwan.cn/,organization_website,http://tailian.taiwan.cn/([\w]+)/(\d+)/t(.*)\.htm$,http://tailian.taiwan.cn/([\w]+)/$
 N17,台灣媽祖聯誼會,https://www.taiwanmazu.org/,organization_website,,
-N19,中時電子報,https://www.chinatimes.com/,news_websites,,
-N20,東森新聞,https://news.ebc.net.tw/,news_websites,,
-N21,ETtoday 新聞雲,https://www.ettoday.net/,news_websites,,
+N19,中時電子報,https://www.chinatimes.com/,news_websites,/(newspapers|realtimenews)/(.*-)?([0-9]*)-([0-9]*),/?chdtv$
+N20,東森新聞,https://news.ebc.net.tw/,news_websites,^/News/(.*)/([0-9]*)$,/Realtime$; /Hot$; /News/([\w]+)$
+N21,ETtoday 新聞雲,https://www.ettoday.net/,news_websites,^/news/([0-9]*)/([0-9]*)\.htm$,^https://www.ettoday.net/news/(news-list|focus|hot-news)
 N22,蘋果新聞網,https://tw.appledaily.com/,news_websites,,
-N23,蘋果即時,https://tw.appledaily.com/new/realtime,news_websites,,
-N24,聯合新聞網,https://udn.com/,news_websites,,
-N25,自由時報,http://news.ltn.com.tw/,news_websites,,
-N26,中央社,https://www.cna.com.tw/,news_websites,,
-N27,芋傳媒,https://taronews.tw/,news_websites,^https://taronews.tw/([0-9]{4})/[0-9]+/[0-9]+/[0-9]+/$,/category/world; /category/politics/
+N23,蘋果即時,https://tw.appledaily.com/new/realtime,news_websites,^https://tw.news.appledaily.com/(.*)/realtime/([0-9]+)/([0-9]+)/$,^/new/realtime/([0-9]+)$
+N24,聯合新聞網,https://udn.com/,news_websites,^https://udn.com/(news|vote2020)/story/([0-9]+)/([0-9]+),^/news; ^/rank; https://udn.com/vote2020/index
+N25,自由時報,http://news.ltn.com.tw/,news_websites,^https://news.ltn.com.tw/news/[^/]*/(breakingnews|paper)/([0-9]*),^https://news.ltn.com.tw/list/
+N26,中央社,https://www.cna.com.tw/,news_websites,^https://www.cna.com.tw/news/([\w]+)/([0-9]+)\.aspx$,^https://www.cna.com.tw/list/
+N27,芋傳媒,https://taronews.tw/,news_websites,^https://taronews.tw/([0-9]{4})/[0-9]+/[0-9]+/[0-9]+/$,/category/(.*)
