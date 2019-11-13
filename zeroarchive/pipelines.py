@@ -8,10 +8,16 @@ import pugsql
 
 queries = pugsql.module("queries/")
 
-class MySQLWritePipeline:
+
+class SQLWritePipeline:
     def open_spider(self, spider):
-        queries.connect("sqlite:///db.sqlite")
+        queries.connect("sqlite:///db.sqlite3")
 
     def process_item(self, item, spider):
-        queries.update_article(item)
+        with queries.transaction():
+            article = {"url": item["url"]}
+            article_id = queries.update_article(article)
+            queries.update_article_snapshot(
+                {"article_id": article_id, "raw_body": item["body"],}
+            )
         return item
