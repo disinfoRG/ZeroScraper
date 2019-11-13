@@ -11,7 +11,7 @@ $ python execute_spiders.py --discover --site_id <site_id>
 The function will save new html to [article_snapshot.jsonl](Data/article_snapshot.jsonl) and (_ideally but not yet implemented_) update the versioning parameters in [article.jsonl](Data/article.jsonl)
 ```sh
 $ cd Codes/newsSpiders
-$ python execute_spiders.py --update --site_id <site_id>
+$ python execute_spiders.py --update
 ```
 
 ### To-dos and Comments
