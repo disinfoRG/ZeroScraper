@@ -10,7 +10,7 @@ def match_any(pats, val):
 
 
 def parse_item(response):
-    return {"article_id": 0, "url": response.url, "raw_body": response.text}
+    return {"url": response.url, "body": response.text}
 
 
 class Nooho(scrapy.Spider):

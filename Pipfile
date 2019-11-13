@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ipython = "*"
+pysqlite3 = "*"
 
 [packages]
 scrapy = "*"
