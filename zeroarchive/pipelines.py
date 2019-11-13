@@ -18,6 +18,6 @@ class SQLWritePipeline:
             article = {"url": item["url"]}
             article_id = queries.update_article(article)
             queries.update_article_snapshot(
-                {"article_id": article_id, "raw_body": item["body"],}
+                {"article_id": article_id, "raw_body": item["body"]}
             )
         return item
