@@ -16,6 +16,6 @@ $ alembic upgrade head
 # run spiders
 $ scrapy crawl "nooho-怒吼文章"
 
-# install pre-commit hooks, and then add your code
+# install pre-commit hooks before hacking for the first time
 $ pre-commit install
 ```
