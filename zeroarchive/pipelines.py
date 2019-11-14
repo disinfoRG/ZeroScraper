@@ -6,6 +6,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy.exceptions import DropItem
 import pugsql
+import os
 
 queries = pugsql.module("queries/")
 
@@ -25,7 +26,7 @@ class DuplicateURLPipeline:
 
 class SQLWritePipeline:
     def open_spider(self, spider):
-        queries.connect("sqlite:///db.sqlite3")
+        queries.connect(os.getenv("DB_URL", default="sqlite:///db.sqlite3"))
 
     def process_item(self, item, spider):
         with queries.transaction():

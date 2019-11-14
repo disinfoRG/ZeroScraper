@@ -3,6 +3,10 @@
 # Scrapy settings for zeroarchive project
 #
 # For simplicity, this file contains only settings considered important or
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # commonly used. You can find more settings consulting the documentation:
 #
 #     https://docs.scrapy.org/en/latest/topics/settings.html

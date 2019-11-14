@@ -13,6 +13,7 @@ scrapy = "*"
 pymysql = "*"
 alembic = "*"
 pugsql = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.6"
