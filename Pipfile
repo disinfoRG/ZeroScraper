@@ -14,6 +14,7 @@ pymysql = "*"
 alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.6"
