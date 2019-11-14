@@ -19,3 +19,5 @@ $ scrapy crawl "nooho-怒吼文章"
 # install pre-commit hooks before hacking for the first time
 $ pre-commit install
 ```
+
+To run it with MySQL, set `DB_URL` in `.env`, and `sqlalchemy.url` in `alembic.ini`.
