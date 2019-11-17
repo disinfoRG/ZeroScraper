@@ -29,4 +29,4 @@ MANIFEST
 .DS_Store
 .idea
 
-firebaseAccountKey.json
+db_auth.json
