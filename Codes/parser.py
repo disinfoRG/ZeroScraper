@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
-import json
+import jsonlines
 
-article_js = json.load(open('../../Data/ArticleSnapshot.json', 'rb'))
-for article in article_js:
-    soup = BeautifulSoup(article['raw_body'], 'html5lib')
+articles = jsonlines.open('../../Data/article_snapshot.jsonl')
+for single_article in articles:
+    soup = BeautifulSoup(single_article['raw_body'], 'html5lib')
     if article['from_site'] == 'N1':
         # get title
         title = soup.find('h1').text

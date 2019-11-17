@@ -2,11 +2,12 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from datetime import datetime, timedelta
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-import jsonlines
 import os
 import sys
 sys.path.append('../')
-from helpers import generate_next_fetch_time
+from helpers import generate_next_fetch_time, connect_to_db
+import zlib
+import sqlalchemy as db
 
 
 class DiscoverNewArticlesSpider(CrawlSpider):
@@ -17,13 +18,15 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.site_id = site_id
         self.start_urls = [site_url]
         self.site_type = site_type
-        data_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping/Data'
-        try:
-            self.existing_urls = [obj['redirect_from'][0] if obj['redirect_from'] else obj['url']
-                                  for obj in jsonlines.open(f'{data_dir}/article.jsonl') if obj['site_id'] == self.site_id]
 
-        except FileNotFoundError:
-            self.existing_urls = list()
+        # connect to db and fetch existing url
+        engine, connection = connect_to_db()
+        self.connection = connection
+        article = db.Table('Article', db.MetaData(), autoload=True, autoload_with=engine)
+        query = db.select([article.columns.url]).where(article.columns.site_id == self.site_id)
+        self.existing_urls = [x[0] for x in connection.execute(query).fetchall()]
+
+        # establish crawling rule
         article_url_patterns = article_url_patterns.split('; ')
         following_url_patterns = following_url_patterns.split('; ')
         DiscoverNewArticlesSpider.rules = [Rule(LinkExtractor(allow=article_url_patterns,
@@ -43,16 +46,19 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         # populate article item
         article['site_id'] = self.site_id
         article['url'] = response.url
-        article['found_at'] = parse_time_str
-        article['last_fetched_at'] = parse_time_str
-        article['fetch_count'] = 1
-        article['next_fetch_at'] = generate_next_fetch_time(self.site_type, article['fetch_count'], parse_time)
-        article['article_id'] = article['url'] + '/' + article['found_at']
-        article['redirect_from'] = response.meta['redirect_urls'] if 'redirect_urls' in response.meta.keys() else None
+        article['url_hash'] = zlib.crc32(article['url'].encode())
+        article['first_snapshot_at'] = parse_time_str
+        article['last_snapshot_at'] = parse_time_str
+        article['snapshot_count'] = 1
+        article['next_snapshot_at'] = generate_next_fetch_time(self.site_type, article['snapshot_count'], parse_time)
+        if 'redirect_urls' in response.meta.keys():
+            article['url'] = response.request.meta['redirect_urls'][0]
+            article['redirect_to'] = response.url
 
         # populate article_snapshot item
         article_snapshot['raw_body'] = response.text
-        article_snapshot['fetched_at'] = parse_time_str
-        article_snapshot['article_id'] = article['article_id']
+        article_snapshot['snapshot_at'] = parse_time_str
+        #todo: how to retrieve TAT
+        # article_snapshot['article_id'] = article['article_id']
 
         yield {'article': article, 'article_snapshot': article_snapshot}
