@@ -15,4 +15,4 @@ $ python execute_spiders.py --update
 ```
 
 ### Note:
-To successfully connect to mysql db, please create a json file named `db_auth.json` following the same format as [sample_db_auth.json](Data/sample_db_auth.json), and put in `Data` folder. 
+To successfully connect to mysql db, please create a json file named `db_auth.json` following the same format as [sample_db_auth.json](Data/sample_db_auth.json), and put in `Data` folder. The format is as followed: `mysql://{db_username}:{db_pass}@{db_endpoint}/{db_name}`
