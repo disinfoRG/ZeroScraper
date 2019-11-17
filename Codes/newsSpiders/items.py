@@ -9,19 +9,17 @@ import scrapy
 
 
 class ArticleItem(scrapy.Item):
-    article_id = scrapy.Field()
     site_id = scrapy.Field()
     url = scrapy.Field()
     url_hash = scrapy.Field()
-    url_hash_seq = scrapy.Field()
-    found_at = scrapy.Field()
-    last_fetched_at = scrapy.Field()
-    next_fetch_at = scrapy.Field()
-    fetch_count = scrapy.Field()
-    redirect_from = scrapy.Field()
+    first_snapshot_at = scrapy.Field()
+    last_snapshot_at = scrapy.Field()
+    next_snapshot_at = scrapy.Field()
+    snapshot_count = scrapy.Field()
+    redirect_to = scrapy.Field()
 
 
 class ArticleSnapshotItem(scrapy.Item):
     article_id = scrapy.Field()
-    fetched_at = scrapy.Field()
+    snapshot_at = scrapy.Field()
     raw_body = scrapy.Field()
