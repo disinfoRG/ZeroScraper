@@ -5,7 +5,7 @@ Scrape News contents provided in this [target list](https://airtable.com/tbl3DrY
 1. Find new articles for sites listed in [url_map.csv](Data/url_map.csv) and store to mysql database on middle2.
 ```sh
 $ cd Codes/newsSpiders
-$ python execute_spiders.py --discover --site_id <site_id> 
+$ python execute_spiders.py --discover --site_id {site_id}
 ```
 2. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database. 
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
