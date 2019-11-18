@@ -1,16 +1,14 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from datetime import datetime, timedelta
-import jsonlines
+import sqlalchemy as db
 import os
-from dateutil.parser import parse
 import json
 import sys
 sys.path.append('../')
-from helpers import generate_next_fetch_time
+from helpers import generate_next_fetch_time, connect_to_db
 
 
-# still working...
 class UpdateContentsSpider(scrapy.Spider):
     name = "update_contents"
 
@@ -18,39 +16,39 @@ class UpdateContentsSpider(scrapy.Spider):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
         root_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping'
         data_dir = root_dir + '/Data'
-        current_taiwan_time = datetime.utcnow() + timedelta(hours=8)
-        self.articles_to_update = [obj for obj in jsonlines.open(f'{data_dir}/article.jsonl')
-                                   if obj['next_fetch_at'] and parse(obj['next_fetch_at']) < current_taiwan_time]
+        current_time = datetime.utcnow() + timedelta(hours=8)  # taiwan time
+        int_current_time = int(current_time.strftime('%y%m%d%H%M'))
+        engine, connection = connect_to_db()
+        article = db.Table('Article', db.MetaData(), autoload=True, autoload_with=engine)
+        query = db.select([article.columns.url, article.columns.url_hash, article.columns.site_id, article.snapshot_count])
+        query = query.where(db.and_(article.columns.next_snapshot_at != 0, article.columns.next_snapshot_at < int_current_time))
+        self.articles_to_update = [dict(row) for row in connection.execute(query)]
         self.url_map = json.load(open(f'{data_dir}/url_map.json', 'r'))
 
     def start_requests(self):
         for a in self.articles_to_update:
             yield scrapy.Request(url=a['url'], callback=self.update_article,
-                                 cb_kwargs={k: a[k] for k in ['site_id', 'article_id', 'url', 'found_at', 'fetch_count']})
+                                 cb_kwargs={'url_hash': a['url_hash'], 'site_id': a['site_id'], 'snapshot_count': a['snapshot_count']})
 
-    def update_article(self, response, site_id, article_id, url, found_at, fetch_count):
+    def update_article(self, response, url_hash, site_id, snapshot_count):
         # init
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         parse_time = datetime.utcnow() + timedelta(hours=8)
-        parse_time_str = parse_time.strftime('%Y-%m-%d-%H:%M:%S')
+        parse_time_str = parse_time.strftime('%y%m%d%H%M')
         site_type = self.url_map[site_id]['type']
 
         # populate article item
         # copy from the original article
-        article['site_id'] = site_id
-        article['article_id'] = article_id
-        article['url'] = url
-        article['found_at'] = found_at
+        article['url_hash'] = url_hash
         # update
-        article['last_fetched_at'] = parse_time_str
-        article['redirect_from'] = response.meta['redirect_urls'] if 'redirect_urls' in response.meta.keys() else None
-        article['fetch_count'] = fetch_count + 1
-        article['next_fetch_at'] = generate_next_fetch_time(site_type, article['fetch_count'], parse_time)
+        article['last_snapshot_at'] = int(parse_time_str)
+        article['snapshot_count'] = snapshot_count+1
+        article['next_snapshot_at'] = generate_next_fetch_time(site_type, article['snapshot_count'], parse_time)
 
         # populate article_snapshot item
         article_snapshot['raw_body'] = response.text
-        article_snapshot['fetched_at'] = parse_time_str
+        article_snapshot['snapshot_at'] = parse_time_str
         article_snapshot['article_id'] = article['article_id']
 
         yield {'article': article, 'article_snapshot': article_snapshot}

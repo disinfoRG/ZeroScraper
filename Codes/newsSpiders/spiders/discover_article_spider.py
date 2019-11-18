@@ -2,7 +2,6 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from datetime import datetime, timedelta
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-import os
 import sys
 sys.path.append('../')
 from helpers import generate_next_fetch_time, connect_to_db
@@ -41,14 +40,15 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         article_snapshot = ArticleSnapshotItem()
         # get current time
         parse_time = datetime.utcnow() + timedelta(hours=8)
-        parse_time_str = parse_time.strftime('%Y-%m-%d-%H:%M:%S')
+        parse_time_str = parse_time.strftime('%y%m%d%H%M')
+        parse_time_int = int(parse_time_str)
 
         # populate article item
         article['site_id'] = self.site_id
         article['url'] = response.url
         article['url_hash'] = zlib.crc32(article['url'].encode())
-        article['first_snapshot_at'] = parse_time_str
-        article['last_snapshot_at'] = parse_time_str
+        article['first_snapshot_at'] = parse_time_int
+        article['last_snapshot_at'] = parse_time_int
         article['snapshot_count'] = 1
         article['next_snapshot_at'] = generate_next_fetch_time(self.site_type, article['snapshot_count'], parse_time)
         if 'redirect_urls' in response.meta.keys():
@@ -56,9 +56,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             article['redirect_to'] = response.url
 
         # populate article_snapshot item
-        article_snapshot['raw_body'] = response.text
-        article_snapshot['snapshot_at'] = parse_time_str
-        #todo: how to retrieve TAT
-        # article_snapshot['article_id'] = article['article_id']
+        article_snapshot['raw_data'] = response.text
+        article_snapshot['snapshot_at'] = parse_time_int
 
         yield {'article': article, 'article_snapshot': article_snapshot}

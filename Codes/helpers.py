@@ -4,6 +4,16 @@ from sqlalchemy import create_engine
 import os
 
 
+def connect_to_db():
+    data_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping/Data'
+    db_auth = json.load(open(f'{data_dir}/db_auth.json', 'r'))
+    engine = create_engine(
+        f'mysql+pymysql://{db_auth["db_username"]}:{db_auth["db_pass"]}@{db_auth["db_endpoint"]}/{db_auth["db_name"]}')
+    connection = engine.connect()
+
+    return engine, connection
+
+
 def generate_next_fetch_time(site_type, fetch_count, parse_time):
     """
     A method that generates next fetch time based on site type
@@ -12,6 +22,7 @@ def generate_next_fetch_time(site_type, fetch_count, parse_time):
     :param parse_time: a datetime object of the current parse time
     :return: next fetch time, in string format
     """
+    # Default
     if 7 > fetch_count >= 1:
         next_fetch_time = (parse_time + timedelta(days=1)).strftime('%y%m%d%H%M')
         return next_fetch_time
@@ -38,13 +49,3 @@ def generate_next_fetch_time(site_type, fetch_count, parse_time):
     #     if 7 > fetch_count >= 1:
     #         next_fetch_time = (parse_time + timedelta(days=1)).strftime('%y%m%d%H%M')
     #         return next_fetch_time
-
-
-def connect_to_db():
-    data_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping/Data'
-    db_auth = json.load(open(f'{data_dir}/db_auth.json', 'r'))
-    engine = create_engine(
-        f'mysql+pymysql://{db_auth["db_username"]}:{db_auth["db_pass"]}@{db_auth["db_endpoint"]}/{db_auth["db_name"]}')
-    connection = engine.connect()
-
-    return engine, connection

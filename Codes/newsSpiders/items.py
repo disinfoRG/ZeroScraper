@@ -22,4 +22,4 @@ class ArticleItem(scrapy.Item):
 class ArticleSnapshotItem(scrapy.Item):
     article_id = scrapy.Field()
     snapshot_at = scrapy.Field()
-    raw_body = scrapy.Field()
+    raw_data = scrapy.Field()
