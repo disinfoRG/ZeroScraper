@@ -19,13 +19,17 @@ def generate_next_fetch_time(site_type, fetch_count, parse_time):
     A method that generates next fetch time based on site type
     :param site_type: str, the type of site where articles are from
     :param fetch_count: int, how many times have this article fetched?
-    :param parse_time: a datetime object of the current parse time
-    :return: next fetch time, in string format
+    :param parse_time: a unix timestamp
+    :return: next fetch time, in unix timestamp
     """
+    # turn to datetime object
+    parse_time = datetime.fromtimestamp(parse_time)
     # Default
     if 7 > fetch_count >= 1:
-        next_fetch_time = (parse_time + timedelta(days=1)).strftime('%y%m%d%H%M')
-        return next_fetch_time
+        next_fetch_time = parse_time + timedelta(days=1)
+        return datetime.timestamp(next_fetch_time)
+    else:
+        return 0
 
     # if site_type == 'content_farm':
     #     # 1/day for 1 week, 1/week for 1 month
