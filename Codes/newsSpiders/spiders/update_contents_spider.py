@@ -7,6 +7,7 @@ import json
 import sys
 sys.path.append('../')
 from helpers import generate_next_fetch_time, connect_to_db
+import time
 
 
 class UpdateContentsSpider(scrapy.Spider):
@@ -34,21 +35,20 @@ class UpdateContentsSpider(scrapy.Spider):
         # init
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
-        parse_time = datetime.utcnow() + timedelta(hours=8)
-        parse_time_str = parse_time.strftime('%y%m%d%H%M')
+        parse_time = int(time.time())
         site_type = self.url_map[site_id]['type']
 
         # populate article item
         # copy from the original article
         article['url_hash'] = url_hash
         # update
-        article['last_snapshot_at'] = int(parse_time_str)
+        article['last_snapshot_at'] = parse_time
         article['snapshot_count'] = snapshot_count+1
         article['next_snapshot_at'] = generate_next_fetch_time(site_type, article['snapshot_count'], parse_time)
 
         # populate article_snapshot item
         article_snapshot['raw_body'] = response.text
-        article_snapshot['snapshot_at'] = parse_time_str
+        article_snapshot['snapshot_at'] = parse_time
         article_snapshot['article_id'] = article['article_id']
 
         yield {'article': article, 'article_snapshot': article_snapshot}

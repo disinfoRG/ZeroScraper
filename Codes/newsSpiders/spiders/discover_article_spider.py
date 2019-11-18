@@ -7,6 +7,7 @@ sys.path.append('../')
 from helpers import generate_next_fetch_time, connect_to_db
 import zlib
 import sqlalchemy as db
+import time
 
 
 class DiscoverNewArticlesSpider(CrawlSpider):
@@ -39,16 +40,14 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         # get current time
-        parse_time = datetime.utcnow() + timedelta(hours=8)
-        parse_time_str = parse_time.strftime('%y%m%d%H%M')
-        parse_time_int = int(parse_time_str)
+        parse_time = int(time.time())
 
         # populate article item
         article['site_id'] = self.site_id
         article['url'] = response.url
         article['url_hash'] = zlib.crc32(article['url'].encode())
-        article['first_snapshot_at'] = parse_time_int
-        article['last_snapshot_at'] = parse_time_int
+        article['first_snapshot_at'] = parse_time
+        article['last_snapshot_at'] = parse_time
         article['snapshot_count'] = 1
         article['next_snapshot_at'] = generate_next_fetch_time(self.site_type, article['snapshot_count'], parse_time)
         if 'redirect_urls' in response.meta.keys():
@@ -57,6 +56,6 @@ class DiscoverNewArticlesSpider(CrawlSpider):
 
         # populate article_snapshot item
         article_snapshot['raw_data'] = response.text
-        article_snapshot['snapshot_at'] = parse_time_int
+        article_snapshot['snapshot_at'] = parse_time
 
         yield {'article': article, 'article_snapshot': article_snapshot}
