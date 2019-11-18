@@ -14,6 +14,12 @@ from helpers import connect_to_db
 3. site_id type on mysql (change to varchar) -- what about site table
 """
 
+#TODO:
+"""
+1. turn datetime to unix timestamp -- get to only seconds
+# import time; int(time.time()) 
+"""
+
 
 class MySqlPipeline(object):
 
