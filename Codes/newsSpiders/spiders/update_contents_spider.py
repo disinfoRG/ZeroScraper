@@ -2,8 +2,6 @@ import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from datetime import datetime, timedelta
 import sqlalchemy as db
-import os
-import json
 import sys
 sys.path.append('../')
 from helpers import generate_next_fetch_time, connect_to_db
@@ -15,8 +13,6 @@ class UpdateContentsSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
-        root_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping'
-        data_dir = root_dir + '/Data'
         current_time = datetime.utcnow() + timedelta(hours=8)  # taiwan time
         int_current_time = int(current_time.strftime('%y%m%d%H%M'))
         engine, connection = connect_to_db()
@@ -24,7 +20,8 @@ class UpdateContentsSpider(scrapy.Spider):
         query = db.select([article.columns.url, article.columns.url_hash, article.columns.site_id, article.snapshot_count])
         query = query.where(db.and_(article.columns.next_snapshot_at != 0, article.columns.next_snapshot_at < int_current_time))
         self.articles_to_update = [dict(row) for row in connection.execute(query)]
-        self.url_map = json.load(open(f'{data_dir}/url_map.json', 'r'))
+        self.site = db.Table('Site', db.MetaData(), autoload=True, autoload_with=engine)
+        self.connection = connection
 
     def start_requests(self):
         for a in self.articles_to_update:
@@ -36,7 +33,8 @@ class UpdateContentsSpider(scrapy.Spider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         parse_time = int(time.time())
-        site_type = self.url_map[site_id]['type']
+        query = db.select([self.site.columns.type]).where(self.site.columns.site_id == site_id)
+        site_type = self.connection.execute(query).fetchone()[0]
 
         # populate article item
         # copy from the original article

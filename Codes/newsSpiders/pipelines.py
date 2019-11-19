@@ -18,6 +18,8 @@ from helpers import connect_to_db
 """
 1. turn datetime to unix timestamp -- get to only seconds
 # import time; int(time.time()) 
+2. change to article_id instead of url_hash for update_article
+3. os.env https://www.geeksforgeeks.org/python-os-getenv-method/
 """
 
 
@@ -42,7 +44,8 @@ class MySqlPipeline(object):
         if spider.name == 'update_contents':
             # update Article
             article_table = self.db_tables['article']
-            query = article_table.update().where(article_table.c.url_hash == bindparam('url_hash'))
+            # todo: finish change join key to article_id
+            query = article_table.update().where(article_table.c.article_id == bindparam('id'))
             query = query.values({'snapshot_count': bindparam('snapshot_count'),
                                   'last_snapshot_at': bindparam('last_snapshot_at'),
                                   'next_snapshot_at': bindparam('next_snapshot_at')})

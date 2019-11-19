@@ -5,7 +5,7 @@ import os
 
 
 def connect_to_db():
-    data_dir = os.getcwd().split('/NewsScraping/')[0] + '/NewsScraping/Data'
+    data_dir = os.getcwd().split('/NewsScraping/')[0]+'/NewsScraping/Data'
     db_auth = json.load(open(f'{data_dir}/db_auth.json', 'r'))
     engine = create_engine(
         f'mysql+pymysql://{db_auth["db_username"]}:{db_auth["db_pass"]}@{db_auth["db_endpoint"]}/{db_auth["db_name"]}')

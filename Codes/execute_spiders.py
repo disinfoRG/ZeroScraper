@@ -1,9 +1,10 @@
 import argparse
 import os
-import json
-import jsonlines
 from datetime import datetime, timedelta
 from dateutil.parser import parse
+import sqlalchemy as db
+from ast import literal_eval
+from helpers import connect_to_db
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--site_id', help="site id to crawl")
@@ -22,27 +23,29 @@ if args.google_bot:
 else:
     # user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
     user_agent = 'newsSpider'
+engine, connection = connect_to_db()
+site = db.Table('Site', db.MetaData(), autoload=True, autoload_with=engine)
 
 
 # execute
 os.system(f"cd {root_dir}/Codes/newsSpiders")
 if args.discover:
-    args.site_id = args.site_id.upper()
-    url_map = json.load(open(f'{data_dir}/url_map.json', 'r'))
-    site_url = url_map[args.site_id]['url']
-    site_type = url_map[args.site_id]['type']
-    article_map = url_map[args.site_id]['article']
-    try:
-        following_map = url_map[args.site_id]['following']
-    except KeyError:
-        following_map = ''
+    args.site_id = int(args.site_id)
+    query = db.select([site.columns.url, site.columns.type, site.columns.config]).where(
+        site.columns.site_id == args.site_id)
+    site_info = dict(connection.execute(query).fetchone())
+    site_info['config'] = literal_eval(site_info['config'])
+    site_url = site_info['url']
+    site_type = site_info['type']
+    article_pattern = site_info['config']['article']
+    following_pattern = site_info['config'].get('following', "")
 
     os.system(f"scrapy crawl discover_new_articles \
                 -a site_id='{args.site_id}' \
                 -a site_url='{site_url}' \
                 -a site_type='{site_type}' \
-                -a article_url_patterns='{article_map}' \
-                -a following_url_patterns='{following_map}' \
+                -a article_url_patterns='{article_pattern}' \
+                -a following_url_patterns='{following_pattern}' \
                 -s DEPTH_LIMIT={args.depth} \
                 -s DOWNLOAD_DELAY={args.delay} \
                 -s USER_AGENT='{user_agent}'")
