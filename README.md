@@ -2,7 +2,7 @@
 Scrape News contents provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 ### Running
-1. Find new articles for sites listed in Site table in database and store to general info to Article and raw html to ArticleSnapshot table.
+1. Find new articles for sites listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table.
 ```sh
 $ cd Codes
 $ python execute_spiders.py --discover --site_id {site_id}
