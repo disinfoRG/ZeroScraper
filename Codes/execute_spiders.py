@@ -21,8 +21,7 @@ data_dir = root_dir+'/Data'
 if args.google_bot:
     user_agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 else:
-    # user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
-    user_agent = 'newsSpider'
+    user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
 engine, connection = connect_to_db()
 site = db.Table('Site', db.MetaData(), autoload=True, autoload_with=engine)
 

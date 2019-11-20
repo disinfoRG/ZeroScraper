@@ -42,7 +42,7 @@ def generate_next_fetch_time(site_type, fetch_count, parse_time):
     #     else:
     #         return 0
     #
-    # elif site_type == 'news_websites':
+    # elif site_type == 'news_website':
     #     # 1/hour for 1 day
     #     if fetch_count < 24:
     #         next_fetch_time = (parse_time + timedelta(hours=1)).strftime('%y%m%d%H%M')
