@@ -9,6 +9,7 @@ import scrapy
 
 
 class ArticleItem(scrapy.Item):
+    article_id = scrapy.Field()
     site_id = scrapy.Field()
     url = scrapy.Field()
     url_hash = scrapy.Field()

@@ -17,8 +17,8 @@ class UpdateContentsSpider(scrapy.Spider):
         int_current_time = int(current_time.strftime('%y%m%d%H%M'))
         engine, connection = connect_to_db()
         article = db.Table('Article', db.MetaData(), autoload=True, autoload_with=engine)
-        query = db.select([article.columns.url, article.columns.url_hash, article.columns.site_id, article.snapshot_count])
-        query = query.where(db.and_(article.columns.next_snapshot_at != 0, article.columns.next_snapshot_at < int_current_time))
+        query = db.select([article.c.article_id, article.c.url, article.c.site_id, article.c.snapshot_count])
+        query = query.where(db.and_(article.c.next_snapshot_at != 0, article.c.next_snapshot_at < int_current_time))
         self.articles_to_update = [dict(row) for row in connection.execute(query)]
         self.site = db.Table('Site', db.MetaData(), autoload=True, autoload_with=engine)
         self.connection = connection
@@ -26,9 +26,9 @@ class UpdateContentsSpider(scrapy.Spider):
     def start_requests(self):
         for a in self.articles_to_update:
             yield scrapy.Request(url=a['url'], callback=self.update_article,
-                                 cb_kwargs={'url_hash': a['url_hash'], 'site_id': a['site_id'], 'snapshot_count': a['snapshot_count']})
+                                 cb_kwargs={'article_id': a['article_id'], 'site_id': a['site_id'], 'snapshot_count': a['snapshot_count']})
 
-    def update_article(self, response, url_hash, site_id, snapshot_count):
+    def update_article(self, response, article_id, site_id, snapshot_count):
         # init
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
@@ -38,7 +38,7 @@ class UpdateContentsSpider(scrapy.Spider):
 
         # populate article item
         # copy from the original article
-        article['url_hash'] = url_hash
+        article['article_id'] = article_id
         # update
         article['last_snapshot_at'] = parse_time
         article['snapshot_count'] = snapshot_count+1
@@ -47,6 +47,6 @@ class UpdateContentsSpider(scrapy.Spider):
         # populate article_snapshot item
         article_snapshot['raw_body'] = response.text
         article_snapshot['snapshot_at'] = parse_time
-        article_snapshot['article_id'] = article['article_id']
+        article_snapshot['article_id'] = article_id
 
         yield {'article': article, 'article_snapshot': article_snapshot}
