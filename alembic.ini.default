@@ -36,8 +36,7 @@ script_location = migrations
 # output_encoding = utf-8
 
 # remember to also change .env when changing this
-sqlalchemy.url = sqlite:///db.sqlite3
-#sqlalchemy.url = mysql://myuser:mysecret@127.0.0.1/mydb
+sqlalchemy.url = mysql://myuser:mysecret@127.0.0.1/mydb
 
 
 [post_write_hooks]
