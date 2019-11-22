@@ -19,7 +19,7 @@ To successfully connect to mysql db, please create a json file named `db_auth.js
 
 ## Development
 
-We use Python 3.6.  Install Python dependencies with pipenv:
+We use Python 3.7.  Install Python dependencies with pipenv:
 
 ```sh
 $ pip install pipenv
@@ -28,15 +28,6 @@ $ pipenv shell
 
 # install pre-commit hooks before hacking for the first time
 $ pre-commit install
-```
-
-Note that if you are using "mysql-client" and "openssl" packages from Homebrew on macOS, you might want to install Python dependencies with the following command:
-
-```sh
-PATH="/usr/local/opt/mysql-client/bin:$PATH" \
-LDFLAGS="-L/usr/local/opt/openssl/lib" \
-CPPFLAGS="-I/usr/local/opt/openssl/include" \
-pipenv install --dev
 ```
 
 We use MySQL.  To setup database connect:
