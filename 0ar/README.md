@@ -20,7 +20,7 @@ $ scrapy crawl "nooho-怒吼文章"
 $ pre-commit install
 ```
 
-To run it with MySQL, set `DATABASE_URL` in `.env`, and `sqlalchemy.url` in `alembic.ini`.  If you are using MySQL on macOS, you might want to try installing Python dependencies with:
+To run it with MySQL, set `DB_URL` in `.env`, and `sqlalchemy.url` in `alembic.ini`.  If you are using MySQL on macOS, you might want to try installing Python dependencies with:
 
 ```sh
 PATH="/usr/local/opt/mysql-client/bin:$PATH" LDFLAGS="-L/usr/local/opt/openssl/lib" CPPFLAGS="-I/usr/local/opt/openssl/include" pipenv install --dev
