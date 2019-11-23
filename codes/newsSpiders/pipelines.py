@@ -1,21 +1,13 @@
-import os
 import sqlalchemy as db
 from sqlalchemy.sql.expression import bindparam
 import sys
 sys.path.append('../')
 from helpers import connect_to_db
 
-#TODO:
-"""
-0. os.env https://www.geeksforgeeks.org/python-os-getenv-method/
-"""
-
 
 class MySqlPipeline(object):
 
     def __init__(self):
-        root_dir = os.getcwd().split('NewsScraping')[0] + 'NewsScraping'
-        self.data_dir = root_dir+'/Data'
         self.connection = None
         self.db_tables = None
         self.values_list = None

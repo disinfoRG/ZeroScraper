@@ -45,7 +45,7 @@ class UpdateContentsSpider(scrapy.Spider):
         article['next_snapshot_at'] = generate_next_fetch_time(site_type, article['snapshot_count'], parse_time)
 
         # populate article_snapshot item
-        article_snapshot['raw_body'] = response.text
+        article_snapshot['raw_data'] = response.text
         article_snapshot['snapshot_at'] = parse_time
         article_snapshot['article_id'] = article_id
 

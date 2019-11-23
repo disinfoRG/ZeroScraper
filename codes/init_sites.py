@@ -1,7 +1,7 @@
 import json
 
-airtable_csv = open('../Data/airtable_sites.csv', encoding='utf8') # csv downloaded from airtable
-local_csv = open('../Data/url_map.csv', encoding='utf8')
+airtable_csv = open('../data/airtable_sites.csv', encoding='utf8')  # csv downloaded from airtable
+local_csv = open('../data/url_map.csv', encoding='utf8')
 sites = {}
 
 site_types = {
