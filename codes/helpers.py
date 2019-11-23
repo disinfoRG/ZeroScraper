@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 import json
 from sqlalchemy import create_engine
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def connect_to_db():
-    data_dir = os.getcwd().split('/NewsScraping/')[0]+'/NewsScraping/Data'
-    db_auth = json.load(open(f'{data_dir}/db_auth.json', 'r'))
-    engine = create_engine(
-        f'mysql+pymysql://{db_auth["db_username"]}:{db_auth["db_pass"]}@{db_auth["db_endpoint"]}/{db_auth["db_name"]}')
+    engine = create_engine(os.getenv("DB_URL"))
     connection = engine.connect()
 
     return engine, connection

@@ -17,7 +17,6 @@ parser.add_argument('-u', '--update', action='store_true', help='execute spider 
 # set up
 args = parser.parse_args()
 root_dir = os.getcwd().split('/NewsScraping/')[0]+'/NewsScraping'
-data_dir = root_dir+'/Data'
 if args.google_bot:
     user_agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 else:
