@@ -1,6 +1,5 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from datetime import datetime, timedelta
 import sqlalchemy as db
 import sys
 sys.path.append('../')
@@ -13,8 +12,7 @@ class UpdateContentsSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
-        current_time = datetime.utcnow() + timedelta(hours=8)  # taiwan time
-        int_current_time = int(current_time.strftime('%y%m%d%H%M'))
+        int_current_time = int(time.time())
         engine, connection = connect_to_db()
         article = db.Table('Article', db.MetaData(), autoload=True, autoload_with=engine)
         query = db.select([article.c.article_id, article.c.url, article.c.site_id, article.c.snapshot_count])
