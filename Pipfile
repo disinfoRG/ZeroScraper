@@ -13,6 +13,7 @@ pymysql = "*"
 alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
+lxml = "==4.4.1"
 
 [requires]
 python_version = "3.7"
