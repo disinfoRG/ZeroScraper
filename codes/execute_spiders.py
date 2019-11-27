@@ -45,7 +45,7 @@ if args.discover:
     following_pattern = site_info["config"].get("following", "")
     depth = site_info["config"].get("depth", args.depth)
     delay = site_info["config"].get("delay", args.delay)
-    site_ua = site_info["config"].get("user_agent", args.user_agent)
+    site_ua = site_info["config"].get("user_agent", args.ua)
 
     os.system(
         f"scrapy crawl discover_new_articles \
@@ -63,7 +63,7 @@ elif args.update:
     os.system(
         f"scrapy crawl update_contents \
                 -s DOWNLOAD_DELAY={args.delay} \
-                -s USER_AGENT='{args.user_agent}'"
+                -s USER_AGENT='{args.ua}'"
     )
 else:
     raise Exception(
