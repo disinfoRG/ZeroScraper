@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import json
 from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv
