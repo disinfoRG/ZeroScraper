@@ -38,8 +38,7 @@ $ python batch_discover.py
 ```
 
     No optional argument. 
-    Site-specific arguments (depth, delay, and ua) should be specified in 
-    'config' column of Site table. 
+    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table. 
     Otherwise the default values will be used. 
 
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
