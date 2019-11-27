@@ -14,6 +14,7 @@ engine, connection = connect_to_db()
 site_table = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
 query = db.select([site_table.c.site_id]).where(site_table.c.is_active)
 site_ids = [x[0] for x in connection.execute(query).fetchall()]
+connection.close()
 
 # run
 start_time = time.time()
