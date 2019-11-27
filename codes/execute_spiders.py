@@ -12,7 +12,7 @@ parser.add_argument(
 parser.add_argument("--delay", default=1.5, help="time delayed for request.")
 parser.add_argument(
     "--ua",
-    default="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
+    default="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
     help="user_agent",
 )
 parser.add_argument(

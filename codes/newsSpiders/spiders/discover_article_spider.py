@@ -1,6 +1,5 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from datetime import datetime, timedelta
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 import sys
 
@@ -39,7 +38,6 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             article.columns.site_id == self.site_id
         )
         self.existing_urls = [x[0] for x in connection.execute(query).fetchall()]
-
         # establish crawling rule
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
