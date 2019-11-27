@@ -15,8 +15,6 @@ alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
 lxml = "==4.4.1"
-aiohttp = "*"
-aiofiles = "*"
 black = "*"
 
 [requires]
