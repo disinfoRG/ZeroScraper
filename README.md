@@ -20,17 +20,36 @@ $ alembic upgrade head
 
 Then,
 
-1. Find new articles for sites listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table.
+1. Find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table.
 ```sh
 $ cd codes
 $ python execute_spiders.py --discover --site_id {site_id}
 ```
-2. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
+    Optional Arguments:
+        --depth: maximum search depth limit. default = 3. 
+                 Set 0 if desire no depth limit.   
+        --delay: delay time between each request. default = 1.5 (sec)
+        --ua: user agent string.
+
+2. Find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
+ ```sh
+$ cd codes
+$ python batch_discover.py
+```
+
+    No optional argument. 
+    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table. 
+    Otherwise the default values will be used. 
+
+3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
 $ cd codes
 $ python execute_spiders.py --update
 ```
+    Optional Arguments: 
+            --delay: delay time between each request. default = 1.5 (sec)
+            --ua: user agent string.
 
 ## Development
 
