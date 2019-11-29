@@ -2,7 +2,7 @@
 .env
 .DS_Store
 .idea
-db_auth.json
+tmp/
 
 ## Python
 # Byte-compiled / optimized / DLL files
