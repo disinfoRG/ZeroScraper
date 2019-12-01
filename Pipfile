@@ -19,3 +19,6 @@ black = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+start = "sh -c 'cd codes && python ./batch_discover.py'"

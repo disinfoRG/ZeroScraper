@@ -5,6 +5,9 @@ import time
 import logging
 from datetime import datetime
 from helpers import connect_to_db
+import sys
+
+python_path = sys.executable
 
 current_time_str = datetime.now().strftime("%Y-%m-%dT%H:%M%S")
 logging.basicConfig(
@@ -12,7 +15,6 @@ logging.basicConfig(
     format="%(asctime)s - %(message)s",
     level=logging.INFO,
 )
-
 
 def discover(site_info):
     site_start_time = time.time()
