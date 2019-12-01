@@ -7,7 +7,7 @@ from helpers import connect_to_db
 parser = argparse.ArgumentParser()
 parser.add_argument("--site_id", help="site id to crawl")
 parser.add_argument(
-    "--depth", default=3, help="desired depth limit; 0 if no limit imposed.", type=int
+    "--depth", default=0, help="desired depth limit; 0 if no limit imposed.", type=int
 )
 parser.add_argument("--delay", default=1.5, help="time delayed for request.")
 parser.add_argument(
