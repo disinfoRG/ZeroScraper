@@ -30,7 +30,6 @@ args = parser.parse_args()
 root_dir = os.getcwd().split("/NewsScraping/")[0] + "/NewsScraping"
 engine, connection = connect_to_db()
 site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
-os.system(f"cd {root_dir}/Codes/newsSpiders")
 # execute
 if args.discover:
     args.site_id = int(args.site_id)
