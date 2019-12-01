@@ -26,10 +26,9 @@ $ cd codes
 $ python execute_spiders.py --discover --site_id {site_id}
 ```
     Optional Arguments:
-        --depth: maximum search depth limit. default = 3. 
-                 Set 0 if desire no depth limit.   
+        --depth: maximum search depth limit. default = 0, i.e. no limit.  
         --delay: delay time between each request. default = 1.5 (sec)
-        --ua: user agent string.
+        --ua: user agent string. default is the latest chrome (v78) user-agent string.
 
 2. Find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
  ```sh
