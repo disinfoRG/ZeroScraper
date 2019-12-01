@@ -1,2 +1,0 @@
-10 * * * * cd content_farms/ && ./collect_new_urls.sh
-0 22 * * * cd content_farms/ && ./update_contents.sh
