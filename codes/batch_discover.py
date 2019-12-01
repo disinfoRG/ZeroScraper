@@ -3,10 +3,12 @@ import sqlalchemy as db
 import os
 import time
 from helpers import connect_to_db
+import sys
 
+python_path = sys.executable
 
 def discover(site_id):
-    os.system(f"python execute_spiders.py -d --site_id {site_id}")
+    os.system(f"{python_path} execute_spiders.py -d --site_id {site_id}")
 
 
 # get a bunch of site ids
