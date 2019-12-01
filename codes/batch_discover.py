@@ -16,12 +16,13 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
 def discover(site_info):
     site_start_time = time.time()
     site_id = site_info["site_id"]
     site_name = site_info["name"]
     logging.info(f"Begin discover new articles on site {site_id} {site_name}")
-    os.system(f"python execute_spiders.py -d --site_id {site_id}")
+    os.system(f"{python_path} execute_spiders.py -d --site_id {site_id}")
     logging.info(
         f"Finish site {site_id} {site_name}. Process time = {time.time()-site_start_time:.2f} seconds"
     )
