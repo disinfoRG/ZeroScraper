@@ -28,7 +28,7 @@ engine, connection = connect_to_db()
 site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
 DEFAULT_DEPTH = 0
 DEFAULT_DELAY = 1.5
-DEFAUL_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
+DEFAULT_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
 # execute
 if args.discover:
     args.site_id = int(args.site_id)
@@ -41,18 +41,19 @@ if args.discover:
     site_type = site_info["type"]
     article_pattern = site_info["config"]["article"]
     following_pattern = site_info["config"].get("following", "")
-    if args.depth:
+    if args.depth is not None:
         depth = args.depth
     else:
         depth = site_info["config"].get("depth", DEFAULT_DEPTH)
-    if args.delay:
+
+    if args.delay is not None:
         delay = args.delay
     else:
         delay = site_info["config"].get("delay", DEFAULT_DELAY)
-    if args.ua:
+    if args.ua is not None:
         site_ua = args.ua
     else:
-        site_ua = site_info["config"].get("user_agent", DEFAUL_UA)
+        site_ua = site_info["config"].get("user_agent", DEFAULT_UA)
 
     os.system(
         f"scrapy crawl discover_new_articles \
@@ -67,14 +68,14 @@ if args.discover:
     )
 
 elif args.update:
-    if args.delay:
+    if args.delay is not None:
         delay = args.delay
     else:
         delay = DEFAULT_DELAY
-    if args.ua:
+    if args.ua is not None:
         ua = args.ua
     else:
-        ua = DEFAUL_UA
+        ua = DEFAULT_UA
     os.system(
         f"scrapy crawl update_contents \
                 -s DOWNLOAD_DELAY={delay} \
