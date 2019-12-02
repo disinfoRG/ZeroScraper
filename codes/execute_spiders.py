@@ -7,14 +7,10 @@ from helpers import connect_to_db
 parser = argparse.ArgumentParser()
 parser.add_argument("--site_id", help="site id to crawl")
 parser.add_argument(
-    "--depth", default=0, help="desired depth limit; 0 if no limit imposed.", type=int
+    "--depth", help="desired depth limit; 0 if no limit imposed.", type=int
 )
-parser.add_argument("--delay", default=1.5, help="time delayed for request.")
-parser.add_argument(
-    "--ua",
-    default="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-    help="user_agent",
-)
+parser.add_argument("--delay", help="time delayed for request.")
+parser.add_argument("--ua", help="user_agent")
 parser.add_argument(
     "-d",
     "--discover",
@@ -30,6 +26,9 @@ args = parser.parse_args()
 root_dir = os.getcwd().split("/NewsScraping/")[0] + "/NewsScraping"
 engine, connection = connect_to_db()
 site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
+DEFAULT_DEPTH = 0
+DEFAULT_DELAY = 1.5
+DEFAULT_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
 # execute
 if args.discover:
     args.site_id = int(args.site_id)
@@ -42,9 +41,19 @@ if args.discover:
     site_type = site_info["type"]
     article_pattern = site_info["config"]["article"]
     following_pattern = site_info["config"].get("following", "")
-    depth = site_info["config"].get("depth", args.depth)
-    delay = site_info["config"].get("delay", args.delay)
-    site_ua = site_info["config"].get("user_agent", args.ua)
+    if args.depth is not None:
+        depth = args.depth
+    else:
+        depth = site_info["config"].get("depth", DEFAULT_DEPTH)
+
+    if args.delay is not None:
+        delay = args.delay
+    else:
+        delay = site_info["config"].get("delay", DEFAULT_DELAY)
+    if args.ua is not None:
+        site_ua = args.ua
+    else:
+        site_ua = site_info["config"].get("user_agent", DEFAULT_UA)
 
     os.system(
         f"scrapy crawl discover_new_articles \
@@ -59,10 +68,18 @@ if args.discover:
     )
 
 elif args.update:
+    if args.delay is not None:
+        delay = args.delay
+    else:
+        delay = DEFAULT_DELAY
+    if args.ua is not None:
+        ua = args.ua
+    else:
+        ua = DEFAULT_UA
     os.system(
         f"scrapy crawl update_contents \
-                -s DOWNLOAD_DELAY={args.delay} \
-                -s USER_AGENT='{args.ua}'"
+                -s DOWNLOAD_DELAY={delay} \
+                -s USER_AGENT='{ua}'"
     )
 else:
     raise Exception(
