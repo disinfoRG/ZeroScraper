@@ -15,7 +15,6 @@ alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
 lxml = "==4.4.1"
-black = "*"
 
 [requires]
 python_version = "3.7"
