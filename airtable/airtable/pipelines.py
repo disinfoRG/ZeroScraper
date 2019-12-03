@@ -12,6 +12,7 @@ queries = pugsql.module("queries/")
 
 site_type_mapping = {
     "官媒": "official_media",
+    "新聞網站": "news_website",
     "內容農場": "content_farm",
     "組織官網": "organization_website",
     "Fb 專頁": "fb_page",
