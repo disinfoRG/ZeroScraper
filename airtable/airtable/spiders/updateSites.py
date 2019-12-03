@@ -9,9 +9,24 @@ class UpdatesitesSpider(scrapy.Spider):
     allowed_domains = ["api.airtable.com"]
 
     def get_request(self, offset=None):
-        url = "https://api.airtable.com/v0/appdh2WkMremF0G1L/Sites?fields=id&fields=name&fields=url&fields=approved&fields=type&filterByFormula=approved&view=List"
-        if offset is not None:
-            url += f"&offset={offset}"
+        fields = [
+            "id",
+            "approved",
+            "name",
+            "url",
+            "type",
+            "article",
+            "following",
+            "depth",
+            "delay",
+            "ua",
+        ]
+        url = (
+            "https://api.airtable.com/v0/appdh2WkMremF0G1L/Sites?"
+            + "&".join([f"fields={f}" for f in fields])
+            + "&filterByFormula=approved&view=List"
+            + (f"&offset={offset}" if offset is not None else "")
+        )
         return scrapy.Request(
             url,
             headers={

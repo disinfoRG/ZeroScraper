@@ -4,4 +4,4 @@ INSERT INTO Site
 VALUES
 (:airtable_id, :name, :type, :url, :config)
 ON DUPLICATE KEY UPDATE
-airtable_id = :airtable_id, name = :name, type = :type, url = :url
+name = :name, type = :type, url = :url, config = :config
