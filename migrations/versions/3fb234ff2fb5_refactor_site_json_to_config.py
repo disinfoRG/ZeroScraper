@@ -18,6 +18,7 @@ depends_on = None
 
 def upgrade():
     op.execute("UPDATE Site SET config = '{}' WHERE config = ''")
+    op.execute("UPDATE Site Set config = REPLACE(config, '\\\\', '\\\\\\\\')")
     op.alter_column(
         "Site", "config", type_=sa.JSON, existing_type=sa.Text, nullable=False
     )
@@ -27,4 +28,5 @@ def downgrade():
     op.alter_column(
         "Site", "config", type_=sa.Text, existing_type=sa.JSON, nullable=False
     )
+    op.execute("UPDATE Site Set config = REPLACE(config, '\\\\\\\\', '\\\\')")
     op.execute("UPDATE Site SET config = '' WHERE config = '{}'")
