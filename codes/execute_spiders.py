@@ -1,6 +1,7 @@
 import argparse
 import os
 import sqlalchemy as db
+from ast import literal_eval
 from helpers import connect_to_db
 
 parser = argparse.ArgumentParser()
@@ -35,6 +36,7 @@ if args.discover:
         site.columns.site_id == args.site_id
     )
     site_info = dict(connection.execute(query).fetchone())
+    site_info["config"] = literal_eval(site_info["config"])
     site_url = site_info["url"]
     site_type = site_info["type"]
     article_pattern = site_info["config"]["article"]
