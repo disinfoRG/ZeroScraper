@@ -6,6 +6,13 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from scrapy.http import HtmlResponse
+
+import os
 
 
 class NewsspidersSpiderMiddleware(object):
@@ -49,6 +56,7 @@ class NewsspidersSpiderMiddleware(object):
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
+
         for r in start_requests:
             yield r
 
@@ -60,25 +68,33 @@ class NewsspidersDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
+    urls_required_selenium = [
+        "https://kknews.cc/",
+        "https://udn.com/",
+        "https://read01.com/zh-tw/",
+    ]
+    driver = None
 
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         s = cls()
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
         return s
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
-
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
-        return None
+        if not self.driver:
+            return None
+        # todo: modify css selector based on sites
+        self.driver.get(request.url)
+        WebDriverWait(self.driver, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "article#content"))
+        )
+        body = self.driver.page_source
+        return HtmlResponse(
+            self.driver.current_url, body=body, encoding="utf-8", request=request
+        )
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
@@ -101,3 +117,18 @@ class NewsspidersDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+        if bool(set(spider.start_urls) & set(self.urls_required_selenium)):
+            # open selenium driver
+            root_dir = os.getcwd().split("NewsScraping")[0] + "NewsScraping"
+            options = webdriver.ChromeOptions()
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument(spider.settings["USER_AGENT"])
+            options.headless = True
+
+            self.driver = webdriver.Chrome(f"{root_dir}/chromedriver", options=options)
+
+    def spider_closed(self, spider):
+        spider.logger.info("Spider closed: %s" % spider.name)
+        if self.driver:
+            self.driver.quit()

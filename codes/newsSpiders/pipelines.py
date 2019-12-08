@@ -14,16 +14,12 @@ class MySqlPipeline(object):
         self.update_article_query = None
 
     def open_spider(self, spider):
-        engine, connection = connect_to_db()
+        engine, connection, tables = connect_to_db()
         self.connection = connection
         metadata = db.MetaData()
         self.db_tables = {
-            "article": db.Table(
-                "Article", metadata, autoload=True, autoload_with=engine
-            ),
-            "article_snapshot": db.Table(
-                "ArticleSnapshot", metadata, autoload=True, autoload_with=engine
-            ),
+            "article": tables["Article"],
+            "article_snapshot": tables["ArticleSnapshot"],
         }
         self.update_article_query = (
             self.db_tables["article"]
