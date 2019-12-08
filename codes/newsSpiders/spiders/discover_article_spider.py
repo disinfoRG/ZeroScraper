@@ -29,11 +29,9 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.site_type = site_type
 
         # connect to db and fetch existing url
-        engine, connection = connect_to_db()
+        engine, connection, tables = connect_to_db()
         self.connection = connection
-        article = db.Table(
-            "Article", db.MetaData(), autoload=True, autoload_with=engine
-        )
+        article = tables["Article"]
         query = db.select([article.columns.url]).where(
             article.columns.site_id == self.site_id
         )

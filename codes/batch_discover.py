@@ -29,8 +29,8 @@ def discover(site_info):
 
 
 # get a bunch of site ids
-engine, connection = connect_to_db()
-site_table = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
+engine, connection, tables = connect_to_db()
+site_table = tables["Site"]
 query = db.select([site_table.c.site_id, site_table.c.name]).where(
     site_table.c.is_active
 )

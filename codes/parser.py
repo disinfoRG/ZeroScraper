@@ -4,17 +4,19 @@ import pickle
 import htmldate
 from helpers import connect_to_db
 
+# todo:
+#   extract meta?
+#   write a wrapper
+
 
 class CleanHTML:
     def __init__(self, article_id, raw_data, site_id=None):
         self.article_id = article_id
         self.raw_data = raw_data
 
-        engine, conn = connect_to_db()
+        engine, conn, tables = connect_to_db()
         # site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
-        article = db.Table(
-            "Article", db.MetaData(), autoload=True, autoload_with=engine
-        )
+        article = tables["Article"]
         if not site_id:
             query = db.select([article.c.site_id]).where(
                 article.c.article_id == int(article_id)
