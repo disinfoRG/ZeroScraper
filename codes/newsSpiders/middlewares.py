@@ -7,11 +7,8 @@
 
 from scrapy import signals
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from scrapy.http import HtmlResponse
-
+import time
 import os
 
 
@@ -69,6 +66,7 @@ class NewsspidersDownloaderMiddleware(object):
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
     urls_required_selenium = [
+        "https://www.toutiao.com/",
         "https://kknews.cc/",
         "https://udn.com/",
         "https://read01.com/zh-tw/",
@@ -86,11 +84,8 @@ class NewsspidersDownloaderMiddleware(object):
     def process_request(self, request, spider):
         if not self.driver:
             return None
-        # todo: modify css selector based on sites
         self.driver.get(request.url)
-        WebDriverWait(self.driver, 5).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "article#content"))
-        )
+        time.sleep(5)
         body = self.driver.page_source
         return HtmlResponse(
             self.driver.current_url, body=body, encoding="utf-8", request=request
