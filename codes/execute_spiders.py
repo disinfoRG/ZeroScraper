@@ -11,6 +11,7 @@ parser.add_argument(
 )
 parser.add_argument("--delay", help="time delayed for request.")
 parser.add_argument("--ua", help="user_agent")
+parser.add_argument("--selenium", help="use selenium to load website or not.")
 parser.add_argument(
     "-d",
     "--discover",
@@ -24,7 +25,7 @@ parser.add_argument(
 # set up
 args = parser.parse_args()
 root_dir = os.getcwd().split("/NewsScraping/")[0] + "/NewsScraping"
-engine, connection, tables = connect_to_db()
+_, connection, tables = connect_to_db()
 site = tables["Site"]
 DEFAULT_DEPTH = 0
 DEFAULT_DELAY = 1.5
@@ -53,6 +54,10 @@ if args.discover:
         site_ua = args.ua
     else:
         site_ua = site_info["config"].get("ua", DEFAULT_UA)
+    if args.selenium is not None:
+        selenium = args.selenium
+    else:
+        selenium = site_info["config"].get("selenium", False)
 
     os.system(
         f"scrapy crawl discover_new_articles \
@@ -61,6 +66,7 @@ if args.discover:
                 -a site_type='{site_type}' \
                 -a article_url_patterns='{article_pattern}' \
                 -a following_url_patterns='{following_pattern}' \
+                -a selenium='{selenium}' \
                 -s DEPTH_LIMIT={depth} \
                 -s DOWNLOAD_DELAY={delay} \
                 -s USER_AGENT='{site_ua}'"
@@ -75,6 +81,7 @@ elif args.update:
         ua = args.ua
     else:
         ua = DEFAULT_UA
+
     os.system(
         f"scrapy crawl update_contents \
                 -s DOWNLOAD_DELAY={delay} \
