@@ -20,6 +20,7 @@ class UpdatesitesSpider(scrapy.Spider):
             "depth",
             "delay",
             "ua",
+            "selenium",
         ]
         url = (
             "https://api.airtable.com/v0/appdh2WkMremF0G1L/Sites?"

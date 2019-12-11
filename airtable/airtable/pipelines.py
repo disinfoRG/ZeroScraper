@@ -22,7 +22,7 @@ site_type_mapping = {
     "YouTube 帳號": "youtube_user",
 }
 
-config_fields = ["article", "following", "depth", "delay", "ua"]
+config_fields = ["article", "following", "depth", "delay", "ua", "selenium"]
 
 
 class MySQLPipeline(object):
