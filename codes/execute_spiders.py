@@ -52,7 +52,7 @@ if args.discover:
     if args.ua is not None:
         site_ua = args.ua
     else:
-        site_ua = site_info["config"].get("user_agent", DEFAULT_UA)
+        site_ua = site_info["config"].get("ua", DEFAULT_UA)
 
     os.system(
         f"scrapy crawl discover_new_articles \

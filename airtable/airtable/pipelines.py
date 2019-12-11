@@ -6,11 +6,13 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import pugsql
 import os
+import json
 
 queries = pugsql.module("queries/")
 
 site_type_mapping = {
     "官媒": "official_media",
+    "新聞網站": "news_website",
     "內容農場": "content_farm",
     "組織官網": "organization_website",
     "Fb 專頁": "fb_page",
@@ -19,6 +21,8 @@ site_type_mapping = {
     "YouTube 頻道": "youtube_channel",
     "YouTube 帳號": "youtube_user",
 }
+
+config_fields = ["article", "following", "depth", "delay", "ua"]
 
 
 class MySQLPipeline(object):
@@ -29,7 +33,7 @@ class MySQLPipeline(object):
         if item["type"] not in site_type_mapping.keys():
             return item
         item["type"] = site_type_mapping[item["type"]]
-        item["config"] = ""
+        item["config"] = json.dumps({k: item[k] for k in config_fields if k in item})
 
         queries.upsert_site(
             {
