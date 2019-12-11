@@ -13,6 +13,7 @@ class UpdateContentsSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
+        self.selenium = True
         int_current_time = int(time.time())
         engine, connection, tables = connect_to_db()
         article = tables["Article"]

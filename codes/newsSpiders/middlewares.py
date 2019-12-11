@@ -65,12 +65,7 @@ class NewsspidersDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
-    urls_required_selenium = [
-        "https://www.toutiao.com/",
-        "https://kknews.cc/",
-        "https://udn.com/",
-        "https://read01.com/zh-tw/",
-    ]
+
     driver = None
 
     @classmethod
@@ -82,7 +77,7 @@ class NewsspidersDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        if not self.driver:
+        if not spider.selenium:
             return None
         self.driver.get(request.url)
         time.sleep(5)
@@ -112,8 +107,9 @@ class NewsspidersDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
-        if bool(set(spider.start_urls) & set(self.urls_required_selenium)):
-            # open selenium driver
+        # open selenium driver
+        if spider.selenium:
+            print("Using Selenium")
             root_dir = os.getcwd().split("NewsScraping")[0] + "NewsScraping"
             options = webdriver.ChromeOptions()
             options.add_argument("--no-sandbox")

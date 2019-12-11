@@ -1,5 +1,6 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+from ast import literal_eval
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 import sys
 
@@ -20,6 +21,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         site_type="",
         article_url_patterns="",
         following_url_patterns="",
+        selenium="",
         *args,
         **kwargs
     ):
@@ -27,6 +29,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.site_id = site_id
         self.start_urls = [site_url]
         self.site_type = site_type
+        self.selenium = literal_eval(selenium)
 
         # connect to db and fetch existing url
         engine, connection, tables = connect_to_db()
