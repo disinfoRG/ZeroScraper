@@ -5,7 +5,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-# todo: modify table selection using metadata and put inside connect_to_db
 
 
 def connect_to_db():
