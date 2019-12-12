@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def connect_to_db():
-    engine = create_engine(os.getenv("DB_URL"))
+def connect_to_db(env_keyword="DB_URL"):
+    engine = create_engine(os.getenv(env_keyword))
     connection = engine.connect()
     metadata = MetaData()
     metadata.reflect(bind=engine)
