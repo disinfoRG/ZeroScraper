@@ -48,7 +48,7 @@ $ pipenv install myawesomethings  # add new dependencies
 我們用 MySQL 5.7。如果你的系統裡沒有 MySQL，有幾個辦法可以安裝：
 
 * macOS 的話，用 Homebrew 安裝：`brew install mysql`，然後每次開發時啟動服務：`mysql.server start`
-* 有 Docker 的話，另開一個 shell 用 MySQL docker image：`docker run --name newsscraping -e 'MYSQL_ROOT_PASSWORD=mysecret' -p 3306:3306 -p 33060:33060 -d mysql:latest`
+* 有 Docker 的話，另開一個 shell 用 MySQL docker image：`docker run --name newsscraping -e 'MYSQL_ROOT_PASSWORD=mysecret' -p 3306:3306 -p 33060:33060 -d mysql:latest`，然後每次開發時啟動container：`docker start -a newsscraping`
 
 開一個 database：
 
