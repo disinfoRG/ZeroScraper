@@ -1,13 +1,11 @@
 from bs4 import BeautifulSoup
 from readability import Document
 from datetime import datetime
+import sqlalchemy as db
 import logging
+import traceback
 from helpers import connect_to_db
 import jsonlines
-
-# todo:
-#   extract meta?
-#   logging problem
 
 
 class CleanHTML:
@@ -19,6 +17,27 @@ class CleanHTML:
 
     @staticmethod
     def clean(one_snapshot_info):
+        # meta tag
+        soup = BeautifulSoup(one_snapshot_info["raw_data"], "html.parser")
+        # meta property
+        meta_property = {
+            x["property"]: x["content"]
+            for x in soup.find_all(
+                lambda tag: tag.name == "meta"
+                and "property" in tag.attrs.keys()
+                and "content" in tag.attrs.keys()
+            )
+        }
+        meta_name = {
+            x["name"]: x["content"]
+            for x in soup.find_all(
+                lambda tag: tag.name == "meta"
+                and "name" in tag.attrs.keys()
+                and "content" in tag.attrs.keys()
+            )
+        }
+
+        # content
         doc = Document(one_snapshot_info["raw_data"])
         # title
         title = doc.title()
@@ -27,17 +46,19 @@ class CleanHTML:
         s = doc.summary()
         soup = BeautifulSoup(s, "html.parser")
 
-        # date - not 100% accurate
-        # guess_date = htmldate.find_date(self.raw_data)
-
         # article text
         text = " ".join([" ".join(x.text.split()) for x in soup.find_all("p")])
 
         # links
         external_links = [x["href"] for x in soup.find_all("a", href=lambda x: x)]
-        image_links = [x["data-src"] for x in soup.find_all("img")]
+        image_links = [
+            x.get("data-src", x.get("src", x.get("data-original", "")))
+            for x in soup.find_all("img")
+        ]
 
         return {
+            "meta_property": meta_property,
+            "meta_name": meta_name,
             "title": title,
             "main_text": text,
             "external_links": external_links,
@@ -48,6 +69,11 @@ class CleanHTML:
         # to elastic search
         # r = requests.post(f"{es_url}/{index}", data=json.dumps(x))
 
+        # to db
+        # _, connection, tables = connect_to_db(env_keyword = "PARSED_DB_URL")
+        # table_name = 'Content'
+        # connection.execute(db.insert(tables[table_name], x))
+
         self.writer.write(x)
 
     def run(self):
@@ -55,16 +81,21 @@ class CleanHTML:
         logging.basicConfig(
             filename=f"../.log/parser_{current_time_str}.log",
             format="%(asctime)s - %(message)s",
-            level=logging.INFO,
+            level=logging.WARNING,
         )
+        success = 0
+        failure = 0
+        logging.warning("Begin Parsing")
+
         for one_snapshot_info in self.snapshot_infos:
             try:
                 parsed_content = self.clean(one_snapshot_info)
             except:
                 logging.error(
-                    f"{str(one_snapshot_info['article_id'])}-{str(one_snapshot_info['snapshot_at'])} "
-                    f"parsing failed"
+                    f"article_id = {str(one_snapshot_info['article_id'])}, snapshot_at = {str(one_snapshot_info['snapshot_at'])} "
+                    f"parsing failed \n{traceback.format_exc()}"
                 )
+                failure += 1
             else:
                 content_to_save = {
                     "article_id": one_snapshot_info["article_id"],
@@ -72,12 +103,16 @@ class CleanHTML:
                     **parsed_content,
                 }
                 self.save(content_to_save)
+                success += 1
+        logging.warning(
+            f"Finish Parsing. \n Total: {len(self.snapshot_infos)} \n Succeeded: {success} \n Failed: {failure}"
+        )
 
 
 if __name__ == "__main__":
     _, conn, tables = connect_to_db()
     article_snapshot = tables["ArticleSnapshot"]
     q = article_snapshot.select()
-    snapshot_infos = [dict(row) for row in conn.execute(q).fetchall()[-20:]]
+    snapshot_infos = [dict(row) for row in conn.execute(q).fetchall()]
     clean = CleanHTML(snapshot_infos)
     clean.run()
