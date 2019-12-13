@@ -7,6 +7,7 @@ verify_ssl = true
 ipython = "*"
 pre-commit = "*"
 black = "==19.3b0"
+fabric = "*"
 
 [packages]
 scrapy = "*"
