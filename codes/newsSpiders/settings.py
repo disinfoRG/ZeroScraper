@@ -88,3 +88,12 @@ ITEM_PIPELINES = {"newsSpiders.pipelines.MySqlPipeline": 300}
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
+CHROMEDRIVER_BIN = os.getenv(
+    "CHROMEDRIVER_BIN", os.getcwd().split("NewsScraping")[0] + "NewsScraping"
+)

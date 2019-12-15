@@ -110,14 +110,15 @@ class NewsspidersDownloaderMiddleware(object):
         # open selenium driver
         if spider.selenium:
             print("Using Selenium")
-            root_dir = os.getcwd().split("NewsScraping")[0] + "NewsScraping"
             options = webdriver.ChromeOptions()
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument(spider.settings["USER_AGENT"])
             options.headless = True
 
-            self.driver = webdriver.Chrome(f"{root_dir}/chromedriver", options=options)
+            self.driver = webdriver.Chrome(
+                spider.settings["CHROMEDRIVER_BIN"], options=options
+            )
 
     def spider_closed(self, spider):
         spider.logger.info("Spider closed: %s" % spider.name)
