@@ -54,9 +54,9 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'newsSpiders.middlewares.NewsspidersDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    "newsSpiders.middlewares.NewsspidersDownloaderMiddleware": 543
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -66,9 +66,7 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    "newsSpiders.pipelines.MySqlPipeline": 300,
-}
+ITEM_PIPELINES = {"newsSpiders.pipelines.MySqlPipeline": 300}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,3 +88,12 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
+CHROMEDRIVER_BIN = os.getenv(
+    "CHROMEDRIVER_BIN", os.getcwd().split("NewsScraping")[0] + "NewsScraping"
+)

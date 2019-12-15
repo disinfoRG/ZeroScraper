@@ -6,6 +6,10 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from selenium import webdriver
+from scrapy.http import HtmlResponse
+import time
+import os
 
 
 class NewsspidersSpiderMiddleware(object):
@@ -49,6 +53,7 @@ class NewsspidersSpiderMiddleware(object):
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
+
         for r in start_requests:
             yield r
 
@@ -61,24 +66,25 @@ class NewsspidersDownloaderMiddleware(object):
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    driver = None
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         s = cls()
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
         return s
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
-
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
-        return None
+        if not spider.selenium:
+            return None
+        self.driver.get(request.url)
+        time.sleep(5)
+        body = self.driver.page_source
+        return HtmlResponse(
+            self.driver.current_url, body=body, encoding="utf-8", request=request
+        )
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
@@ -101,3 +107,20 @@ class NewsspidersDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+        # open selenium driver
+        if spider.selenium:
+            print("Using Selenium")
+            options = webdriver.ChromeOptions()
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument(spider.settings["USER_AGENT"])
+            options.headless = True
+
+            self.driver = webdriver.Chrome(
+                spider.settings["CHROMEDRIVER_BIN"], options=options
+            )
+
+    def spider_closed(self, spider):
+        spider.logger.info("Spider closed: %s" % spider.name)
+        if self.driver:
+            self.driver.quit()

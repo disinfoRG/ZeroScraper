@@ -3,6 +3,7 @@ import os
 import sqlalchemy as db
 from helpers import connect_to_db
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--site_id", help="site id to crawl")
 parser.add_argument(
@@ -10,6 +11,7 @@ parser.add_argument(
 )
 parser.add_argument("--delay", help="time delayed for request.")
 parser.add_argument("--ua", help="user_agent")
+parser.add_argument("--selenium", help="use selenium to load website or not.")
 parser.add_argument(
     "-d",
     "--discover",
@@ -23,8 +25,8 @@ parser.add_argument(
 # set up
 args = parser.parse_args()
 root_dir = os.getcwd().split("/NewsScraping/")[0] + "/NewsScraping"
-engine, connection = connect_to_db()
-site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
+_, connection, tables = connect_to_db()
+site = tables["Site"]
 DEFAULT_DEPTH = 0
 DEFAULT_DELAY = 1.5
 DEFAULT_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
@@ -52,6 +54,10 @@ if args.discover:
         site_ua = args.ua
     else:
         site_ua = site_info["config"].get("ua", DEFAULT_UA)
+    if args.selenium is not None:
+        selenium = args.selenium
+    else:
+        selenium = site_info["config"].get("selenium", False)
 
     os.system(
         f"scrapy crawl discover_new_articles \
@@ -60,6 +66,7 @@ if args.discover:
                 -a site_type='{site_type}' \
                 -a article_url_patterns='{article_pattern}' \
                 -a following_url_patterns='{following_pattern}' \
+                -a selenium='{selenium}' \
                 -s DEPTH_LIMIT={depth} \
                 -s DOWNLOAD_DELAY={delay} \
                 -s USER_AGENT='{site_ua}'"
@@ -74,6 +81,7 @@ elif args.update:
         ua = args.ua
     else:
         ua = DEFAULT_UA
+
     os.system(
         f"scrapy crawl update_contents \
                 -s DOWNLOAD_DELAY={delay} \

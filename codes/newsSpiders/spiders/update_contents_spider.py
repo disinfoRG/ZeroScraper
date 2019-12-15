@@ -13,11 +13,11 @@ class UpdateContentsSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
+        self.selenium = True
         int_current_time = int(time.time())
-        engine, connection = connect_to_db()
-        article = db.Table(
-            "Article", db.MetaData(), autoload=True, autoload_with=engine
-        )
+        engine, connection, tables = connect_to_db()
+        article = tables["Article"]
+        self.site = tables["Site"]
         query = db.select(
             [
                 article.c.article_id,
@@ -33,7 +33,6 @@ class UpdateContentsSpider(scrapy.Spider):
             )
         )
         self.articles_to_update = [dict(row) for row in connection.execute(query)]
-        self.site = db.Table("Site", db.MetaData(), autoload=True, autoload_with=engine)
         self.connection = connection
 
     def start_requests(self):
