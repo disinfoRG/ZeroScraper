@@ -1,4 +1,4 @@
-CHROMEDRIVER_URL=https://chromedriver.storage.googleapis.com/chromedriver_linux64.zip
+CHROMEDRIVER_URL=https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
 
 apt-get install -y libnss3-dev
 if [ ! -x /usr/local/bin/chromedriver ]; then
