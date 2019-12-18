@@ -8,10 +8,10 @@ if [ ! -x /usr/local/bin/chromedriver ]; then
   mv chromedriver /usr/local/bin
   chmod 700 /usr/local/bin/chromedriver
 fi
-rm /usr/local/bin/chrome.deb
-if [ ! -x /usr/local/bin/chrome.deb ]; then
-  curl ${CHROMEDRIVER_URL} -o /usr/local/bin/chrome.deb
-  dpkg -i /usr/local/bin/chrome.deb || apt-get install -yf
+
+if [ ! -x /chrome.deb ]; then
+  curl ${CHROMEDRIVER_URL} -o /chrome.deb
+  dpkg -i /chrome.deb || apt-get install -yf
 fi
 
 pip3 install pipenv && pipenv install --system
