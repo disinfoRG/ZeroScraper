@@ -8,7 +8,7 @@ if [ ! -x /usr/local/bin/chromedriver ]; then
   mv chromedriver /usr/local/bin
   chmod 700 /usr/local/bin/chromedriver
 fi
-if [ ! -x opt/google/chrome/google-chrome ]; then
+if [ ! -x /opt/google/chrome/google-chrome ]; then
     curl ${CHROME_URL} -o /chrome.deb
     dpkg -i /chrome.deb || apt-get update -y && apt-get upgrade -y || apt --fix-broken install -y
     rm /chrome.deb
