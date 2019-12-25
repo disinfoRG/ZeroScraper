@@ -80,7 +80,7 @@ class NewsspidersDownloaderMiddleware(object):
         if not spider.selenium:
             return None
         self.driver.get(request.url)
-        time.sleep(5)
+        time.sleep(10)
         body = self.driver.page_source
         return HtmlResponse(
             self.driver.current_url, body=body, encoding="utf-8", request=request
