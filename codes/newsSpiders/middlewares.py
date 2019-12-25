@@ -7,6 +7,7 @@
 
 from scrapy import signals
 from selenium import webdriver
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from scrapy.http import HtmlResponse
 import time
 import os
@@ -80,8 +81,9 @@ class NewsspidersDownloaderMiddleware(object):
         if not spider.selenium:
             return None
         self.driver.get(request.url)
-        time.sleep(10)
+        time.sleep(5)
         body = self.driver.page_source
+        print(body)
         return HtmlResponse(
             self.driver.current_url, body=body, encoding="utf-8", request=request
         )
