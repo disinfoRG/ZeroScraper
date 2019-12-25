@@ -66,7 +66,7 @@ class CleanHTML:
         ]
 
         return {
-            "json-ld": jsonld,
+            "jsonld": jsonld,
             "meta_property": meta_property,
             "meta_name": meta_name,
             "title": title,
