@@ -5,6 +5,7 @@ import sqlalchemy as db
 import logging
 import traceback
 from helpers import connect_to_db
+import json
 import jsonlines
 
 
@@ -37,6 +38,14 @@ class CleanHTML:
             )
         }
 
+        # json ld
+        try:
+            jsonld = json.loads(
+                soup.find("script", {"type": "application/ld+json"}).text
+            )
+        except AttributeError:
+            jsonld = {}
+
         # content
         doc = Document(one_snapshot_info["raw_data"])
         # title
@@ -57,6 +66,7 @@ class CleanHTML:
         ]
 
         return {
+            "json-ld": jsonld,
             "meta_property": meta_property,
             "meta_name": meta_name,
             "title": title,
