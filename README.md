@@ -3,9 +3,7 @@ Scrape News contents provided in this [target list](https://airtable.com/tbl3DrY
 
 ### Running
 
-We use MySQL.  To setup database connections:
-
-1. Copy `.env.default` to `.env`, and set `DB_URL` value.  Start the MySQl connection string with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
+We use MySQL.  To setup database connections, copy `.env.default` to `.env`, and set `DB_URL` value.  MySQL connection string should start with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
 
 We use Python 3.7.  Install Python dependencies and run database migrations:
 
@@ -13,32 +11,36 @@ We use Python 3.7.  Install Python dependencies and run database migrations:
 $ pip install pipenv
 $ pipenv install
 # start a shell in virtual env
-$ pipenv shell
-# run db migrations
-$ alembic upgrade head
+$ pipenv run alembic upgrade head
 ```
 
-Then,
+Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `API_KEY=<your_api_key>` to `.env`, and then:
 
-1. Find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table.
+```sh
+$ cd airtable
+$ pipenv run scrapy runspider airtable/spiders/updateSites.py
+```
+
+1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
+
 ```sh
 $ cd codes
 $ python execute_spiders.py --discover --site_id {site_id}
 ```
     Optional Arguments:
-        --depth: maximum search depth limit. default = 0, i.e. no limit.  
+        --depth: maximum search depth limit. default = 0, i.e. no limit.
         --delay: delay time between each request. default = 1.5 (sec)
         --ua: user agent string. default is the latest chrome (v78) user-agent string.
 
-2. Find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
+2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
  ```sh
 $ cd codes
 $ python batch_discover.py
 ```
 
-    No optional argument. 
-    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table. 
-    Otherwise the default values will be used. 
+    No optional argument.
+    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
+    Otherwise the default values will be used.
 
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
@@ -46,7 +48,7 @@ The function will save new html to ArticleSnapshot table and update the snapshot
 $ cd codes
 $ python execute_spiders.py --update
 ```
-    Optional Arguments: 
+    Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
             --ua: user agent string.
 
