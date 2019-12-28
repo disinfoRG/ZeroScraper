@@ -14,7 +14,7 @@ $ pipenv install
 $ pipenv run alembic upgrade head
 ```
 
-Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `API_KEY=<your_api_key>` to `.env`, and then:
+Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` to `.env`, and then:
 
 ```sh
 $ cd airtable
