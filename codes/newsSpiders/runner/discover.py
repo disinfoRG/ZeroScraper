@@ -1,9 +1,10 @@
 import os
 import sqlalchemy as db
 from helpers import connect_to_db
+from newsSpiders.types import SiteConfig
 
 
-def run(site_id, args, defaults):
+def run(site_id, args, default_conf):
     _, connection, tables = connect_to_db()
     site = tables["Site"]
 
@@ -13,35 +14,19 @@ def run(site_id, args, defaults):
     site_info = dict(connection.execute(query).fetchone())
     site_url = site_info["url"]
     site_type = site_info["type"]
-    article_pattern = site_info["config"]["article"]
-    following_pattern = site_info["config"].get("following", "")
-    if args.depth is not None:
-        depth = args.depth
-    else:
-        depth = site_info["config"].get("depth", defaults["depth"])
-
-    if args.delay is not None:
-        delay = args.delay
-    else:
-        delay = site_info["config"].get("delay", defaults["delay"])
-    if args.ua is not None:
-        site_ua = args.ua
-    else:
-        site_ua = site_info["config"].get("ua", defaults["ua"])
-    if args.selenium is not None:
-        selenium = args.selenium
-    else:
-        selenium = site_info["config"].get("selenium", False)
+    site_conf = default_conf.copy()
+    site_conf.update(site_info["config"])
+    site_conf.update(args)
 
     os.system(
         f"scrapy crawl discover_new_articles \
                 -a site_id='{site_id}' \
                 -a site_url='{site_url}' \
                 -a site_type='{site_type}' \
-                -a article_url_patterns='{article_pattern}' \
-                -a following_url_patterns='{following_pattern}' \
-                -a selenium='{selenium}' \
-                -s DEPTH_LIMIT={depth} \
-                -s DOWNLOAD_DELAY={delay} \
-                -s USER_AGENT='{site_ua}'"
+                -a article_url_patterns='{site_conf['article']}' \
+                -a following_url_patterns='{site_conf['following']}' \
+                -a selenium='{site_conf['selenium']}' \
+                -s DEPTH_LIMIT={site_conf['depth']} \
+                -s DOWNLOAD_DELAY={site_conf['delay']} \
+                -s USER_AGENT='{site_conf['ua']}'"
     )

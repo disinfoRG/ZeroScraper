@@ -3,6 +3,7 @@ import os
 import sqlalchemy as db
 from helpers import connect_to_db
 from newsSpiders.runner import discover, update
+from newsSpiders.types import SiteConfig
 
 
 parser = argparse.ArgumentParser()
@@ -25,17 +26,22 @@ parser.add_argument(
 
 # set up
 args = parser.parse_args()
-defaults = {
-    "depth": 0,
-    "delay": 1.5,
-    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-}
+
+default_conf = SiteConfig(
+    {
+        "depth": 0,
+        "delay": 1.5,
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+        "following": "",
+        "selenium": False,
+    }
+)
 
 # execute
 if args.discover:
-    discover.run(args.site_id, args, defaults)
+    discover.run(args.site_id, vars(args), default_conf=default_conf)
 elif args.update:
-    update.run(args, defaults=defaults)
+    update.run(vars(args), default_conf=default_conf)
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"
