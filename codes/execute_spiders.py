@@ -1,9 +1,5 @@
 import argparse
-import os
-import sqlalchemy as db
-from helpers import connect_to_db
 from newsSpiders.runner import discover, update
-from newsSpiders.types import SiteConfig
 
 
 parser = argparse.ArgumentParser()
