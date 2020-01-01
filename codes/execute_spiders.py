@@ -6,7 +6,7 @@ from newsSpiders.runner import discover, update
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--site_id", help="site id to crawl")
+parser.add_argument("--site_id", type=int, help="site id to crawl")
 parser.add_argument(
     "--depth", help="desired depth limit; 0 if no limit imposed.", type=int
 )
@@ -31,20 +31,11 @@ defaults = {
     "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
 }
 
-
-def run_discover(args, defaults):
-    return discover.run(args, defaults)
-
-
-def run_update(args, defaults):
-    return update.run(args, defaults)
-
-
 # execute
 if args.discover:
-    run_discover(args, defaults)
+    discover.run(args.site_id, args, defaults)
 elif args.update:
-    run_update(args, defaults=defaults)
+    update.run(args, defaults=defaults)
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"

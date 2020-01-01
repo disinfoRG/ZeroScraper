@@ -3,13 +3,12 @@ import sqlalchemy as db
 from helpers import connect_to_db
 
 
-def run(args, defaults):
+def run(site_id, args, defaults):
     _, connection, tables = connect_to_db()
     site = tables["Site"]
 
-    args.site_id = int(args.site_id)
     query = db.select([site.columns.url, site.columns.type, site.columns.config]).where(
-        site.columns.site_id == args.site_id
+        site.columns.site_id == site_id
     )
     site_info = dict(connection.execute(query).fetchone())
     site_url = site_info["url"]
@@ -36,7 +35,7 @@ def run(args, defaults):
 
     os.system(
         f"scrapy crawl discover_new_articles \
-                -a site_id='{args.site_id}' \
+                -a site_id='{site_id}' \
                 -a site_url='{site_url}' \
                 -a site_type='{site_type}' \
                 -a article_url_patterns='{article_pattern}' \
