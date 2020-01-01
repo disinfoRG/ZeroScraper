@@ -10,6 +10,9 @@ from selenium import webdriver
 from scrapy.http import HtmlResponse
 import time
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class NewsspidersSpiderMiddleware(object):
@@ -114,6 +117,7 @@ class NewsspidersDownloaderMiddleware(object):
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument(spider.settings["USER_AGENT"])
+            options.add_argument("--proxy-server={}".format(os.getenv("PROXY_URL")))
             options.headless = True
 
             self.driver = webdriver.Chrome(
