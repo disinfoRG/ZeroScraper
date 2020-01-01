@@ -24,14 +24,16 @@ parser.add_argument(
 
 # set up
 args = parser.parse_args()
-root_dir = os.getcwd().split("/NewsScraping/")[0] + "/NewsScraping"
 _, connection, tables = connect_to_db()
 site = tables["Site"]
-DEFAULT_DEPTH = 0
-DEFAULT_DELAY = 1.5
-DEFAULT_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
-# execute
-if args.discover:
+defaults = {
+    "depth": 0,
+    "delay": 1.5,
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+}
+
+
+def run_discover(args, defaults):
     args.site_id = int(args.site_id)
     query = db.select([site.columns.url, site.columns.type, site.columns.config]).where(
         site.columns.site_id == args.site_id
@@ -44,16 +46,16 @@ if args.discover:
     if args.depth is not None:
         depth = args.depth
     else:
-        depth = site_info["config"].get("depth", DEFAULT_DEPTH)
+        depth = site_info["config"].get("depth", defaults["depth"])
 
     if args.delay is not None:
         delay = args.delay
     else:
-        delay = site_info["config"].get("delay", DEFAULT_DELAY)
+        delay = site_info["config"].get("delay", defaults["delay"])
     if args.ua is not None:
         site_ua = args.ua
     else:
-        site_ua = site_info["config"].get("ua", DEFAULT_UA)
+        site_ua = site_info["config"].get("ua", defaults["ua"])
     if args.selenium is not None:
         selenium = args.selenium
     else:
@@ -72,21 +74,29 @@ if args.discover:
                 -s USER_AGENT='{site_ua}'"
     )
 
-elif args.update:
+
+def run_update(args, defaults):
     if args.delay is not None:
         delay = args.delay
     else:
-        delay = DEFAULT_DELAY
+        delay = defaults["delay"]
     if args.ua is not None:
         ua = args.ua
     else:
-        ua = DEFAULT_UA
+        ua = defaults["ua"]
 
     os.system(
         f"scrapy crawl update_contents \
                 -s DOWNLOAD_DELAY={delay} \
                 -s USER_AGENT='{ua}'"
     )
+
+
+# execute
+if args.discover:
+    run_discover(args, defaults)
+elif args.update:
+    run_update(args, defaults=defaults)
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"
