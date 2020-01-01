@@ -1,18 +1,12 @@
 import os
+from newsSpiders.types import SiteConfig
 
 
-def run(args, defaults):
-    if args.delay is not None:
-        delay = args.delay
-    else:
-        delay = defaults["delay"]
-    if args.ua is not None:
-        ua = args.ua
-    else:
-        ua = defaults["ua"]
-
+def run(args, default_conf):
+    site_conf = default_conf.copy()
+    site_conf.update(args)
     os.system(
         f"scrapy crawl update_contents \
-                -s DOWNLOAD_DELAY={delay} \
-                -s USER_AGENT='{ua}'"
+                -s DOWNLOAD_DELAY={site_conf['delay']} \
+                -s USER_AGENT='{site_conf['ua']}'"
     )
