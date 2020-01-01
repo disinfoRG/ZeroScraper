@@ -4,7 +4,7 @@ from helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 
 
-def run(site_id, args, default_conf):
+def run(site_id, args=None):
     _, connection, tables = connect_to_db()
     site = tables["Site"]
 
@@ -14,9 +14,10 @@ def run(site_id, args, default_conf):
     site_info = dict(connection.execute(query).fetchone())
     site_url = site_info["url"]
     site_type = site_info["type"]
-    site_conf = default_conf.copy()
+    site_conf = SiteConfig.default()
     site_conf.update(site_info["config"])
-    site_conf.update(args)
+    if args is not None:
+        site_conf.update(args)
 
     os.system(
         f"scrapy crawl discover_new_articles \

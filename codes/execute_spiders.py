@@ -27,21 +27,11 @@ parser.add_argument(
 # set up
 args = parser.parse_args()
 
-default_conf = SiteConfig(
-    {
-        "depth": 0,
-        "delay": 1.5,
-        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-        "following": "",
-        "selenium": False,
-    }
-)
-
 # execute
 if args.discover:
-    discover.run(args.site_id, vars(args), default_conf=default_conf)
+    discover.run(args.site_id, vars(args))
 elif args.update:
-    update.run(vars(args), default_conf=default_conf)
+    update.run(vars(args))
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"
