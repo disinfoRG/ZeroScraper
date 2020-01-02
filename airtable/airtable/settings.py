@@ -64,7 +64,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {"airtable.pipelines.MySQLPipeline": 300}
+ITEM_PIPELINES = {
+    "airtable.pipelines.SiteItemPipeline": 100,
+    "airtable.pipelines.MySQLPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

@@ -7,22 +7,19 @@
 import pugsql
 import os
 import json
+from scrapy.exceptions import DropItem
+from airtable.items import site_type_mapping
 
 queries = pugsql.module("queries/")
 
-site_type_mapping = {
-    "官媒": "official_media",
-    "新聞網站": "news_website",
-    "內容農場": "content_farm",
-    "組織官網": "organization_website",
-    "Fb 專頁": "fb_page",
-    "Fb 公開社團": "fb_public_group",
-    "Ptt 看板": "ptt_board",
-    "YouTube 頻道": "youtube_channel",
-    "YouTube 帳號": "youtube_user",
-}
 
-config_fields = ["article", "following", "depth", "delay", "ua", "selenium"]
+class SiteItemPipeline(object):
+    def process_item(self, item, spider):
+        if item["type"] not in site_type_mapping.keys():
+            raise DropItem(f"Unknown site type '{item['type']}'")
+        else:
+            item["type"] = site_type_mapping[item["type"]]
+        return item
 
 
 class MySQLPipeline(object):
@@ -30,19 +27,18 @@ class MySQLPipeline(object):
         queries.connect(os.getenv("DB_URL"))
 
     def process_item(self, item, spider):
-        if item["type"] not in site_type_mapping.keys():
-            return item
-        item["type"] = site_type_mapping[item["type"]]
-        item["config"] = json.dumps({k: item[k] for k in config_fields if k in item})
-
         queries.upsert_site(
             {
-                "airtable_id": item["id"],
+                "airtable_id": item["airtable_id"],
                 "name": item["name"],
                 "type": item["type"],
                 "url": item["url"],
-                "config": item["config"],
+                "config": json.dumps(item["config"]),
+                "site_info": json.dumps(item["site_info"]),
             }
         )
 
         return item
+
+    def close_spider(self, spider):
+        queries.disconnect()
