@@ -7,8 +7,26 @@
 
 import scrapy
 
+site_type_mapping = {
+    "官媒": "official_media",
+    "新聞網站": "news_website",
+    "內容農場": "content_farm",
+    "組織官網": "organization_website",
+    "Fb 專頁": "fb_page",
+    "Fb 公開社團": "fb_public_group",
+    "Ptt 看板": "ptt_board",
+    "YouTube 頻道": "youtube_channel",
+    "YouTube 帳號": "youtube_user",
+}
 
-class AirtableItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+site_config_fields = ["article", "following", "depth", "delay", "ua", "selenium"]
+
+
+class SiteItem(scrapy.Item):
+    airtable_id = scrapy.Field()
+    approved = scrapy.Field()
+    name = scrapy.Field()
+    url = scrapy.Field()
+    type = scrapy.Field()
+    config = scrapy.Field()
+    site_info = scrapy.Field()
