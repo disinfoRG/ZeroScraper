@@ -30,6 +30,7 @@ class MySQLPipeline(object):
         queries.upsert_site(
             {
                 "airtable_id": item["airtable_id"],
+                "is_active": item["is_active"],
                 "name": item["name"],
                 "type": item["type"],
                 "url": item["url"],

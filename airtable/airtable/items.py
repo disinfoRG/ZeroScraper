@@ -25,6 +25,7 @@ site_config_fields = ["article", "following", "depth", "delay", "ua", "selenium"
 class SiteItem(scrapy.Item):
     airtable_id = scrapy.Field()
     approved = scrapy.Field()
+    is_active = scrapy.Field()
     name = scrapy.Field()
     url = scrapy.Field()
     type = scrapy.Field()
