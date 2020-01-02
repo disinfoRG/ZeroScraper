@@ -14,6 +14,7 @@ class UpdatesitesSpider(scrapy.Spider):
         req_fields = [
             "id",
             "approved",
+            "is_active",
             "name",
             "url",
             "type",
@@ -48,6 +49,7 @@ class UpdatesitesSpider(scrapy.Spider):
             {
                 "airtable_id": fields["id"],
                 "approved": fields["approved"],
+                "is_active": "is_active" in fields and fields["is_active"],
                 "name": fields["name"],
                 "url": fields["url"],
                 "type": fields["type"],
