@@ -2,6 +2,8 @@
 import scrapy
 import json
 import os
+from scrapy.loader import ItemLoader
+from airtable.items import SiteItem, site_config_fields
 
 
 class UpdatesitesSpider(scrapy.Spider):
@@ -9,9 +11,10 @@ class UpdatesitesSpider(scrapy.Spider):
     allowed_domains = ["api.airtable.com"]
 
     def get_request(self, offset=None):
-        fields = [
+        req_fields = [
             "id",
             "approved",
+            "is_active",
             "name",
             "url",
             "type",
@@ -24,7 +27,7 @@ class UpdatesitesSpider(scrapy.Spider):
         ]
         url = (
             "https://api.airtable.com/v0/appdh2WkMremF0G1L/Sites?"
-            + "&".join([f"fields={f}" for f in fields])
+            + "&".join([f"fields={f}" for f in req_fields])
             + "&filterByFormula=approved&view=List"
             + (f"&offset={offset}" if offset is not None else "")
         )
@@ -39,10 +42,26 @@ class UpdatesitesSpider(scrapy.Spider):
     def start_requests(self):
         yield self.get_request()
 
+    def parse_record(self, record):
+        loader = ItemLoader(item=SiteItem())
+        fields = record["fields"]
+        return SiteItem(
+            {
+                "airtable_id": fields["id"],
+                "approved": fields["approved"],
+                "is_active": "is_active" in fields and fields["is_active"],
+                "name": fields["name"],
+                "url": fields["url"],
+                "type": fields["type"],
+                "config": {k: fields[k] for k in site_config_fields if k in fields},
+                "site_info": {},
+            }
+        )
+
     def parse(self, response):
         data = json.loads(response.text)
         for record in data["records"]:
-            site = record["fields"]
+            site = self.parse_record(record)
             if not ("approved" in site and site["approved"]):
                 continue
             yield site
