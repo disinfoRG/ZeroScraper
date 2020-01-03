@@ -16,7 +16,6 @@ class MySqlPipeline(object):
     def open_spider(self, spider):
         engine, connection, tables = connect_to_db()
         self.connection = connection
-        metadata = db.MetaData()
         self.db_tables = {
             "article": tables["Article"],
             "article_snapshot": tables["ArticleSnapshot"],
