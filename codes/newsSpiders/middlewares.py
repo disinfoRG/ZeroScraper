@@ -10,6 +10,7 @@ from selenium import webdriver
 from scrapy.http import HtmlResponse
 import time
 
+
 class NewsspidersSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -119,7 +120,12 @@ class NewsspidersDownloaderMiddleware(object):
                 spider.settings["CHROMEDRIVER_BIN"], options=options
             )
 
-    def spider_closed(self, spider):
-        spider.logger.info("Spider closed: %s" % spider.name)
+    def spider_closed(self, spider, reason):
+        if reason == "finished":
+            spider.logger.info("Spider finished: %s" % spider.name)
+        elif reason == "shutdown":
+            spider.logger.info("Spider shutdown: %s" % spider.name)
+
         if self.driver:
+            print("\nShutting down selenium driver...")
             self.driver.quit()
