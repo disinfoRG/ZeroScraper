@@ -29,14 +29,17 @@ def discover(site_info):
 # get a bunch of site ids
 engine, connection, tables = connect_to_db()
 site_table = tables["Site"]
-query = db.select([site_table.c.site_id, site_table.c.name]).where(
-    site_table.c.is_active
-)
+query = db.select(
+    [site_table.c.site_id, site_table.c.name, site_table.c.last_crawl_at]
+).where(site_table.c.is_active)
 site_infos = [dict(x) for x in connection.execute(query).fetchall()]
+sorted_site_infos = sorted(
+    site_infos, key=lambda k: 0 if k["last_crawl_at"] is None else k["last_crawl_at"]
+)
 connection.close()
 
 # run
 start_time = time.time()
 pool = multiprocessing.Pool()
-pool.map(discover, site_infos)
+pool.map(discover, sorted_site_infos)
 logging.info(f"\nTime to complete = {time.time() - start_time:.2f} seconds\n")

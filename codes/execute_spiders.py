@@ -1,6 +1,11 @@
+import os
 import argparse
+import time
+import pugsql
 from newsSpiders.runner import discover, update
 
+queries = pugsql.module("queries/")
+queries.connect(os.getenv("DB_URL"))
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--site_id", type=int, help="site id to crawl")
@@ -25,6 +30,8 @@ args = parser.parse_args()
 
 # execute
 if args.discover:
+    crawl_time = int(time.time())
+    queries.update_site_crawl_time(site_id=args.site_id, crawl_time=crawl_time)
     discover.run(args.site_id, vars(args))
 elif args.update:
     update.run(vars(args))
