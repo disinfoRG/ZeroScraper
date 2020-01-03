@@ -9,11 +9,6 @@ from scrapy import signals
 from selenium import webdriver
 from scrapy.http import HtmlResponse
 import time
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 class NewsspidersSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
