@@ -1,5 +1,7 @@
 import os
 import sqlalchemy as db
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 from helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 
@@ -19,15 +21,21 @@ def run(site_id, args=None):
     if args is not None:
         site_conf.update(args)
 
-    os.system(
-        f"scrapy crawl discover_new_articles \
-                -a site_id='{site_id}' \
-                -a site_url='{site_url}' \
-                -a site_type='{site_type}' \
-                -a article_url_patterns='{site_conf['article']}' \
-                -a following_url_patterns='{site_conf['following']}' \
-                -a selenium='{site_conf['selenium']}' \
-                -s DEPTH_LIMIT={site_conf['depth']} \
-                -s DOWNLOAD_DELAY={site_conf['delay']} \
-                -s USER_AGENT='{site_conf['ua']}'"
+    conf = {
+        **get_project_settings(),
+        "DEPTH_LIMIT": site_conf["depth"],
+        "DOWNLOAD_DELAY": site_conf["delay"],
+        "USER_AGENT": site_conf["ua"],
+    }
+
+    process = CrawlerProcess(conf)
+    process.crawl(
+        "discover_new_articles",
+        site_id=site_id,
+        site_url=site_url,
+        site_type=site_type,
+        article_url_patterns=site_conf["article"],
+        following_url_patterns=site_conf["following"],
+        selenium="True" if site_conf["selenium"] else "False",
     )
+    process.start()
