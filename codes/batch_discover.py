@@ -42,4 +42,8 @@ connection.close()
 start_time = time.time()
 pool = multiprocessing.Pool()
 pool.map(discover, sorted_site_infos)
+# closing pool gracefully
+pool.close()
+pool.join()
+
 logging.info(f"\nTime to complete = {time.time() - start_time:.2f} seconds\n")
