@@ -1,11 +1,13 @@
 import multiprocessing
-import sqlalchemy as db
+import os
 import time
 import logging
 from datetime import datetime
-from helpers import connect_to_db
 import newsSpiders.runner.discover
+import pugsql
 
+queries = pugsql.module("queries/")
+queries.connect(os.getenv("DB_URL"))
 
 current_time_str = datetime.now().strftime("%Y-%m-%dT%H:%M%S")
 logging.basicConfig(
@@ -27,16 +29,11 @@ def discover(site_info):
 
 
 # get a bunch of site ids
-engine, connection, tables = connect_to_db()
-site_table = tables["Site"]
-query = db.select(
-    [site_table.c.site_id, site_table.c.name, site_table.c.last_crawl_at]
-).where(site_table.c.is_active)
-site_infos = [dict(x) for x in connection.execute(query).fetchall()]
+
+site_infos = list(queries.get_sites_to_crawl())
 sorted_site_infos = sorted(
     site_infos, key=lambda k: 0 if k["last_crawl_at"] is None else k["last_crawl_at"]
 )
-connection.close()
 
 # run
 start_time = time.time()
