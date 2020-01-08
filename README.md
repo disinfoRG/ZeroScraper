@@ -17,7 +17,7 @@ $ pipenv run alembic upgrade head
 Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` to `.env`, and then:
 
 ```sh
-$ SCRAPY_PROJECT=airtable pipenv run scrapy crawl updateSites
+$ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 ```
 
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
