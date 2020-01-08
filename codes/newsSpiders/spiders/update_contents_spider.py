@@ -4,7 +4,7 @@ import sqlalchemy as db
 import sys
 
 sys.path.append("../")
-from helpers import generate_next_fetch_time, connect_to_db
+from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
 import time
 
 
