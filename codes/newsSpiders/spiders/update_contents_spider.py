@@ -1,9 +1,6 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 import sqlalchemy as db
-import sys
-
-sys.path.append("../")
 from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
 import time
 
