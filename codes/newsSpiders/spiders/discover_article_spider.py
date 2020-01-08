@@ -2,9 +2,6 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from ast import literal_eval
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-import sys
-
-sys.path.append("../")
 from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
 import zlib
 import sqlalchemy as db
