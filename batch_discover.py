@@ -11,7 +11,7 @@ queries.connect(os.getenv("DB_URL"))
 
 current_time_str = datetime.now().strftime("%Y-%m-%dT%H:%M%S")
 logging.basicConfig(
-    filename=f"../.log/{current_time_str}.log",
+    filename=f".log/{current_time_str}.log",
     format="%(asctime)s - %(message)s",
     level=logging.INFO,
 )
