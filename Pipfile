@@ -9,7 +9,7 @@ pre-commit = "*"
 black = "==19.3b0"
 
 [packages]
-scrapy = "*"
+scrapy="==1.8"
 pymysql = "*"
 alembic = "*"
 pugsql = "*"
