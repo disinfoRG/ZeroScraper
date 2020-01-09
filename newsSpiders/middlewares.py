@@ -7,7 +7,7 @@
 
 from scrapy import signals
 from selenium import webdriver
-from scrapy.http import Request, HtmlResponse
+from scrapy.http import HtmlResponse
 import time
 import os
 
@@ -147,6 +147,8 @@ class CookiesDownloaderMiddleware(object):
     def process_request(self, request, spider):
         if "ptt.cc" in request.url:
             request.cookies = {"over18": "1"}
+        else:
+            return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
