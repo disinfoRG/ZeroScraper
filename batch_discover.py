@@ -11,7 +11,7 @@ queries.connect(os.getenv("DB_URL"))
 
 current_time_str = datetime.now().strftime("%Y-%m-%dT%H:%M%S")
 logging.basicConfig(
-    filename=f"../.log/{current_time_str}.log",
+    filename=f".log/{current_time_str}.log",
     format="%(asctime)s - %(message)s",
     level=logging.INFO,
 )
@@ -29,7 +29,6 @@ def discover(site_info):
 
 
 # get a bunch of site ids
-
 site_infos = list(queries.get_sites_to_crawl())
 sorted_site_infos = sorted(
     site_infos, key=lambda k: 0 if k["last_crawl_at"] is None else k["last_crawl_at"]

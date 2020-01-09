@@ -3,7 +3,7 @@ import scrapy
 import json
 import os
 from scrapy.loader import ItemLoader
-from airtable.items import SiteItem, site_config_fields
+from sitesAirtable.items import SiteItem, site_config_fields
 
 
 class UpdatesitesSpider(scrapy.Spider):

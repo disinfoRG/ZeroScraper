@@ -17,15 +17,13 @@ $ pipenv run alembic upgrade head
 Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` to `.env`, and then:
 
 ```sh
-$ cd airtable
-$ pipenv run scrapy runspider airtable/spiders/updateSites.py
+$ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 ```
 
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
-$ cd codes
-$ python execute_spiders.py --discover --site_id {site_id}
+$ python ./execute_spiders.py --discover --site_id {site_id}
 ```
     Optional Arguments:
         --depth: maximum search depth limit. default = 0, i.e. no limit.
@@ -34,8 +32,7 @@ $ python execute_spiders.py --discover --site_id {site_id}
 
 2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
  ```sh
-$ cd codes
-$ python batch_discover.py
+$ python ./batch_discover.py
 ```
 
     No optional argument.
@@ -45,8 +42,7 @@ $ python batch_discover.py
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
-$ cd codes
-$ python execute_spiders.py --update
+$ python ./execute_spiders.py --update
 ```
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)

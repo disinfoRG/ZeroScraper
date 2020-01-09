@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for airtable project
+# Scrapy settings for sitesAirtable project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "airtable"
+BOT_NAME = "sitesAirtable"
 
-SPIDER_MODULES = ["airtable.spiders"]
-NEWSPIDER_MODULE = "airtable.spiders"
+SPIDER_MODULES = ["sitesAirtable.spiders"]
+NEWSPIDER_MODULE = "sitesAirtable.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'airtable (+http://www.yourdomain.com)'
+# USER_AGENT = 'sitesAirtable (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -47,13 +47,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    'airtable.middlewares.AirtableSpiderMiddleware': 543,
+#    'sitesAirtable.middlewares.AirtableSpiderMiddleware': 543,
 # }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    'airtable.middlewares.AirtableDownloaderMiddleware': 543,
+#    'sitesAirtable.middlewares.AirtableDownloaderMiddleware': 543,
 # }
 
 # Enable or disable extensions
@@ -65,8 +65,8 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "airtable.pipelines.SiteItemPipeline": 100,
-    "airtable.pipelines.MySQLPipeline": 300,
+    "sitesAirtable.pipelines.SiteItemPipeline": 100,
+    "sitesAirtable.pipelines.MySQLPipeline": 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
