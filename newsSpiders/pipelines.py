@@ -13,9 +13,6 @@ class DuplicatesPipeline:
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))
 
-    def close_spider(self, spider):
-        self.queries.disconnect()
-
     def process_item(self, item, spider):
         if spider.name == "discover_new_articles":
             if (
