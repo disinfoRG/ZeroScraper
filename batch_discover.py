@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import multiprocessing
 import os
 import time
@@ -9,11 +13,20 @@ import pugsql
 queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
-current_time_str = datetime.now().strftime("%Y-%m-%dT%H:%M%S")
+
+def log_filename():
+    filename = os.getenv("LOG_FILE", None)
+    variables = {"current_time": datetime.now().strftime("%Y-%m-%dT%H:%M%S")}
+    if filename is not None:
+        for k, v in variables.items():
+            filename = filename.replace("{" + k + "}", v)
+    return filename
+
+
 logging.basicConfig(
-    filename=f".log/{current_time_str}.log",
+    filename=log_filename(),
     format="%(asctime)s - %(message)s",
-    level=logging.INFO,
+    level=os.getenv("LOG_LEVEL", "DEBUG"),
 )
 
 
