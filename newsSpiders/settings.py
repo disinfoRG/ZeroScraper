@@ -67,7 +67,10 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {"newsSpiders.pipelines.MySqlPipeline": 300}
+ITEM_PIPELINES = {
+    "newsSpiders.pipelines.DuplicatesPipeline": 100,
+    "newsSpiders.pipelines.MySqlPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
