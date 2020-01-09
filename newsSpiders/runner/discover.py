@@ -1,4 +1,3 @@
-import os
 import sqlalchemy as db
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
@@ -14,6 +13,7 @@ def run(site_id, args=None):
         site.columns.site_id == site_id
     )
     site_info = dict(connection.execute(query).fetchone())
+    connection.close()
     site_url = site_info["url"]
     site_type = site_info["type"]
     site_conf = SiteConfig.default()
