@@ -27,21 +27,11 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.start_urls = [site_url]
         self.site_type = site_type
         self.selenium = literal_eval(selenium)
-
-        # connect to db and fetch existing url
-        engine, connection, tables = connect_to_db()
-        self.connection = connection
-        article = tables["Article"]
-        query = db.select([article.columns.url]).where(
-            article.columns.site_id == self.site_id
-        )
-        self.existing_urls = [x[0] for x in connection.execute(query).fetchall()]
-        # establish crawling rule
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
         DiscoverNewArticlesSpider.rules = [
             Rule(
-                LinkExtractor(allow=article_url_patterns, deny=self.existing_urls),
+                LinkExtractor(allow=article_url_patterns),
                 callback="parse_articles",
                 follow=True,
             )

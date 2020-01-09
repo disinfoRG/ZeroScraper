@@ -1,6 +1,34 @@
+import os
+import pugsql
+from scrapy.exceptions import DropItem
 import sqlalchemy as db
 from sqlalchemy.sql.expression import bindparam
 from newsSpiders.helpers import connect_to_db
+
+
+class DuplicatesPipeline:
+    def __init__(self):
+        self.queries = pugsql.module("queries")
+
+    def open_spider(self, spider):
+        self.queries.connect(os.getenv("DB_URL"))
+
+    def close_spider(self, spider):
+        self.queries.disconnect()
+
+    def process_item(self, item, spider):
+        if spider.name == "discover_new_articles":
+            if (
+                self.queries.get_article_by_url(
+                    url=item["article"]["url"], url_hash=item["article"]["url_hash"]
+                )
+                is not None
+            ):
+                raise DropItem(f"Duplicate item: {item['article']['url']}")
+            else:
+                return item
+        else:
+            return item
 
 
 class MySqlPipeline(object):
