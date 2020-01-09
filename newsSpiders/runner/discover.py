@@ -1,7 +1,7 @@
 import sqlalchemy as db
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from helpers import connect_to_db
+from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 
 
