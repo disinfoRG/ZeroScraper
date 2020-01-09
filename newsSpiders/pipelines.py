@@ -1,9 +1,6 @@
 import sqlalchemy as db
 from sqlalchemy.sql.expression import bindparam
-import sys
-
-sys.path.append("../")
-from helpers import connect_to_db
+from newsSpiders.helpers import connect_to_db
 
 
 class MySqlPipeline(object):

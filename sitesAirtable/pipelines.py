@@ -8,7 +8,7 @@ import pugsql
 import os
 import json
 from scrapy.exceptions import DropItem
-from airtable.items import site_type_mapping
+from sitesAirtable.items import site_type_mapping
 
 queries = pugsql.module("queries/")
 
