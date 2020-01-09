@@ -5,7 +5,7 @@ from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 
 
-def run(site_id, args=None):
+def run(runner, site_id, args=None):
     _, connection, tables = connect_to_db()
     site = tables["Site"]
 
@@ -28,8 +28,7 @@ def run(site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
-    process = CrawlerProcess(conf)
-    process.crawl(
+    runner.crawl(
         "discover_new_articles",
         site_id=site_id,
         site_url=site_url,
@@ -38,4 +37,3 @@ def run(site_id, args=None):
         following_url_patterns=site_conf["following"],
         selenium="True" if site_conf["selenium"] else "False",
     )
-    process.start()
