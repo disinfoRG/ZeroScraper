@@ -55,7 +55,8 @@ ROBOTSTXT_OBEY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "newsSpiders.middlewares.NewsspidersDownloaderMiddleware": 543
+    "newsSpiders.middlewares.CookiesDownloaderMiddleware": 543,
+    "newsSpiders.middlewares.SeleniumDownloaderMiddleware": 600,
 }
 
 # Enable or disable extensions

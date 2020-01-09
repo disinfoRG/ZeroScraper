@@ -43,6 +43,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             Rule(
                 LinkExtractor(allow=article_url_patterns, deny=self.existing_urls),
                 callback="parse_articles",
+                follow=True,
             )
         ]
         if following_url_patterns:
