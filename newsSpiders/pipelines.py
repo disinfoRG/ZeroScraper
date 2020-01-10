@@ -21,6 +21,8 @@ class DuplicatesPipeline:
                 )
                 is not None
             ):
+                # XXX for shorter log messages
+                item["article_snapshot"]["raw_data"] = "<removed>"
                 raise DropItem(f"Duplicate item: {item['article']['url']}")
             else:
                 return item
