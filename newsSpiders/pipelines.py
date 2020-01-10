@@ -4,6 +4,7 @@ from scrapy.exceptions import DropItem
 import sqlalchemy as db
 from sqlalchemy.sql.expression import bindparam
 from newsSpiders.helpers import connect_to_db
+import time
 
 
 class DuplicatesPipeline:
@@ -36,6 +37,7 @@ class MySqlPipeline(object):
         self.db_tables = None
         self.values_list = None
         self.update_article_query = None
+        self.queries = pugsql.module("queries")
 
     def open_spider(self, spider):
         engine, connection, tables = connect_to_db()
@@ -56,6 +58,7 @@ class MySqlPipeline(object):
                 "next_snapshot_at": bindparam("next_snapshot_at"),
             }
         )
+        self.queries.connect(os.getenv("DB_URL"))
 
     def close_spider(self, spider):
         self.connection.close()
@@ -68,6 +71,9 @@ class MySqlPipeline(object):
             item["article_snapshot"]["article_id"] = article_id
             query = db.insert(self.db_tables["article_snapshot"])
             self.connection.execute(query, item["article_snapshot"])
+            self.queries.update_site_crawl_time(
+                site_id=item["article"]["site_id"], crawl_time=int(time.time())
+            )
 
         elif spider.name == "update_contents":
             # update Article
