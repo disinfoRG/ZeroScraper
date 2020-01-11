@@ -96,10 +96,12 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
-import os
 
 CHROMEDRIVER_BIN = os.getenv(
     "CHROMEDRIVER_BIN", os.getcwd().split("NewsScraping")[0] + "NewsScraping"
 )
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_FILE = os.getenv("LOG_FILE", None)
