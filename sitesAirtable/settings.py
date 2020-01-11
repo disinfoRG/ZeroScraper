@@ -91,8 +91,10 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 from dotenv import load_dotenv
-
-load_dotenv()
 import os
 
+load_dotenv()
+
 AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY", "")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_FILE = os.getenv("LOG_FILE", None)
