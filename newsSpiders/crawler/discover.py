@@ -5,7 +5,7 @@ from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 
 
-def run(runner, site_id, args=None):
+def create(runner, site_id, args=None):
     _, connection, tables = connect_to_db()
     site = tables["Site"]
 

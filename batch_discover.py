@@ -7,7 +7,7 @@ import os
 import time
 import logging
 from datetime import datetime
-import newsSpiders.runner.discover
+import newsSpiders.crawler.discover
 import pugsql
 
 queries = pugsql.module("queries/")
