@@ -19,6 +19,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         article_url_patterns="",
         following_url_patterns="",
         selenium="",
+        links_filter=None,
         *args,
         **kwargs
     ):
@@ -34,6 +35,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
                 LinkExtractor(allow=article_url_patterns),
                 callback="parse_articles",
                 follow=True,
+                process_links=links_filter,
             )
         ]
         if following_url_patterns:
