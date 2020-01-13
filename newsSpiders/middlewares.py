@@ -80,8 +80,10 @@ class SeleniumDownloaderMiddleware(object):
         if not spider.selenium:
             return None
         self.driver.get(request.url)
-        time.sleep(10)
+        time.sleep(5)
+
         body = self.driver.page_source
+
         return HtmlResponse(
             self.driver.current_url, body=body, encoding="utf-8", request=request
         )
@@ -114,7 +116,7 @@ class SeleniumDownloaderMiddleware(object):
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument(spider.settings["USER_AGENT"])
-            options.add_argument("--proxy-server={}".format(os.getenv("PROXY_URL")))
+            # options.add_argument("--proxy-server={}".format(os.getenv("PROXY_URL")))
             options.headless = True
 
             self.driver = webdriver.Chrome(
