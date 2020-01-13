@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import sys
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
@@ -17,6 +18,9 @@ sites = sorted(
     queries.get_sites_to_crawl(),
     key=lambda k: 0 if k["last_crawl_at"] is None else k["last_crawl_at"],
 )
+
+if len(sites) == 0:
+    sys.exit(0)
 
 configure_logging()
 runner = CrawlerRunner(get_project_settings())
