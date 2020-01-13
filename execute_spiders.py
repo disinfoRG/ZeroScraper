@@ -35,7 +35,7 @@ process = CrawlerProcess(get_project_settings())
 if args.discover:
     crawl_time = int(time.time())
     queries.update_site_crawl_time(site_id=args.site_id, crawl_time=crawl_time)
-    discover.create(process, args.site_id, vars(args))
+    discover.create(process, queries, args.site_id, vars(args))
 elif args.update:
     update.create(process, vars(args))
 else:

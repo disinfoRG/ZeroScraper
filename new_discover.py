@@ -21,7 +21,7 @@ sites = sorted(
 configure_logging()
 runner = CrawlerRunner(get_project_settings())
 for site in sites:
-    newsSpiders.crawler.discover.create(runner, site["site_id"])
+    newsSpiders.crawler.discover.create(runner, queries, site["site_id"])
 d = runner.join()
 d.addBoth(lambda _: reactor.stop())
 

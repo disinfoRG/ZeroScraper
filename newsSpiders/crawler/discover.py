@@ -1,24 +1,16 @@
-import sqlalchemy as db
+import json
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
-from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
 
 
-def create(runner, site_id, args=None):
-    _, connection, tables = connect_to_db()
-    site = tables["Site"]
-
-    query = db.select([site.columns.url, site.columns.type, site.columns.config]).where(
-        site.columns.site_id == site_id
-    )
-    site_info = dict(connection.execute(query).fetchone())
-    connection.close()
-    site_url = site_info["url"]
-    site_type = site_info["type"]
+def create(runner, queries, site_id, args=None):
+    site = queries.get_site_by_id(site_id=site_id)
+    site_url = site["url"]
+    site_type = site["type"]
     site_conf = SiteConfig.default()
-    site_conf.update(site_info["config"])
+    site_conf.update(json.loads(site["config"]))
     if args is not None:
         site_conf.update(args)
 
