@@ -4,7 +4,7 @@ import time
 import pugsql
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from newsSpiders.runner import discover, update
+from newsSpiders.crawler import discover, update
 
 queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
@@ -31,15 +31,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 # execute
+process = CrawlerProcess(get_project_settings())
 if args.discover:
     crawl_time = int(time.time())
     queries.update_site_crawl_time(site_id=args.site_id, crawl_time=crawl_time)
-    process = CrawlerProcess(get_project_settings())
-    discover.run(process, args.site_id, vars(args))
-    process.start()
+    discover.create(process, queries, args.site_id, vars(args))
 elif args.update:
-    update.run(vars(args))
+    update.create(process, vars(args))
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"
     )
+process.start()
