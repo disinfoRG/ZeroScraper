@@ -2,9 +2,8 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from ast import literal_eval
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
+from newsSpiders.helpers import generate_next_fetch_time
 import zlib
-import sqlalchemy as db
 import time
 
 
