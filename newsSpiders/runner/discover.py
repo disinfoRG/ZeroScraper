@@ -1,8 +1,9 @@
 import sqlalchemy as db
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
+from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
 
 
 def run(runner, site_id, args=None):
@@ -21,7 +22,7 @@ def run(runner, site_id, args=None):
     if args is not None:
         site_conf.update(args)
 
-    conf = {
+    settings = {
         **get_project_settings(),
         "DEPTH_LIMIT": site_conf["depth"],
         "DOWNLOAD_DELAY": site_conf["delay"],
@@ -29,7 +30,7 @@ def run(runner, site_id, args=None):
     }
 
     runner.crawl(
-        "discover_new_articles",
+        Crawler(DiscoverNewArticlesSpider, settings),
         site_id=site_id,
         site_url=site_url,
         site_type=site_type,
