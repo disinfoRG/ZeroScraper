@@ -24,6 +24,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
     ):
         super(DiscoverNewArticlesSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
+        self.site_url = site_url
         self.start_urls = [site_url]
         self.site_type = site_type
         self.selenium = literal_eval(selenium)
@@ -42,6 +43,15 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             )
         super(DiscoverNewArticlesSpider, self)._compile_rules()
 
+    def assign_article_type(self):
+        if "ptt.cc" in self.site_url:
+            article_type = "PTT"
+        elif "dcard" in self.site_url:
+            article_type = "Dcard"
+        else:
+            article_type = "Article"
+        return article_type
+
     def parse_articles(self, response):
         # init
         article = ArticleItem()
@@ -53,7 +63,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         article["site_id"] = self.site_id
         article["url"] = response.url
         article["url_hash"] = zlib.crc32(article["url"].encode())
-        article["article_type"] = "Article"
+        article["article_type"] = self.assign_article_type()
         article["first_snapshot_at"] = parse_time
         article["last_snapshot_at"] = parse_time
         article["snapshot_count"] = 1
