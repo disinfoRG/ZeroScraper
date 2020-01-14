@@ -31,15 +31,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 # execute
+process = CrawlerProcess(get_project_settings())
 if args.discover:
     crawl_time = int(time.time())
     queries.update_site_crawl_time(site_id=args.site_id, crawl_time=crawl_time)
-    process = CrawlerProcess(get_project_settings())
     discover.run(process, args.site_id, vars(args))
-    process.start()
 elif args.update:
-    update.run(vars(args))
+    update.run(process, vars(args))
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"
     )
+process.start()
