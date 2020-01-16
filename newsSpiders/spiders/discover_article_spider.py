@@ -33,7 +33,8 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             "facebook.com",
             "twitter.com",
             "linkedin.com",
-            "plurk.com" "line.me",
+            "plurk.com",
+            "line.me",
             "line.naver.jp",
             "plus.google.com",
         ]
