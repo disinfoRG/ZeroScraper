@@ -29,11 +29,18 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.selenium = literal_eval(selenium)
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
+        social_media_links = [
+            "facebook.com",
+            "twitter.com",
+            "linkedin.com",
+            "plurk.com" "line.me",
+            "line.naver.jp",
+            "plus.google.com",
+        ]
         DiscoverNewArticlesSpider.rules = [
             Rule(
-                LinkExtractor(allow=article_url_patterns),
+                LinkExtractor(allow=article_url_patterns, deny=social_media_links),
                 callback="parse_articles",
-                follow=True,
             )
         ]
         if following_url_patterns:
