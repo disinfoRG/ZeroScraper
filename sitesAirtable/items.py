@@ -14,7 +14,7 @@ site_type_mapping = {
     "組織官網": "organization_website",
     "Fb 專頁": "fb_page",
     "Fb 公開社團": "fb_public_group",
-    "Ptt 看板": "ptt_board",
+    "討論區看板": "discussion_board",
     "YouTube 頻道": "youtube_channel",
     "YouTube 帳號": "youtube_user",
 }
