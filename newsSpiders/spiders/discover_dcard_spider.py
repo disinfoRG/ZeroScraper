@@ -7,18 +7,13 @@ from newsSpiders.helpers import generate_next_fetch_time
 import time
 
 
-class DcardSpider(scrapy.Spider):
+class DiscoverDcardPostsSpider(scrapy.Spider):
     name = "dcard_discover"
 
     def __init__(
-        self,
-        site_id="493",
-        site_url="https://www.dcard.tw/f/trending?latest=true",
-        site_type="",
-        *args,
-        **kwargs,
+        self, site_id="", site_url="", site_type="", *args, **kwargs,
     ):
-        super(DcardSpider, self).__init__(*args, **kwargs)
+        super(DiscoverDcardPostsSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
         self.site_type = site_type
         self.site_url = site_url
@@ -26,7 +21,6 @@ class DcardSpider(scrapy.Spider):
         self.forum_name = re.search("/f/(.*)", self.site_url).group(1).split("?")[0]
 
     def start_requests(self):
-        # todo: the limit
         api_url = f"https://www.dcard.tw/_api/forums/{self.forum_name}/posts?popular=false&limit=100"
 
         yield scrapy.Request(url=api_url, callback=self.get_post_id)
