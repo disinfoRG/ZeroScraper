@@ -21,12 +21,14 @@ class UpdateContentsSpider(scrapy.Spider):
                 article.c.url,
                 article.c.site_id,
                 article.c.snapshot_count,
+                article.c.article_type,
             ]
         )
         query = query.where(
             db.and_(
                 article.c.next_snapshot_at != 0,
                 article.c.next_snapshot_at < int_current_time,
+                article.c.article_type.in_(["Article", "PTT"]),
             )
         )
         self.articles_to_update = [dict(row) for row in connection.execute(query)]
