@@ -4,6 +4,7 @@ from scrapy.utils.project import get_project_settings
 from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
+from newsSpiders.spiders.discover_dcard_spider import DiscoverDcardPostsSpider
 
 
 def run(runner, site_id, args=None):
@@ -29,12 +30,20 @@ def run(runner, site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
-    runner.crawl(
-        Crawler(DiscoverNewArticlesSpider, settings),
-        site_id=site_id,
-        site_url=site_url,
-        site_type=site_type,
-        article_url_patterns=site_conf["article"],
-        following_url_patterns=site_conf["following"],
-        selenium="True" if site_conf["selenium"] else "False",
-    )
+    if "dcard" in site_url:
+        runner.crawl(
+            Crawler(DiscoverDcardPostsSpider, settings),
+            site_id=site_id,
+            site_url=site_url,
+            site_type=site_type,
+        )
+    else:
+        runner.crawl(
+            Crawler(DiscoverNewArticlesSpider, settings),
+            site_id=site_id,
+            site_url=site_url,
+            site_type=site_type,
+            article_url_patterns=site_conf["article"],
+            following_url_patterns=site_conf["following"],
+            selenium="True" if site_conf["selenium"] else "False",
+        )
