@@ -72,3 +72,7 @@ class UpdateContentsSpider(scrapy.Spider):
         article_snapshot["article_id"] = article_id
 
         yield {"article": article, "article_snapshot": article_snapshot}
+
+    def closed(self, reason):
+        print("Closing SQL connection")
+        self.connection.close()
