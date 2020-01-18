@@ -31,7 +31,7 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
 
         for i in range(len(post_ids)):
             pid = post_ids[i]
-            comment_api = f"https://www.dcard.tw/_api/posts/{pid}/comments"
+            comment_api = f"https://www.dcard.tw/_api/posts/{pid}/comments?limit=100"
             yield scrapy.Request(
                 url=comment_api,
                 callback=self.get_comments,
