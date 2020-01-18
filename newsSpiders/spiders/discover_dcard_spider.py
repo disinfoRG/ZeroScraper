@@ -40,7 +40,6 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
 
     def get_comments(self, response, post_id, post_info):
         comments_api_result = json.loads(response.body.decode("utf-8"))
-
         # prepare Items
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
