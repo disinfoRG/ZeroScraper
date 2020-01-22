@@ -15,7 +15,7 @@ class DuplicatesPipeline:
         self.queries.connect(os.getenv("DB_URL"))
 
     def process_item(self, item, spider):
-        if spider.name == "discover_new_articles":
+        if spider.name in ("discover_new_articles", "dcard_discover"):
             if (
                 self.queries.get_article_by_url(
                     url=item["article"]["url"], url_hash=item["article"]["url_hash"]
@@ -40,7 +40,7 @@ class MySqlPipeline(object):
         self.queries = pugsql.module("queries")
 
     def open_spider(self, spider):
-        engine, connection, tables = connect_to_db()
+        _, connection, tables = connect_to_db()
         self.connection = connection
         self.db_tables = {
             "article": tables["Article"],
@@ -64,7 +64,7 @@ class MySqlPipeline(object):
         self.connection.close()
 
     def process_item(self, item, spider):
-        if spider.name == "discover_new_articles":
+        if spider.name in ("discover_new_articles", "dcard_discover"):
             query = db.insert(self.db_tables["article"])
             exe = self.connection.execute(query, item["article"])
             article_id = exe.inserted_primary_key
@@ -75,7 +75,7 @@ class MySqlPipeline(object):
                 site_id=item["article"]["site_id"], crawl_time=int(time.time())
             )
 
-        elif spider.name == "update_contents":
+        elif spider.name in ("update_contents", "dcard_update"):
             # update Article
             article_dict = dict(item["article"])
             article_dict["id"] = article_dict.pop(

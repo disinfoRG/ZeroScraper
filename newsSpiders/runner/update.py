@@ -2,6 +2,7 @@ from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
+from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
 
 
 def run(runner, args=None):
@@ -16,3 +17,4 @@ def run(runner, args=None):
     }
 
     runner.crawl(Crawler(UpdateContentsSpider, settings))
+    runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
