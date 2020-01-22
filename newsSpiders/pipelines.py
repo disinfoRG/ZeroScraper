@@ -30,9 +30,6 @@ class DuplicatesPipeline:
         else:
             return item
 
-    def close_spider(self, spider):
-        self.queries.disconnect()
-
 
 class MySqlPipeline(object):
     def __init__(self):
@@ -65,7 +62,6 @@ class MySqlPipeline(object):
 
     def close_spider(self, spider):
         self.connection.close()
-        self.queries.disconnect()
 
     def process_item(self, item, spider):
         if spider.name in ("discover_new_articles", "dcard_discover"):

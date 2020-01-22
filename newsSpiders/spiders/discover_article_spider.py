@@ -45,8 +45,6 @@ class DiscoverNewArticlesSpider(CrawlSpider):
     def assign_article_type(self):
         if "ptt.cc" in self.site_url:
             article_type = "PTT"
-        elif "dcard" in self.site_url:
-            article_type = "Dcard"
         else:
             article_type = "Article"
         return article_type
