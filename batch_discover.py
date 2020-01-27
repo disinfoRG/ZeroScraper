@@ -16,7 +16,9 @@ import pugsql
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit-sec", type=int, help="time limit to run in seconds")
-    parser.add_argument("--pid-file", help="path to file to store PID")
+    parser.add_argument(
+        "--pid-name", default="discover", help="variable name to store PID"
+    )
     return parser.parse_args()
 
 
@@ -28,34 +30,33 @@ class Cleanup:
         self.runner.stop()
 
 
+class ProcessError(Exception):
+    pass
+
+
 class PIDLock:
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, queries, proc_name):
+        self.queries = queries
+        self.key = f"{proc_name}:pid"
 
     def lock(self):
-        if self.path:
-            if os.path.exists(self.path):
-                raise Exception("Another discover process already running.")
-            with open(self.path, "w") as f:
-                f.write(str(os.getpid()))
+        variable = self.queries.get_variable(key=self.key)
+        if variable is not None and variable["value"]:
+            raise ProcessError("Another discover process already running.")
+        self.queries.set_variable(key=self.key, value=str(os.getpid()))
 
     def unlock(self):
-        if self.path is not None:
-            os.remove(self.path)
+        self.queries.delete_variable(key=self.key)
 
 
 def main():
     args = parse_args()
 
-    pid_lock = PIDLock(args.pid_file)
-    try:
-        pid_lock.lock()
-    except Exception:
-        sys.stderr.write("Another discover process already running.  Exit.")
-        sys.exit(-1)
-
     queries = pugsql.module("queries/")
     queries.connect(os.getenv("DB_URL"))
+
+    pid_lock = PIDLock(queries, args.pid_name)
+    pid_lock.lock()
 
     sites = queries.get_sites_to_crawl()
 
