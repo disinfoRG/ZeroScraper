@@ -28,19 +28,31 @@ class Cleanup:
         self.runner.stop()
 
 
-def save_pid(path):
-    with open(path, "w") as f:
-        f.write(str(os.getpid()))
+class PIDLock:
+    def __init__(self, path):
+        self.path = path
+
+    def lock(self):
+        if self.path:
+            if os.path.exists(self.path):
+                raise Exception("Another discover process already running.")
+            with open(self.path, "w") as f:
+                f.write(str(os.getpid()))
+
+    def unlock(self):
+        if self.path is not None:
+            os.remove(self.path)
 
 
 def main():
     args = parse_args()
 
-    if args.pid_file:
-        if os.path.exists(args.pid_file):
-            sys.stderr.write("Another discover process already running.  Exit.")
-            sys.exit(-1)
-        save_pid(args.pid_file)
+    pid_lock = PIDLock(args.pid_file)
+    try:
+        pid_lock.lock()
+    except Exception:
+        sys.stderr.write("Another discover process already running.  Exit.")
+        sys.exit(-1)
 
     queries = pugsql.module("queries/")
     queries.connect(os.getenv("DB_URL"))
@@ -59,8 +71,7 @@ def main():
 
     reactor.run()
 
-    if args.pid_file is not None:
-        os.remove(args.pid_file)
+    pid_lock.unlock()
 
 
 if __name__ == "__main__":
