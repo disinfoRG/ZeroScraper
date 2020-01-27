@@ -39,14 +39,18 @@ class PIDLock:
         self.queries = queries
         self.key = f"{proc_name}:pid"
 
-    def lock(self):
+    def __enter__(self):
         variable = self.queries.get_variable(key=self.key)
         if variable is not None and variable["value"]:
             raise ProcessError("Another discover process already running.")
         self.queries.set_variable(key=self.key, value=str(os.getpid()))
 
-    def unlock(self):
+    def __exit__(self, type_, value, traceback):
         self.queries.delete_variable(key=self.key)
+
+
+def pid_lock(queries, proc_name):
+    return PIDLock(queries, proc_name)
 
 
 def main():
@@ -55,24 +59,20 @@ def main():
     queries = pugsql.module("queries/")
     queries.connect(os.getenv("DB_URL"))
 
-    pid_lock = PIDLock(queries, args.pid_name)
-    pid_lock.lock()
+    with pid_lock(queries, args.pid_name):
+        sites = queries.get_sites_to_crawl()
 
-    sites = queries.get_sites_to_crawl()
+        configure_logging()
+        runner = CrawlerRunner(get_project_settings())
+        for site in sites:
+            newsSpiders.runner.discover.run(runner, site["site_id"])
+        d = runner.join()
+        d.addBoth(lambda _: reactor.stop())
 
-    configure_logging()
-    runner = CrawlerRunner(get_project_settings())
-    for site in sites:
-        newsSpiders.runner.discover.run(runner, site["site_id"])
-    d = runner.join()
-    d.addBoth(lambda _: reactor.stop())
+        if args.limit_sec is not None:
+            reactor.callLater(args.limit_sec, Cleanup(runner).terminate)
 
-    if args.limit_sec is not None:
-        reactor.callLater(args.limit_sec, Cleanup(runner).terminate)
-
-    reactor.run()
-
-    pid_lock.unlock()
+        reactor.run()
 
 
 if __name__ == "__main__":
