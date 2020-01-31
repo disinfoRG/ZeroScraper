@@ -17,7 +17,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit-sec", type=int, help="time limit to run in seconds")
     parser.add_argument(
-        "--pid-name", default="discover", help="variable name to store PID"
+        "--proc-name", default="discover", help="process name to store PID"
     )
     return parser.parse_args()
 
@@ -60,7 +60,7 @@ def main():
     queries = pugsql.module("queries/")
     queries.connect(os.getenv("DB_URL"))
 
-    with pid_lock(queries, args.pid_name):
+    with pid_lock(queries, args.proc_name):
         sites = queries.get_sites_to_crawl()
 
         configure_logging()
