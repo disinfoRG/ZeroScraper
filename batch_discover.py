@@ -40,10 +40,11 @@ class PIDLock:
         self.key = f"{proc_name}:pid"
 
     def __enter__(self):
-        variable = self.queries.get_variable(key=self.key)
-        if variable is not None and variable["value"]:
-            raise ProcessError("Another discover process already running.")
-        self.queries.set_variable(key=self.key, value=str(os.getpid()))
+        with self.queries.transaction():
+            lock = self.queries.get_variable(key=self.key)
+            if lock is not None and lock["value"]:
+                raise ProcessError("Another discover process already running.")
+            self.queries.set_variable(key=self.key, value=str(os.getpid()))
 
     def __exit__(self, type_, value, traceback):
         self.queries.delete_variable(key=self.key)
