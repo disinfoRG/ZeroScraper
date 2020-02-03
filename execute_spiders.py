@@ -40,7 +40,6 @@ elif args.update:
     if args.site_id:
         print(f"Update for site {args.site_id}.")
     else:
-
         print(f"Update all.")
     update.run(process, args.site_id, vars(args))
 else:
