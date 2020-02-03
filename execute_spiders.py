@@ -37,7 +37,12 @@ if args.discover:
     queries.update_site_crawl_time(site_id=args.site_id, crawl_time=crawl_time)
     discover.run(process, args.site_id, vars(args))
 elif args.update:
-    update.run(process, vars(args))
+    if args.site_id:
+        print(f"Update for site {args.site_id}.")
+    else:
+
+        print(f"Update all.")
+    update.run(process, args.site_id, vars(args))
 else:
     raise Exception(
         "Please specify action by adding either --discover or --update flag"

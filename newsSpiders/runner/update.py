@@ -5,7 +5,7 @@ from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
 from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
 
 
-def run(runner, args=None):
+def run(runner, site_id, args=None):
     site_conf = SiteConfig.default()
     if args is not None:
         site_conf.update(args)
@@ -16,5 +16,5 @@ def run(runner, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
-    runner.crawl(Crawler(UpdateContentsSpider, settings))
+    runner.crawl(Crawler(UpdateContentsSpider, settings), site_id=site_id)
     runner.crawl(Crawler(UpdateDcardPostsSpider, settings))

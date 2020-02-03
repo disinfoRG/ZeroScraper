@@ -8,7 +8,7 @@ import time
 class UpdateContentsSpider(scrapy.Spider):
     name = "update_contents"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, site_id=None, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
         self.selenium = True
         int_current_time = int(time.time())
@@ -24,13 +24,25 @@ class UpdateContentsSpider(scrapy.Spider):
                 article.c.article_type,
             ]
         )
-        query = query.where(
-            db.and_(
-                article.c.next_snapshot_at != 0,
-                article.c.next_snapshot_at < int_current_time,
-                article.c.article_type.in_(["Article", "PTT"]),
+
+        if site_id:
+            query = query.where(
+                db.and_(
+                    article.c.site_id == site_id,
+                    article.c.next_snapshot_at != 0,
+                    article.c.next_snapshot_at < int_current_time,
+                    article.c.article_type.in_(["Article", "PTT"]),
+                )
             )
-        )
+
+        else:
+            query = query.where(
+                db.and_(
+                    article.c.next_snapshot_at != 0,
+                    article.c.next_snapshot_at < int_current_time,
+                    article.c.article_type.in_(["Article", "PTT"]),
+                )
+            )
         self.articles_to_update = [dict(row) for row in connection.execute(query)]
         self.connection = connection
 
