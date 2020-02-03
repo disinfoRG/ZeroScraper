@@ -31,12 +31,20 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
 
         for i in range(len(post_ids)):
             pid = post_ids[i]
-            comment_api = f"https://www.dcard.tw/_api/posts/{pid}/comments?limit=100"
+            post_api = f"https://www.dcard.tw/_api/posts/{pid}"
+
             yield scrapy.Request(
-                url=comment_api,
-                callback=self.get_comments,
-                cb_kwargs={"post_id": pid, "post_info": response_json[i]},
+                url=post_api, callback=self.get_posts, cb_kwargs={"post_id": pid},
             )
+
+    def get_posts(self, response, post_id):
+        response_json = json.loads(response.body.decode("utf-8"))
+        comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?limit=100"
+        yield scrapy.Request(
+            url=comment_api,
+            callback=self.get_comments,
+            cb_kwargs={"post_id": post_id, "post_info": response_json},
+        )
 
     def get_comments(self, response, post_id, post_info):
         comments_api_result = json.loads(response.body.decode("utf-8"))
