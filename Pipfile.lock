@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7457b0ff03af2fd04a6081a3693128feb04a9086e25da8b478f7d81e507fa06b"
+            "sha256": "590eb75d18322eb046f2c55564edbdab56877a96f543e6b4ead7c1c1331ef3d6"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -188,7 +188,7 @@
                 "sha256:fd52e796fee7171c4361d441796b64df1acfceb51f29e545e812f16d023c4bbc",
                 "sha256:fe976a0f1ef09b3638778024ab9fb8cde3118f203364212c198f71341c0715ca"
             ],
-            "markers": "python_version > '3.4'",
+            "markers": "python_version != '3.4'",
             "version": "==4.5.0"
         },
         "mako": {
@@ -334,10 +334,6 @@
                 "sha256:ff43b5b74b9266f8df4232a8f768dc4d67281a271905e2ed4a3689d4d304cd02"
             ],
             "version": "==1.5.0"
-        },
-        "readability-lxml": {
-            "git": "https://github.com/pm5/python-readability.git",
-            "ref": "8e1f4ceb6af9dc7794ec7169fae8923565f73998"
         },
         "requests": {
             "hashes": [
