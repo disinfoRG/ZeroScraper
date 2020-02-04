@@ -14,14 +14,9 @@ pymysql = "*"
 alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
-lxml = "==4.4.1"
 htmldate = "*"
-readability-lxml = {git = "https://github.com/pm5/python-readability.git"}
 selenium = "*"
 xvfbwrapper = "*"
 
 [requires]
 python_version = "3.7"
-
-[scripts]
-start = "sh -c 'cd codes && python ./batch_discover.py'"
