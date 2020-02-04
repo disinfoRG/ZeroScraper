@@ -14,11 +14,14 @@ pymysql = "*"
 alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
-lxml = "==4.4.1"
+lxml = "*"
 htmldate = "*"
 readability-lxml = {git = "https://github.com/pm5/python-readability.git"}
 selenium = "*"
 xvfbwrapper = "*"
+flask = "*"
+flask-restful = "*"
+url-normalize = "*"
 
 [requires]
 python_version = "3.7"
