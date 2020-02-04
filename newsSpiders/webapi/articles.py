@@ -36,7 +36,7 @@ def get_article_by_url(url):
         ]
         result = {**url_info, **article_entry, "snapshot_time": snapshot_time}
     except TypeError:
-        result = {**url_info, "error message": "url does not exist in the database."}
+        result = {**url_info, "error_message": "url does not exist in the database."}
     queries.disconnect()
 
     return result
