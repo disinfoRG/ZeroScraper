@@ -16,20 +16,20 @@ def run(runner, site_id, args=None):
         "DOWNLOAD_DELAY": site_conf["delay"],
         "USER_AGENT": site_conf["ua"],
     }
-    site_type = None
+    url = None
 
     if site_id is not None:
         _, connection, tables = connect_to_db()
         site = tables["Site"]
 
-        query = db.select([site.c.type]).where(site.c.site_id == site_id)
-        site_type = connection.execute(query).fetchone()[0]
+        query = db.select([site.c.url]).where(site.c.site_id == site_id)
+        url = connection.execute(query).fetchone()[0]
         connection.close()
 
-    if site_type is None:
+    if url is None:
         runner.crawl(Crawler(UpdateContentsSpider, settings))
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
-    elif site_type in ["Article", "PTT"]:
-        runner.crawl(Crawler(UpdateContentsSpider, settings), site_id=site_id)
-    elif site_type == "Dcard":
+    elif "dcard" in url:
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings), site_id=site_id)
+    else:
+        runner.crawl(Crawler(UpdateContentsSpider, settings), site_id=site_id)
