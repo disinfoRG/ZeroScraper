@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "68ebf769aaa31df88a71e864cf8d928c8dec375f93dc24525d3d85fb2a5386b4"
+            "sha256": "fa71cdc127e63d3a223a306cbbcd141b63d64547202d2dd8fc2c58b39327d354"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,13 +44,6 @@
             ],
             "version": "==0.8.0"
         },
-        "certifi": {
-            "hashes": [
-                "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3",
-                "sha256:25b64c7da4cd7479594d035c08c2d809eb4aab3a26e5a990ea98cc450c320f1f"
-            ],
-            "version": "==2019.11.28"
-        },
         "cffi": {
             "hashes": [
                 "sha256:0b49274afc941c626b605fb59b59c3485c17dc776dc3cc7cc14aca74cc19cc42",
@@ -88,13 +81,6 @@
                 "sha256:fd43a88e045cf992ed09fa724b5315b790525f2676883a6ea64e3263bae6549d"
             ],
             "version": "==1.13.2"
-        },
-        "chardet": {
-            "hashes": [
-                "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae",
-                "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
-            ],
-            "version": "==3.0.4"
         },
         "click": {
             "hashes": [
@@ -158,14 +144,6 @@
             ],
             "index": "pypi",
             "version": "==0.3.7"
-        },
-        "htmldate": {
-            "hashes": [
-                "sha256:66c2044c95b0b31c8c322b7ddc1e15fd0b043977a3eeab556716195f5549ca44",
-                "sha256:8048e55d4abbd6c76c8f54fd3308d3f306aeefc25470197649d6dbb03a5f7a7d"
-            ],
-            "index": "pypi",
-            "version": "==0.6.1"
         },
         "hyperlink": {
             "hashes": [
@@ -232,7 +210,7 @@
                 "sha256:fd52e796fee7171c4361d441796b64df1acfceb51f29e545e812f16d023c4bbc",
                 "sha256:fe976a0f1ef09b3638778024ab9fb8cde3118f203364212c198f71341c0715ca"
             ],
-            "index": "pypi",
+            "markers": "python_version != '3.4'",
             "version": "==4.5.0"
         },
         "mako": {
@@ -385,18 +363,6 @@
                 "sha256:ff43b5b74b9266f8df4232a8f768dc4d67281a271905e2ed4a3689d4d304cd02"
             ],
             "version": "==1.5.0"
-        },
-        "readability-lxml": {
-            "git": "https://github.com/pm5/python-readability.git",
-            "ref": "8e1f4ceb6af9dc7794ec7169fae8923565f73998"
-        },
-        "requests": {
-            "hashes": [
-                "sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4",
-                "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"
-            ],
-            "markers": "python_version > '3.4'",
-            "version": "==2.22.0"
         },
         "scrapy": {
             "hashes": [
