@@ -16,24 +16,25 @@ def run(runner, site_id, args=None):
         "DOWNLOAD_DELAY": site_conf["delay"],
         "USER_AGENT": site_conf["ua"],
     }
-    url = None
 
-    if site_id is not None:
-        _, connection, tables = connect_to_db()
-        site = tables["Site"]
-
-        query = db.select([site.c.url]).where(site.c.site_id == site_id)
-        url = connection.execute(query).fetchone()[0]
-        connection.close()
-
-    if url is None:
+    if site_id is None:  # update all
         runner.crawl(Crawler(UpdateContentsSpider, settings))
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
-    elif "dcard" in url:
-        crawler = Crawler(UpdateDcardPostsSpider, settings)
-        crawler.stats.set_value("site_id", site_id)
-        runner.crawl(crawler, site_id=site_id)
+
     else:
-        crawler = Crawler(UpdateContentsSpider, settings)
-        crawler.stats.set_value("site_id", site_id)
-        runner.crawl(crawler, site_id=site_id)
+        _, connection, tables = connect_to_db()
+        site = tables["Site"]
+        query = db.select([site.c.url, site.c.config]).where(site.c.site_id == site_id)
+        site_info = dict(connection.execute(query).fetchone())
+        url = site_info["url"]
+        use_selenium = "True" if "selenium" in site_info["config"].keys() else "False"
+        connection.close()
+
+        if "dcard" in url:
+            crawler = Crawler(UpdateDcardPostsSpider, settings)
+            crawler.stats.set_value("site_id", site_id)
+            runner.crawl(crawler, site_id=site_id)
+        else:
+            crawler = Crawler(UpdateContentsSpider, settings)
+            crawler.stats.set_value("site_id", site_id)
+            runner.crawl(crawler, site_id=site_id, selenium=use_selenium)
