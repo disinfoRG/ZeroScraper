@@ -3,14 +3,20 @@ from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 import sqlalchemy as db
 from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
 import time
+from ast import literal_eval
 
 
 class UpdateContentsSpider(scrapy.Spider):
     name = "update_contents"
 
-    def __init__(self, site_id=None, *args, **kwargs):
+    def __init__(self, site_id=None, selenium="", *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
-        self.selenium = True
+
+        if not site_id:  # if update all articles in db
+            self.selenium = True
+        else:  # if specified site_id, follow site config
+            self.selenium = literal_eval(selenium)
+
         int_current_time = int(time.time())
         engine, connection, tables = connect_to_db()
         article = tables["Article"]
