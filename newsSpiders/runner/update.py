@@ -30,6 +30,10 @@ def run(runner, site_id, args=None):
         runner.crawl(Crawler(UpdateContentsSpider, settings))
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
     elif "dcard" in url:
-        runner.crawl(Crawler(UpdateDcardPostsSpider, settings), site_id=site_id)
+        crawler = Crawler(UpdateDcardPostsSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(crawler, site_id=site_id)
     else:
-        runner.crawl(Crawler(UpdateContentsSpider, settings), site_id=site_id)
+        crawler = Crawler(UpdateContentsSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(crawler, site_id=site_id)
