@@ -31,15 +31,18 @@ def run(runner, site_id, args=None):
     }
 
     if "dcard" in site_url:
+        crawler = Crawler(DiscoverDcardPostsSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
         runner.crawl(
-            Crawler(DiscoverDcardPostsSpider, settings),
-            site_id=site_id,
-            site_url=site_url,
-            site_type=site_type,
+            crawler, site_id=site_id, site_url=site_url, site_type=site_type,
         )
     else:
+        crawler = Crawler(DiscoverNewArticlesSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
         runner.crawl(
-            Crawler(DiscoverNewArticlesSpider, settings),
+            crawler,
             site_id=site_id,
             site_url=site_url,
             site_type=site_type,
