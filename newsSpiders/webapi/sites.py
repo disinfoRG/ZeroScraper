@@ -1,20 +1,8 @@
-import pugsql
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-queries = pugsql.module("queries")
-
-
-def get_article_count(site_id):
-    queries.connect(os.getenv("DB_URL"))
+def get_article_count(queries, site_id):
     result = queries.get_site_article_count(site_id=site_id)
-    queries.disconnect()
     return result
 
 
-def get_latest_article(site_id):
-    queries.connect(os.getenv("DB_URL"))
+def get_latest_article(queries, site_id):
     result = queries.get_site_latest_article(site_id=site_id)
-    queries.disconnect()
     return result
