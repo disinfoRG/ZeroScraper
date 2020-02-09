@@ -14,9 +14,11 @@ pymysql = "*"
 alembic = "*"
 pugsql = "*"
 python-dotenv = "*"
-htmldate = "*"
 selenium = "*"
 xvfbwrapper = "*"
+flask = "*"
+flask-restful = "*"
+url-normalize = "*"
 
 [requires]
 python_version = "3.7"

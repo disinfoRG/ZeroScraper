@@ -1,6 +1,4 @@
 -- :name get_article_by_url :one
-SELECT
-  article_id
+SELECT *
 FROM Article
-WHERE
-  url_hash = :url_hash AND url = :url
+WHERE url = :url
