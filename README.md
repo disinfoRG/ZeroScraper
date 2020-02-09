@@ -42,7 +42,11 @@ $ python ./batch_discover.py
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
+# update all articles 
 $ python ./execute_spiders.py --update
+
+# update articles only in the specified site
+$ python ./execute_spiders.py --update --site_id {site_id}
 ```
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
