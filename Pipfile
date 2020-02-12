@@ -19,6 +19,7 @@ xvfbwrapper = "*"
 flask = "*"
 flask-restful = "*"
 url-normalize = "*"
+werkzeug = "*"
 
 [requires]
 python_version = "3.7"
