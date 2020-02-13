@@ -1,6 +1,5 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from ast import literal_eval
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from newsSpiders.helpers import generate_next_fetch_time
 import zlib
@@ -17,7 +16,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         site_type="",
         article_url_patterns="",
         following_url_patterns="",
-        selenium="",
+        selenium=False,
         *args,
         **kwargs
     ):
@@ -26,7 +25,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.site_url = site_url
         self.start_urls = [site_url]
         self.site_type = site_type
-        self.selenium = literal_eval(selenium)
+        self.selenium = selenium
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
         social_media_links = [
