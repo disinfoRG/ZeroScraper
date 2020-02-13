@@ -2,9 +2,6 @@ import argparse
 import pugsql
 import os
 import time
-from dotenv import load_dotenv
-
-load_dotenv()
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
