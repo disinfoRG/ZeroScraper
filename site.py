@@ -45,9 +45,8 @@ if __name__ == "__main__":
     discover_cmd.add_argument(
         "--depth", help="desired depth limit; 0 if no limit imposed.", type=int
     )
-    discover_cmd.add_argument("--delay", help="time delayed for request.")
-    discover_cmd.add_argument("--ua", help="user_agent")
-    discover_cmd.add_argument("--selenium", help="use selenium to load website or not.")
+    discover_cmd.add_argument("--delay", help="time delayed for request.", type=int)
+    discover_cmd.add_argument("--ua", help="user_agent", type=str)
 
     update_cmd = cmds.add_parser("update", help="do update")
     update_cmd.add_argument(
@@ -55,7 +54,6 @@ if __name__ == "__main__":
     )
     update_cmd.add_argument("--delay", help="time delayed for request.")
     update_cmd.add_argument("--ua", help="user_agent")
-    update_cmd.add_argument("--selenium", help="use selenium to load website or not.")
 
     activate_cmd = cmds.add_parser("activate", help="activate a site in news db")
     activate_cmd.add_argument(
