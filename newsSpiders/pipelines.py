@@ -17,7 +17,7 @@ class DuplicatesPipeline:
     def process_item(self, item, spider):
         if spider.name in ("discover_new_articles", "dcard_discover"):
             if (
-                self.queries.get_article_by_url(
+                self.queries.get_article_id_by_url(
                     url=item["article"]["url"], url_hash=item["article"]["url_hash"]
                 )
                 is not None
