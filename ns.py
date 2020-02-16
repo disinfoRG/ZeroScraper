@@ -62,7 +62,6 @@ def discover(args):
             reactor.callLater(args.limit_sec, Cleanup(runner).terminate)
 
         reactor.run()
-    queries.disconnect()
 
 
 def update():
@@ -83,7 +82,6 @@ def update():
             reactor.callLater(args.limit_sec, Cleanup(runner).terminate)
 
         reactor.run()
-    queries.disconnect()
 
 
 def main(args):
