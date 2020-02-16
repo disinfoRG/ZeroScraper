@@ -51,7 +51,7 @@ def discover(args):
 
     with pid_lock(queries, args.proc_name):
         sites = queries.get_sites_to_crawl()
-        queries.disconnect()
+
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
         for site in sites:
@@ -71,7 +71,6 @@ def update(args):
 
     with pid_lock(queries, args.proc_name):
         sites = queries.get_sites_to_crawl()
-        queries.disconnect()
 
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
