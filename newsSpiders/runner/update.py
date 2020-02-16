@@ -39,7 +39,5 @@ def run(runner, site_id, args=None):
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
             runner.crawl(
-                crawler,
-                site_id=site_id,
-                selenium="True" if site_conf["selenium"] else "False",
+                crawler, site_id=site_id, selenium=site_conf.get("selenium", "False"),
             )

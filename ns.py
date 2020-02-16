@@ -9,6 +9,7 @@ from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
 from scrapy.utils.log import configure_logging
 import newsSpiders.runner.discover
+import newsSpiders.runner.update
 import pugsql
 
 
@@ -50,7 +51,7 @@ def discover(args):
 
     with pid_lock(queries, args.proc_name):
         sites = queries.get_sites_to_crawl()
-
+        queries.disconnect()
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
         for site in sites:
@@ -64,12 +65,13 @@ def discover(args):
         reactor.run()
 
 
-def update():
+def update(args):
     queries = pugsql.module("queries/")
     queries.connect(os.getenv("DB_URL"))
 
     with pid_lock(queries, args.proc_name):
         sites = queries.get_sites_to_crawl()
+        queries.disconnect()
 
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
@@ -92,25 +94,24 @@ def main(args):
 
 
 if __name__ == "__main__":
-    if __name__ == "__main__":
-        parser = argparse.ArgumentParser()
-        cmds = parser.add_subparsers(title="sub command", dest="command", required=True)
+    parser = argparse.ArgumentParser()
+    cmds = parser.add_subparsers(title="sub command", dest="command", required=True)
 
-        discover_cmd = cmds.add_parser("discover", help="do discover")
-        discover_cmd.add_argument(
-            "--limit-sec", type=int, help="time limit to run in seconds"
-        )
-        discover_cmd.add_argument(
-            "--proc-name", default="discover", help="process name to store PID"
-        )
+    discover_cmd = cmds.add_parser("discover", help="do discover")
+    discover_cmd.add_argument(
+        "--limit-sec", type=int, help="time limit to run in seconds"
+    )
+    discover_cmd.add_argument(
+        "--proc-name", default="discover", help="process name to store PID"
+    )
 
-        update_cmd = cmds.add_parser("update", help="do update")
-        update_cmd.add_argument(
-            "--limit-sec", type=int, help="time limit to run in seconds"
-        )
-        update_cmd.add_argument(
-            "--proc-name", default="update", help="process name to store PID"
-        )
+    update_cmd = cmds.add_parser("update", help="do update")
+    update_cmd.add_argument(
+        "--limit-sec", type=int, help="time limit to run in seconds"
+    )
+    update_cmd.add_argument(
+        "--proc-name", default="update", help="process name to store PID"
+    )
 
-        args = parser.parse_args()
-        main(args)
+    args = parser.parse_args()
+    main(args)
