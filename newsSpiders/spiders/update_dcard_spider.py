@@ -36,6 +36,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
 
     def start_requests(self):
         for post in self.posts_to_update:
+            print(f'updating {post["article_id"]}')
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
             # retrieve last comment count
@@ -47,6 +48,8 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             try:
                 last_comment_count = last_snapshot_comments[-1]["floor"]
             except IndexError:
+                last_comment_count = 0
+            except KeyError:  # 上一篇的snapshot是error message，但沒有更新到Article
                 last_comment_count = 0
 
             yield scrapy.Request(
