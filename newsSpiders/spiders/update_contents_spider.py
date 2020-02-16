@@ -3,7 +3,6 @@ from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 import sqlalchemy as db
 from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
 import time
-from ast import literal_eval
 
 
 class UpdateContentsSpider(scrapy.Spider):
@@ -54,6 +53,7 @@ class UpdateContentsSpider(scrapy.Spider):
 
     def start_requests(self):
         for a in self.articles_to_update:
+            print(f"updating {a['article_id']}")
             yield scrapy.Request(
                 url=a["url"],
                 callback=self.update_article,
