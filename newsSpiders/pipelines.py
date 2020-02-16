@@ -35,16 +35,13 @@ class MySqlPipeline(object):
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))
 
-    def close_spider(self, spider):
-        self.queries.disconnect()
-
     def process_item(self, item, spider):
         article = item["article"]
         snapshot = item["article_snapshot"]
 
         if spider.name in ("discover_new_articles", "dcard_discover"):
             article_id = self.queries.insert_article(**article)
-            print(f"article {article_id} inserted!")
+            print(f"new article {article_id} inserted!")
             snapshot["article_id"] = article_id
             self.queries.insert_snapshot(
                 article_id=snapshot["article_id"],
@@ -70,3 +67,5 @@ class MySqlPipeline(object):
                 crawl_time=snapshot["snapshot_at"],
                 raw_data=snapshot["raw_data"],
             )
+
+            print(f'finish updating {snapshot["article_id"]}')
