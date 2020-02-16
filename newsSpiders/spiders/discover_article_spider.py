@@ -77,6 +77,8 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         if "redirect_urls" in response.meta.keys():
             article["url"] = response.request.meta["redirect_urls"][0]
             article["redirect_to"] = response.url
+        else:
+            article["redirect_to"] = None
 
         # populate article_snapshot item
         article_snapshot["raw_data"] = response.text
