@@ -9,13 +9,13 @@ from ast import literal_eval
 class UpdateContentsSpider(scrapy.Spider):
     name = "update_contents"
 
-    def __init__(self, site_id=None, selenium="", *args, **kwargs):
+    def __init__(self, site_id=None, selenium=False, *args, **kwargs):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
 
         if not site_id:  # if update all articles in db
             self.selenium = True
         else:  # if specified site_id, follow site config
-            self.selenium = literal_eval(selenium)
+            self.selenium = selenium
 
         int_current_time = int(time.time())
         engine, connection, tables = connect_to_db()
