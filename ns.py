@@ -90,7 +90,7 @@ def main(args):
     if args.command == "discover":
         discover(args)
     elif args.command == "update":
-        discover(args)
+        update(args)
 
 
 if __name__ == "__main__":
