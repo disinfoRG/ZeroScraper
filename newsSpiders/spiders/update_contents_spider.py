@@ -10,19 +10,12 @@ queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 
-def get_articles_to_update(site_id, current_time):
-    if site_id:
-        return queries.get_articles_to_update(
-            site_id=site_id, current_time=current_time
-        )
-    else:
-        return queries.get_all_articles_to_update(current_time=current_time)
-
-
 class UpdateContentsSpider(scrapy.Spider):
     name = "update_contents"
 
-    def __init__(self, site_id=None, selenium=False, *args, **kwargs):
+    def __init__(
+        self, articles_to_update, site_id=None, selenium=False, *args, **kwargs
+    ):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
 
         if not site_id:  # if update all articles in db
@@ -31,7 +24,7 @@ class UpdateContentsSpider(scrapy.Spider):
             self.selenium = selenium
 
         current_time = int(time.time())
-        self.articles_to_update = get_articles_to_update(site_id, current_time)
+        self.articles_to_update = articles_to_update
 
     def start_requests(self):
         for a in self.articles_to_update:
