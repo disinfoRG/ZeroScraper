@@ -7,6 +7,15 @@ from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
 from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
 
 
+def get_site_info(site_id):
+    _, connection, tables = connect_to_db()
+    site = tables["Site"]
+    query = db.select([site.c.url, site.c.config]).where(site.c.site_id == site_id)
+    site_info = dict(connection.execute(query).fetchone())
+    connection.close()
+    return site_info
+
+
 def run(runner, site_id, args=None):
     site_conf = SiteConfig.default()
     if args is not None:
@@ -23,13 +32,9 @@ def run(runner, site_id, args=None):
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
 
     else:
-        _, connection, tables = connect_to_db()
-        site = tables["Site"]
-        query = db.select([site.c.url, site.c.config]).where(site.c.site_id == site_id)
-        site_info = dict(connection.execute(query).fetchone())
+        site_info = get_site_info(site_id)
         url = site_info["url"]
         site_conf.update(json.loads(site_info["config"]))
-        connection.close()
 
         if "dcard" in url:
             crawler = Crawler(UpdateDcardPostsSpider, settings)
