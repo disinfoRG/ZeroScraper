@@ -1,48 +1,22 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-import sqlalchemy as db
-from newsSpiders.helpers import generate_next_fetch_time, connect_to_db
+from newsSpiders.helpers import generate_next_fetch_time
 import time
+import os
+import json
+import pugsql
+
+queries = pugsql.module("queries/")
+queries.connect(os.getenv("DB_URL"))
 
 
 def get_articles_to_update(site_id, current_time):
-    engine, connection, tables = connect_to_db()
-    article = tables["Article"]
-    query = db.select(
-        [
-            article.c.article_id,
-            article.c.url,
-            article.c.site_id,
-            article.c.snapshot_count,
-            article.c.article_type,
-        ]
-    )
-
     if site_id:
-        query = query.where(
-            db.and_(
-                article.c.site_id == site_id,
-                article.c.next_snapshot_at != 0,
-                article.c.next_snapshot_at < current_time,
-                article.c.article_type.in_(["Article", "PTT"]),
-            )
+        return queries.get_articles_to_update(
+            site_id=site_id, current_time=current_time
         )
     else:
-        query = query.where(
-            db.and_(
-                article.c.next_snapshot_at != 0,
-                article.c.next_snapshot_at < current_time,
-                article.c.article_type.in_(["Article", "PTT"]),
-            )
-        )
-    return [dict(row) for row in connection.execute(query)]
-
-
-def get_site_type(site_id):
-    engine, connection, tables = connect_to_db()
-    site = tables["Site"]
-    query = db.select([site.columns.type]).where(site.columns.site_id == site_id)
-    return connection.execute(query).fetchone()[0]
+        return queries.get_all_articles_to_update(current_time=current_time)
 
 
 class UpdateContentsSpider(scrapy.Spider):
@@ -77,7 +51,7 @@ class UpdateContentsSpider(scrapy.Spider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         parse_time = int(time.time())
-        site_type = get_site_type(site_id)
+        site_type = queries.get_site_by_id(site_id=site_id)["type"]
 
         # populate article item
         # copy from the original article
