@@ -15,16 +15,35 @@ def connect_to_db():
     return engine, connection, metadata.tables
 
 
-def generate_next_fetch_time(site_type, fetch_count, parse_time):
+def get_article_type(url):
+    if "dcard" in url:
+        article_type = "Dcard"
+    elif "ptt" in url:
+        article_type = "PTT"
+    else:
+        article_type = "Article"
+    return article_type
+
+
+def get_site_type(queries, site_id):
+    try:
+        r = queries.get_site_by_id(site_id=site_id)
+        site_type = r["type"]
+    except:
+        site_type = None
+    return site_type
+
+
+def generate_next_fetch_time(site_type, fetch_count, snapshot_time):
     """
     A method that generates next fetch time based on site type
     :param site_type: str, the type of site where articles are from
     :param fetch_count: int, how many times have this article fetched?
-    :param parse_time: a unix timestamp
+    :param snapshot_time: a unix timestamp
     :return: next fetch time, in unix timestamp
     """
     # turn to datetime object
-    parse_time = datetime.fromtimestamp(parse_time)
+    parse_time = datetime.fromtimestamp(snapshot_time)
     # Default
     if 7 > fetch_count >= 1:
         next_fetch_time = parse_time + timedelta(days=1)
