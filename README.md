@@ -46,10 +46,10 @@ The function will save new html to ArticleSnapshot table and update the snapshot
 ```sh
 # update all articles 
 $ python ns.py update
-
-Optional Arguments:
-        --limit-sec: time limit to run in seconds
 ```
+    Optional Arguments:
+            --limit-sec: time limit to run in seconds
+
 
 4. Revisit news articles in a specified site.
 ```sh
