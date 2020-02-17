@@ -11,6 +11,7 @@ def run(runner, site_id, args=None):
     site_conf = SiteConfig.default()
     if args is not None:
         site_conf.update(args)
+    # crawler setting
     settings = {
         **get_project_settings(),
         "DOWNLOAD_DELAY": site_conf["delay"],
@@ -27,7 +28,7 @@ def run(runner, site_id, args=None):
         query = db.select([site.c.url, site.c.config]).where(site.c.site_id == site_id)
         site_info = dict(connection.execute(query).fetchone())
         url = site_info["url"]
-        use_selenium = "True" if "selenium" in site_info["config"].keys() else "False"
+        site_conf.update(site_info["config"])
         connection.close()
 
         if "dcard" in url:
@@ -37,4 +38,6 @@ def run(runner, site_id, args=None):
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
-            runner.crawl(crawler, site_id=site_id, selenium=use_selenium)
+            runner.crawl(
+                crawler, site_id=site_id, selenium=site_conf["selenium"],
+            )
