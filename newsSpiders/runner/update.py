@@ -28,7 +28,7 @@ def run(runner, site_id, args=None):
         query = db.select([site.c.url, site.c.config]).where(site.c.site_id == site_id)
         site_info = dict(connection.execute(query).fetchone())
         url = site_info["url"]
-        site_conf.update(site_info["config"])
+        site_conf.update(json.loads(site_info["config"]))
         connection.close()
 
         if "dcard" in url:
@@ -38,6 +38,4 @@ def run(runner, site_id, args=None):
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
-            runner.crawl(
-                crawler, site_id=site_id, selenium=site_conf["selenium"],
-            )
+            runner.crawl(crawler, site_id=site_id, selenium=site_conf["selenium"])
