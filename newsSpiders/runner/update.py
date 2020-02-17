@@ -33,12 +33,12 @@ def run(runner, site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
+    current_time = int(time.time())
+
     if site_id is None:  # update all
-        runner.crawl(
-            Crawler(UpdateContentsSpider, settings),
-            articles_to_update=get_articles_to_update(site_id, int(time.time())),
-        )
         runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
+        for site in queries.get_sites_to_update(current_time=current_time):
+            run(runner, site["site_id"], args)
 
     else:
         site = queries.get_site_by_id(site_id=site_id)
@@ -54,7 +54,7 @@ def run(runner, site_id, args=None):
             crawler.stats.set_value("site_id", site_id)
             runner.crawl(
                 crawler,
-                articles_to_update=get_articles_to_update(site_id, int(time.time())),
+                articles_to_update=get_articles_to_update(site_id, current_time),
                 site_id=site_id,
                 selenium=site_conf["selenium"],
             )
