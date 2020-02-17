@@ -13,15 +13,6 @@ queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 
-def get_articles_to_update(site_id, current_time):
-    if site_id:
-        return queries.get_articles_to_update(
-            site_id=site_id, current_time=current_time
-        )
-    else:
-        return queries.get_all_articles_to_update(current_time=current_time)
-
-
 def run(runner, site_id, args=None):
     site_conf = SiteConfig.default()
     if args is not None:
@@ -54,7 +45,9 @@ def run(runner, site_id, args=None):
             crawler.stats.set_value("site_id", site_id)
             runner.crawl(
                 crawler,
-                articles_to_update=get_articles_to_update(site_id, current_time),
+                articles_to_update=queries.get_articles_to_update(
+                    site_id=site_id, current_time=current_time
+                ),
                 site_id=site_id,
                 selenium=site_conf["selenium"],
             )
