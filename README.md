@@ -65,7 +65,14 @@ $ python article.py update {article_id}
 ```
     Optional Arguments:
             --selenium: use selenium to load the article.
- 
+
+6. Discover a new article that does not exist in DB based on a provided url.  
+```sh
+$ python article.py discover {url}
+```
+    Optional Arguments:
+            --site_id: id of site of which the url belongs to. default = 0
+            --selenium: use selenium to load the article.
 
 
 ## Development
