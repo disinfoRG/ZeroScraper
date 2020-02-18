@@ -45,6 +45,7 @@ class UpdatesitesSpider(scrapy.Spider):
     def parse_record(self, record):
         loader = ItemLoader(item=SiteItem())
         fields = record["fields"]
+
         return SiteItem(
             {
                 "airtable_id": fields["id"],
@@ -58,10 +59,20 @@ class UpdatesitesSpider(scrapy.Spider):
             }
         )
 
+    def filter_record(self, site):
+        accepted = False
+        accepted_site_types = self.settings.get("SITE_TYPES")
+        if site["type"] in accepted_site_types:
+            accepted = True
+        return accepted
+
     def parse(self, response):
         data = json.loads(response.text)
         for record in data["records"]:
             site = self.parse_record(record)
+            accepted = self.filter_record(site)
+            if not accepted:
+                continue
             if not ("approved" in site and site["approved"]):
                 continue
             yield site
