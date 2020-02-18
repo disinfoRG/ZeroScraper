@@ -14,7 +14,7 @@ $ pipenv install
 $ pipenv run alembic upgrade head
 ```
 
-Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` to `.env`, and then:
+Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` and `SITE_TYPES=["<site_type_1>", "<site_type_2>",...]` to `.env`, and then:
 
 ```sh
 $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
