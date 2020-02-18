@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import json
-import os
-from scrapy.loader import ItemLoader
 from sitesAirtable.items import SiteItem, site_config_fields
 
 
@@ -43,7 +41,6 @@ class UpdatesitesSpider(scrapy.Spider):
         yield self.get_request()
 
     def parse_record(self, record):
-        loader = ItemLoader(item=SiteItem())
         fields = record["fields"]
         return SiteItem(
             {
@@ -58,10 +55,20 @@ class UpdatesitesSpider(scrapy.Spider):
             }
         )
 
+    def filter_record(self, site):
+        accepted = False
+        accepted_site_types = self.settings.get("SITE_TYPES")
+        if site["type"] in accepted_site_types:
+            accepted = True
+        return accepted
+
     def parse(self, response):
         data = json.loads(response.text)
         for record in data["records"]:
             site = self.parse_record(record)
+            accepted = self.filter_record(site)
+            if not accepted:
+                continue
             if not ("approved" in site and site["approved"]):
                 continue
             yield site
