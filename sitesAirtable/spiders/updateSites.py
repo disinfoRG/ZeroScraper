@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import json
-import os
-from scrapy.loader import ItemLoader
 from sitesAirtable.items import SiteItem, site_config_fields
 
 
@@ -43,9 +41,7 @@ class UpdatesitesSpider(scrapy.Spider):
         yield self.get_request()
 
     def parse_record(self, record):
-        loader = ItemLoader(item=SiteItem())
         fields = record["fields"]
-
         return SiteItem(
             {
                 "airtable_id": fields["id"],
