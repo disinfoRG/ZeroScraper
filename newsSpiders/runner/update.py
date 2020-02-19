@@ -5,7 +5,6 @@ import json
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
-from newsSpiders.helpers import connect_to_db
 from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
 from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
 
@@ -33,6 +32,7 @@ def run(runner, site_id, args=None):
 
     else:
         site = queries.get_site_by_id(site_id=site_id)
+        print(site_id, site)
         url = site["url"]
         site_conf.update(json.loads(site["config"]))
 
