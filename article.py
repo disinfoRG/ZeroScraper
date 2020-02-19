@@ -127,15 +127,20 @@ def discover(args):
     article_type = helpers.get_article_type(args.url)
     url_hash = zlib.crc32(args.url.encode())
     site_type = helpers.get_site_type(queries, args.site_id)
+    next_snapshot_at = (
+        0
+        if site_type is None
+        else helpers.generate_next_fetch_time(
+            site_type, fetch_count=1, snapshot_time=crawl_time
+        )
+    )
     inserted_article_id = queries.insert_article(
         site_id=args.site_id,
         url=args.url,
         url_hash=url_hash,
         first_snapshot_at=crawl_time,
         last_snapshot_at=crawl_time,
-        next_snapshot_at=helpers.generate_next_fetch_time(
-            site_type, fetch_count=1, snapshot_time=crawl_time
-        ),
+        next_snapshot_at=next_snapshot_at,
         snapshot_count=1,
         redirect_to=None,
         article_type=article_type,
