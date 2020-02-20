@@ -28,6 +28,10 @@ class DuplicatesPipeline:
             return item
 
 
+class InvalidItemsError(Exception):
+    pass
+
+
 class MySqlPipeline(object):
     def __init__(self):
         self.queries = pugsql.module("queries")
@@ -52,7 +56,7 @@ class MySqlPipeline(object):
                 next_snapshot_at=item["next_snapshot_at"],
             )
             print(f'updated {r} article {item["article_id"]}')
-            return None
+            return item["article_id"]
 
     def process_item(self, item, spider):
         article = item["article"]
@@ -60,6 +64,8 @@ class MySqlPipeline(object):
 
         with self.queries.transaction() as t:
             article_id = self.process_article(article)
-            if article_id is not None:
-                snapshot["article_id"] = article_id
-            self.queries.insert_snapshot(**snapshot)
+            if snapshot is not None:
+                snapshot.setdefault("article_id", article_id)
+                if snapshot["article_id"] != article_id:
+                    raise InvalidItemsError("Article id mismatch with snapshot")
+                self.queries.insert_snapshot(**snapshot)
