@@ -38,20 +38,20 @@ class MySqlPipeline(object):
     def process_article(self, item):
         if "article_id" not in item:
             article_id = self.queries.insert_article(**item)
-            print(f"new article {article_id} inserted!")
+            print(f"inserted new article {article_id}")
             self.queries.update_site_crawl_time(
                 site_id=item["site_id"], last_crawl_at=int(time.time())
             )
             return article_id
 
         else:
-            self.queries.update_article_snapshot_time(
+            r = self.queries.update_article_snapshot_time(
                 article_id=item["article_id"],
                 last_snapshot_at=item["last_snapshot_at"],
                 snapshot_count=item["snapshot_count"],
                 next_snapshot_at=item["next_snapshot_at"],
             )
-            print(f'finish updating {item["article_id"]}')
+            print(f'updated {r} article {item["article_id"]}')
             return None
 
     def process_item(self, item, spider):
