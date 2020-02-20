@@ -35,27 +35,31 @@ class MySqlPipeline(object):
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))
 
+    def process_article(self, item):
+        if "article_id" not in item:
+            article_id = self.queries.insert_article(**item)
+            print(f"new article {article_id} inserted!")
+            self.queries.update_site_crawl_time(
+                site_id=item["site_id"], last_crawl_at=int(time.time())
+            )
+            return article_id
+
+        else:
+            self.queries.update_article_snapshot_time(
+                article_id=item["article_id"],
+                last_snapshot_at=item["last_snapshot_at"],
+                snapshot_count=item["snapshot_count"],
+                next_snapshot_at=item["next_snapshot_at"],
+            )
+            print(f'finish updating {item["article_id"]}')
+            return None
+
     def process_item(self, item, spider):
         article = item["article"]
         snapshot = item["article_snapshot"]
 
-        if "article_id" not in article:
-            article_id = self.queries.insert_article(**article)
-            print(f"new article {article_id} inserted!")
-            snapshot["article_id"] = article_id
+        with self.queries.transaction() as t:
+            article_id = self.process_article(article)
+            if article_id is not None:
+                snapshot["article_id"] = article_id
             self.queries.insert_snapshot(**snapshot)
-            self.queries.update_site_crawl_time(
-                site_id=article["site_id"], last_crawl_at=int(time.time())
-            )
-
-        else:
-            self.queries.update_article_snapshot_time(
-                article_id=article["article_id"],
-                last_snapshot_at=article["last_snapshot_at"],
-                snapshot_count=article["snapshot_count"],
-                next_snapshot_at=article["next_snapshot_at"],
-            )
-
-            self.queries.insert_snapshot(**snapshot)
-
-            print(f'finish updating {snapshot["article_id"]}')
