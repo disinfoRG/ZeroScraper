@@ -87,29 +87,30 @@ class UpdateDcardPostsSpider(scrapy.Spider):
         # init
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
-        crawl_time = int(time.time())
+        now = int(time.time())
         site_type = "discussion_board"
 
         # populate article item
         # copy from the original article
         article["article_id"] = article_id
         # update
-        article["last_snapshot_at"] = crawl_time
-        article["snapshot_count"] = snapshot_count + 1
+        article["last_snapshot_at"] = now
 
-        if (
-            "error" in post_response.keys()
-        ):  # post is removed and does not need to be updated again.
+        if response.status in self.handle_httpstatus_list:
+            article["snapshot_count"] = snapshot_count
             article["next_snapshot_at"] = 0
+            article_snapshot = None
+
         else:
+            article["snapshot_count"] = snapshot_count + 1
             article["next_snapshot_at"] = generate_next_fetch_time(
-                site_type, article["snapshot_count"], crawl_time
+                site_type, article["snapshot_count"], now
             )
 
-        # populate article_snapshot item
-        post_comments = {"post": post_response, "comments": comment_response}
-        article_snapshot["raw_data"] = json.dumps(post_comments)
-        article_snapshot["snapshot_at"] = crawl_time
-        article_snapshot["article_id"] = article_id
+            # populate article_snapshot item
+            post_comments = {"post": post_response, "comments": comment_response}
+            article_snapshot["raw_data"] = json.dumps(post_comments)
+            article_snapshot["snapshot_at"] = now
+            article_snapshot["article_id"] = article_id
 
         yield {"article": article, "article_snapshot": article_snapshot}
