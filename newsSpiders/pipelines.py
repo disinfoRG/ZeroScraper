@@ -39,7 +39,7 @@ class MySqlPipeline(object):
         article = item["article"]
         snapshot = item["article_snapshot"]
 
-        if spider.name in ("discover_new_articles", "dcard_discover"):
+        if "article_id" not in article:
             article_id = self.queries.insert_article(**article)
             print(f"new article {article_id} inserted!")
             snapshot["article_id"] = article_id
@@ -48,7 +48,7 @@ class MySqlPipeline(object):
                 site_id=article["site_id"], last_crawl_at=int(time.time())
             )
 
-        elif spider.name in ("update_contents", "dcard_update"):
+        else:
             self.queries.update_article_snapshot_time(
                 article_id=article["article_id"],
                 last_snapshot_at=article["last_snapshot_at"],
