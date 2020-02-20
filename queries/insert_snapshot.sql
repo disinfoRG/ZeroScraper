@@ -1,2 +1,5 @@
 -- :name insert_snapshot :insert
-insert into ArticleSnapshot values (:article_id, :crawl_time, :raw_data)
+INSERT INTO ArticleSnapshot
+  (article_id, snapshot_at, raw_data)
+VALUES
+  (:article_id, :snapshot_at, :raw_data)

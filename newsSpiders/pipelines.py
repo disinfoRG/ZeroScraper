@@ -43,17 +43,12 @@ class MySqlPipeline(object):
             article_id = self.queries.insert_article(**article)
             print(f"new article {article_id} inserted!")
             snapshot["article_id"] = article_id
-            self.queries.insert_snapshot(
-                article_id=snapshot["article_id"],
-                crawl_time=snapshot["snapshot_at"],
-                raw_data=snapshot["raw_data"],
-            )
+            self.queries.insert_snapshot(**snapshot)
             self.queries.update_site_crawl_time(
                 site_id=article["site_id"], crawl_time=int(time.time())
             )
 
         elif spider.name in ("update_contents", "dcard_update"):
-            # update Article
             self.queries.update_article_snapshot_time(
                 article_id=article["article_id"],
                 crawl_time=article["last_snapshot_at"],
@@ -61,11 +56,6 @@ class MySqlPipeline(object):
                 next_snapshot_at=article["next_snapshot_at"],
             )
 
-            # insert to ArticleSnapshot
-            self.queries.insert_snapshot(
-                article_id=snapshot["article_id"],
-                crawl_time=snapshot["snapshot_at"],
-                raw_data=snapshot["raw_data"],
-            )
+            self.queries.insert_snapshot(**snapshot)
 
             print(f'finish updating {snapshot["article_id"]}')
