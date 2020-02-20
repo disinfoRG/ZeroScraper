@@ -15,8 +15,6 @@ def main(args):
 
     if args.command == "discover":
         process = CrawlerProcess(get_project_settings())
-        crawl_time = int(time.time())
-        queries.update_site_crawl_time(site_id=args.id, crawl_time=crawl_time)
         discover.run(process, args.id, vars(args))
         process.start()
 
