@@ -28,6 +28,10 @@ class DuplicatesPipeline:
             return item
 
 
+class InvalidItemsError(Exception):
+    pass
+
+
 class MySqlPipeline(object):
     def __init__(self):
         self.queries = pugsql.module("queries")
@@ -35,37 +39,33 @@ class MySqlPipeline(object):
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))
 
+    def process_article(self, item):
+        if "article_id" not in item:
+            article_id = self.queries.insert_article(**item)
+            print(f"inserted new article {article_id}")
+            self.queries.update_site_crawl_time(
+                site_id=item["site_id"], last_crawl_at=int(time.time())
+            )
+            return article_id
+
+        else:
+            r = self.queries.update_article_snapshot_time(
+                article_id=item["article_id"],
+                last_snapshot_at=item["last_snapshot_at"],
+                snapshot_count=item["snapshot_count"],
+                next_snapshot_at=item["next_snapshot_at"],
+            )
+            print(f'updated {r} article {item["article_id"]}')
+            return item["article_id"]
+
     def process_item(self, item, spider):
         article = item["article"]
         snapshot = item["article_snapshot"]
 
-        if spider.name in ("discover_new_articles", "dcard_discover"):
-            article_id = self.queries.insert_article(**article)
-            print(f"new article {article_id} inserted!")
-            snapshot["article_id"] = article_id
-            self.queries.insert_snapshot(
-                article_id=snapshot["article_id"],
-                crawl_time=snapshot["snapshot_at"],
-                raw_data=snapshot["raw_data"],
-            )
-            self.queries.update_site_crawl_time(
-                site_id=article["site_id"], crawl_time=int(time.time())
-            )
-
-        elif spider.name in ("update_contents", "dcard_update"):
-            # update Article
-            self.queries.update_article_snapshot_time(
-                article_id=article["article_id"],
-                crawl_time=article["last_snapshot_at"],
-                snapshot_count=article["snapshot_count"],
-                next_snapshot_at=article["next_snapshot_at"],
-            )
-
-            # insert to ArticleSnapshot
-            self.queries.insert_snapshot(
-                article_id=snapshot["article_id"],
-                crawl_time=snapshot["snapshot_at"],
-                raw_data=snapshot["raw_data"],
-            )
-
-            print(f'finish updating {snapshot["article_id"]}')
+        with self.queries.transaction() as t:
+            article_id = self.process_article(article)
+            if snapshot is not None:
+                snapshot.setdefault("article_id", article_id)
+                if snapshot["article_id"] != article_id:
+                    raise InvalidItemsError("Article id mismatch with snapshot")
+                self.queries.insert_snapshot(**snapshot)

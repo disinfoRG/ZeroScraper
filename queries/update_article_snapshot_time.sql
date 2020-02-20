@@ -1,8 +1,8 @@
 -- :name update_article_snapshot_time :affected
-update Article
-set
-last_snapshot_at = :crawl_time,
-snapshot_count = :snapshot_count,
-next_snapshot_at = :next_snapshot_at
-
-where article_id = :article_id
+UPDATE Article
+SET
+  last_snapshot_at = :last_snapshot_at,
+  snapshot_count = :snapshot_count,
+  next_snapshot_at = :next_snapshot_at
+WHERE
+  article_id = :article_id
