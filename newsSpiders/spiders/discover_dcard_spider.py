@@ -65,6 +65,7 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         article["next_snapshot_at"] = generate_next_fetch_time(
             self.site_type, article["snapshot_count"], parse_time
         )
+        article["redirect_to"] = None
 
         # populate article_snapshot item
         post_comments = {"post": post_info, "comments": comments_api_result}
