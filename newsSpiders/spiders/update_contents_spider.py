@@ -43,22 +43,22 @@ class UpdateContentsSpider(scrapy.Spider):
         # init
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
-        parse_time = int(time.time())
+        now = int(time.time())
         site_type = queries.get_site_by_id(site_id=site_id)["type"]
 
         # populate article item
         # copy from the original article
         article["article_id"] = article_id
         # update
-        article["last_snapshot_at"] = parse_time
+        article["last_snapshot_at"] = now
         article["snapshot_count"] = snapshot_count + 1
         article["next_snapshot_at"] = generate_next_fetch_time(
-            site_type, article["snapshot_count"], parse_time
+            site_type, article["snapshot_count"], now
         )
 
         # populate article_snapshot item
         article_snapshot["raw_data"] = response.text
-        article_snapshot["snapshot_at"] = parse_time
+        article_snapshot["snapshot_at"] = now
         article_snapshot["article_id"] = article_id
 
         yield {"article": article, "article_snapshot": article_snapshot}
