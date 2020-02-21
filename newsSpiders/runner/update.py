@@ -49,5 +49,6 @@ def run(runner, site_id, args=None):
                     site_id=site_id, current_time=current_time
                 ),
                 site_id=site_id,
+                site_type=site["type"],
                 selenium=site_conf["selenium"],
             )
