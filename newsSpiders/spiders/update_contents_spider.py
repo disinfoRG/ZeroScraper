@@ -23,10 +23,12 @@ class UpdateContentsSpider(scrapy.Spider):
         self.site_type = site_type
         # always start selenium if updating all sites
         self.selenium = selenium if site_id else True
+        # for logging
+        self.name = f"{self.name}:{site_id}"
 
     def start_requests(self):
         for a in self.articles_to_update:
-            print(f"updating {a['article_id']}")
+            self.logger.info(f"updating {a['article_id']}")
             yield scrapy.Request(
                 url=a["url"],
                 callback=self.update_article,
