@@ -10,6 +10,19 @@ queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 
+def get_last_comment_floor(queries, post):
+    last_snapshot_raw_data = queries.get_post_latest_snapshot(
+        article_id=post["article_id"]
+    )["raw_data"]
+    last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
+    if len(last_snapshot_comments) == 0:
+        return 0
+    elif "floor" not in last_snapshot_comments[-1]:
+        return 0
+    else:
+        return last_snapshot_comments[-1]["floor"]
+
+
 class UpdateDcardPostsSpider(scrapy.Spider):
     name = "dcard_update"
     handle_httpstatus_list = [404]
@@ -28,17 +41,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
             # retrieve last comment count
-            last_snapshot_raw_data = queries.get_post_latest_snapshot(
-                article_id=post["article_id"]
-            )["raw_data"]
-
-            last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
-            try:
-                last_comment_count = last_snapshot_comments[-1]["floor"]
-            except IndexError:
-                last_comment_count = 0
-            except KeyError:  # 上一篇的snapshot是error message，但沒有更新到Article
-                last_comment_count = 0
+            last_comment_count = get_last_comment_floor(queries, post)
 
             yield scrapy.Request(
                 url=post_api,
