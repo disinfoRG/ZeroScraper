@@ -26,7 +26,10 @@ def run(runner, site_id, args=None):
     current_time = int(time.time())
 
     if site_id is None:  # update all
-        runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
+        runner.crawl(
+            Crawler(UpdateDcardPostsSpider, settings),
+            queries.get_all_dcard_posts_to_update(current_time=current_time),
+        )
         for site in queries.get_sites_to_update(current_time=current_time):
             run(runner, site["site_id"], args)
 
@@ -39,7 +42,13 @@ def run(runner, site_id, args=None):
         if "dcard" in url:
             crawler = Crawler(UpdateDcardPostsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
-            runner.crawl(crawler, site_id=site_id)
+            runner.crawl(
+                crawler,
+                site_id=site_id,
+                posts_to_update=queries.get_one_dcard_site_posts_to_update(
+                    site_id=site_id, current_time=current_time
+                ),
+            )
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
