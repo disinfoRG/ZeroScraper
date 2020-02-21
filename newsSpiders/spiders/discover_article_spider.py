@@ -16,9 +16,10 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         site_type="",
         article_url_patterns="",
         following_url_patterns="",
+        article_url_excludes=None,
         selenium=False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         super(DiscoverNewArticlesSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
@@ -26,6 +27,9 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.start_urls = [site_url]
         self.site_type = site_type
         self.selenium = selenium
+        self.article_url_excludes = (
+            article_url_excludes if article_url_excludes is not None else []
+        )
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
         social_media_links = [
@@ -40,6 +44,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         DiscoverNewArticlesSpider.rules = [
             Rule(
                 LinkExtractor(allow=article_url_patterns, deny=social_media_links),
+                process_links=self.dedup_article_links,
                 callback="parse_articles",
             )
         ]
@@ -48,6 +53,20 @@ class DiscoverNewArticlesSpider(CrawlSpider):
                 Rule(LinkExtractor(allow=following_url_patterns), follow=True)
             )
         super(DiscoverNewArticlesSpider, self)._compile_rules()
+        if site_id:
+            self.name = f"{self.name}:{site_id}"
+
+    def is_duplicate_url(self, link):
+        if link.url in self.article_url_excludes:
+            self.logger.debug(f"Found duplicated article url {link.url}")
+            return True
+        else:
+            return False
+
+    def dedup_article_links(self, article_links):
+        if len(self.article_url_excludes) == 0:
+            return article_links
+        return [link for link in article_links if not self.is_duplicate_url(link)]
 
     def assign_article_type(self):
         if "ptt.cc" in self.site_url:

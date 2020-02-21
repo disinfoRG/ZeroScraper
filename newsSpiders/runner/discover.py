@@ -13,6 +13,7 @@ def run(runner, site_id, args=None):
     queries.connect(os.getenv("DB_URL"))
 
     site_info = queries.get_site_by_id(site_id=site_id)
+    recent_articles = queries.get_recent_articles_by_site(site_id=site_id, limit=200)
 
     queries.disconnect()
 
@@ -48,5 +49,6 @@ def run(runner, site_id, args=None):
             site_type=site_type,
             article_url_patterns=site_conf["article"],
             following_url_patterns=site_conf["following"],
+            article_url_excludes=[a["url"] for a in recent_articles],
             selenium=site_conf.get("selenium", False),
         )

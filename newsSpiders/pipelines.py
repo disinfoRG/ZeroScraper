@@ -12,7 +12,7 @@ class DuplicatesPipeline:
         self.queries.connect(os.getenv("DB_URL"))
 
     def process_item(self, item, spider):
-        if spider.name in ("discover_new_articles", "dcard_discover"):
+        if "article_id" not in item["article"]:
             if (
                 self.queries.get_article_id_by_url(
                     url=item["article"]["url"], url_hash=item["article"]["url_hash"]
@@ -20,7 +20,7 @@ class DuplicatesPipeline:
                 is not None
             ):
                 # XXX for shorter log messages
-                item["article_snapshot"]["raw_data"] = "<removed>"
+                del item["article_snapshot"]
                 raise DropItem(f"Duplicate item: {item['article']['url']}")
             else:
                 return item
