@@ -2,25 +2,7 @@ import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from newsSpiders.helpers import generate_next_fetch_time
 import time
-import os
 import json
-import pugsql
-
-queries = pugsql.module("queries/")
-queries.connect(os.getenv("DB_URL"))
-
-
-def get_last_comment_floor(queries, post):
-    last_snapshot_raw_data = queries.get_post_latest_snapshot(
-        article_id=post["article_id"]
-    )["raw_data"]
-    last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
-    if len(last_snapshot_comments) == 0:
-        return 0
-    elif "floor" not in last_snapshot_comments[-1]:
-        return 0
-    else:
-        return last_snapshot_comments[-1]["floor"]
 
 
 class UpdateDcardPostsSpider(scrapy.Spider):
@@ -40,8 +22,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             self.logger.info(f'updating {post["article_id"]}')
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
-            # retrieve last comment count
-            last_comment_count = get_last_comment_floor(queries, post)
+            last_comment_count = post["last_comment_count"]
 
             yield scrapy.Request(
                 url=post_api,
