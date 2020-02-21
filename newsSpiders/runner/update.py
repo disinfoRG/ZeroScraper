@@ -27,7 +27,7 @@ def get_last_comment_floor(queries, post):
 
 def get_posts_to_update(queries, posts):
     return [
-        {**post, "last_comment_count": get_last_comment_floor(queries, post)}
+        {**post, "last_comment_floor": get_last_comment_floor(queries, post)}
         for post in posts
     ]
 
