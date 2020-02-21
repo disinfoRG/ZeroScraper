@@ -19,20 +19,13 @@ class UpdateDcardPostsSpider(scrapy.Spider):
         self.selenium = False
         int_current_time = int(time.time())
         if site_id:
-            self.posts_to_update = [
-                dict(row)
-                for row in queries.get_one_dcard_site_posts_to_update(
-                    site_id=site_id, current_time=int_current_time
-                )
-            ]
-
+            self.posts_to_update = queries.get_one_dcard_site_posts_to_update(
+                site_id=site_id, current_time=int_current_time
+            )
         else:
-            self.posts_to_update = [
-                dict(row)
-                for row in queries.get_all_dcard_posts_to_update(
-                    current_time=int_current_time
-                )
-            ]
+            self.posts_to_update = queries.get_all_dcard_posts_to_update(
+                current_time=int_current_time
+            )
 
     def start_requests(self):
         for post in self.posts_to_update:
