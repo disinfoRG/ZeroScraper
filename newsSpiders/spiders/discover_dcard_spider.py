@@ -7,11 +7,25 @@ from newsSpiders.helpers import generate_next_fetch_time
 import time
 
 
+post_id_pattern = re.compile("https://www.dcard.tw/f/[^/]*/p/(\d+)")
+
+
+def parse_post_id(link):
+    m = post_id_pattern.match(link)
+    return m.group(1)
+
+
 class DiscoverDcardPostsSpider(scrapy.Spider):
     name = "dcard_discover"
 
     def __init__(
-        self, site_id="", site_url="", site_type="", *args, **kwargs,
+        self,
+        site_id="",
+        site_url="",
+        site_type="",
+        article_url_excludes=None,
+        *args,
+        **kwargs,
     ):
         super(DiscoverDcardPostsSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
@@ -19,6 +33,10 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         self.site_url = site_url
         self.selenium = False
         self.forum_name = re.search("/f/(.*)", self.site_url).group(1).split("?")[0]
+        if article_url_excludes is None:
+            self.post_id_excludes = []
+        else:
+            self.post_id_excludes = [parse_post_id(url) for url in article_url_excludes]
 
     def start_requests(self):
         api_url = f"https://www.dcard.tw/_api/forums/{self.forum_name}/posts?popular=false&limit=100"
@@ -29,12 +47,15 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         response_json = json.loads(response.body.decode("utf-8"))
         post_ids = [str(x["id"]) for x in response_json]
 
-        for i in range(len(post_ids)):
-            pid = post_ids[i]
+        for pid in post_ids:
+            if pid in self.post_id_excludes:
+                self.logger.debug(f"Found duplicated post {pid}")
+                continue
+
             post_api = f"https://www.dcard.tw/_api/posts/{pid}"
 
             yield scrapy.Request(
-                url=post_api, callback=self.get_posts, cb_kwargs={"post_id": pid},
+                url=post_api, callback=self.get_posts, cb_kwargs={"post_id": pid}
             )
 
     def get_posts(self, response, post_id):

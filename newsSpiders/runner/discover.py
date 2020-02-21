@@ -37,7 +37,11 @@ def run(runner, site_id, args=None):
         crawler.stats.set_value("site_id", site_id)
 
         runner.crawl(
-            crawler, site_id=site_id, site_url=site_url, site_type=site_type,
+            crawler,
+            site_id=site_id,
+            site_url=site_url,
+            site_type=site_type,
+            article_url_excludes=[a["url"] for a in recent_articles],
         )
     else:
         crawler = Crawler(DiscoverNewArticlesSpider, settings)
