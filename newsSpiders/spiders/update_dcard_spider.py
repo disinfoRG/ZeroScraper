@@ -22,15 +22,15 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             self.logger.info(f'updating {post["article_id"]}')
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
-            last_comment_count = post["last_comment_count"]
+            last_comment_floor = post["last_comment_floor"]
 
             yield scrapy.Request(
                 url=post_api,
                 callback=self.get_comments,
                 cb_kwargs={
                     "post_id": post_id,
-                    "last_comment_count": max(
-                        0, last_comment_count - 1
+                    "last_comment_floor": max(
+                        0, last_comment_floor - 1
                     ),  # so every snapshot has at least 1 comment
                     "article_id": post["article_id"],
                     "snapshot_count": post["snapshot_count"],
@@ -38,11 +38,11 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             )
 
     def get_comments(
-        self, response, post_id, last_comment_count, article_id, snapshot_count
+        self, response, post_id, last_comment_floor, article_id, snapshot_count
     ):
 
         post_response = json.loads(response.body.decode("utf-8"))
-        comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?after={last_comment_count}"
+        comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?after={last_comment_floor}"
 
         yield scrapy.Request(
             url=comment_api,
