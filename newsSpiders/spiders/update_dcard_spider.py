@@ -22,6 +22,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             self.posts_to_update = queries.get_one_dcard_site_posts_to_update(
                 site_id=site_id, current_time=int_current_time
             )
+            self.name = f"{self.name}:{site_id}"
         else:
             self.posts_to_update = queries.get_all_dcard_posts_to_update(
                 current_time=int_current_time
@@ -29,7 +30,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
 
     def start_requests(self):
         for post in self.posts_to_update:
-            print(f'updating {post["article_id"]}')
+            self.logger.info(f'updating {post["article_id"]}')
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
             # retrieve last comment count
