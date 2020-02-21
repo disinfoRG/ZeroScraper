@@ -14,19 +14,13 @@ class UpdateDcardPostsSpider(scrapy.Spider):
     name = "dcard_update"
     handle_httpstatus_list = [404]
 
-    def __init__(self, site_id=None, *args, **kwargs):
+    def __init__(self, posts_to_update, site_id=None, *args, **kwargs):
         super(UpdateDcardPostsSpider, self).__init__(*args, **kwargs)
         self.selenium = False
-        int_current_time = int(time.time())
+        self.posts_to_update = posts_to_update
+        self.site_id = site_id
         if site_id:
-            self.posts_to_update = queries.get_one_dcard_site_posts_to_update(
-                site_id=site_id, current_time=int_current_time
-            )
             self.name = f"{self.name}:{site_id}"
-        else:
-            self.posts_to_update = queries.get_all_dcard_posts_to_update(
-                current_time=int_current_time
-            )
 
     def start_requests(self):
         for post in self.posts_to_update:
