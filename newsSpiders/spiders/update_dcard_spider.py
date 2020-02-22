@@ -6,7 +6,7 @@ import os
 import json
 import pugsql
 
-queries = pugsql.module("queries/")
+queries = pugsql.module("queries/scraper")
 queries.connect(os.getenv("DB_URL"))
 
 
