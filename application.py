@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 import pugsql
 import os
+import time
 from dotenv import load_dotenv
 from newsSpiders.webapi import sites, articles, publications
 
@@ -13,7 +14,7 @@ load_dotenv()
 scraper_queries = pugsql.module("queries")
 scraper_queries.connect(os.getenv("DB_URL"))
 # publication db
-pub_queries = pugsql.module("queries")
+pub_queries = pugsql.module("queries/parser")
 pub_queries.connect(os.getenv("PUB_DB_URL"))
 
 
@@ -51,20 +52,27 @@ class SitesWarning(Resource):
 
 
 class PublicationSearch(Resource):
-    pubs = dict()
+    publications = dict()
+    check_points = dict()
     limit = 20
+    checkpoint_interval = 3600
 
-    def persist_pubs(self, pattern):
-        if pattern not in self.pubs.keys():
-            pub_count = publications.get_publication(pub_queries, pattern)
-            self.pubs[pattern] = pub_count
-        return self.pubs[pattern]
+    def retrieve_publication(self, pattern):
+        last_check_point = self.check_points.get(pattern, 0)
+        now = int(time.time())
+        if now - last_check_point > self.checkpoint_interval:
+            self.publications[pattern] = publications.get_publication(
+                pub_queries, pattern
+            )
+            self.check_points[pattern] = now
+
+        return self.publications[pattern]
 
     def get(self):
         pattern = request.args.get("q")
         page = request.args.get("page", 1)
         page = int(page)
-        matching_publications = self.persist_pubs(pattern)
+        matching_publications = self.retrieve_publication(pattern)
         result, status_code = publications.paginate(
             matching_publications, page_requested=page, limit=self.limit
         )
