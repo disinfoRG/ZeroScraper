@@ -11,7 +11,7 @@ api = Api(app)
 
 load_dotenv()
 # scraper db
-scraper_queries = pugsql.module("queries/scraper")
+scraper_queries = pugsql.module("queries/")
 scraper_queries.connect(os.getenv("DB_URL"))
 # publication db
 pub_queries = pugsql.module("queries/parser")

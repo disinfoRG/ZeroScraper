@@ -10,7 +10,7 @@ import json
 from scrapy.exceptions import DropItem
 from sitesAirtable.items import site_type_mapping
 
-queries = pugsql.module("queries/scraper")
+queries = pugsql.module("queries/")
 
 
 class SiteItemPipeline(object):
