@@ -1,9 +1,6 @@
 import os
 import pugsql
 from scrapy.exceptions import DropItem
-import sqlalchemy as db
-from sqlalchemy.sql.expression import bindparam
-from newsSpiders.helpers import connect_to_db
 import time
 
 
@@ -31,58 +28,44 @@ class DuplicatesPipeline:
             return item
 
 
+class InvalidItemsError(Exception):
+    pass
+
+
 class MySqlPipeline(object):
     def __init__(self):
-        self.connection = None
-        self.db_tables = None
-        self.values_list = None
-        self.update_article_query = None
-        self.queries = pugsql.module("queries/")
+        self.queries = pugsql.module("queries")
 
     def open_spider(self, spider):
-        _, connection, tables = connect_to_db()
-        self.connection = connection
-        self.db_tables = {
-            "article": tables["Article"],
-            "article_snapshot": tables["ArticleSnapshot"],
-        }
-        self.update_article_query = (
-            self.db_tables["article"]
-            .update()
-            .where(self.db_tables["article"].c.article_id == bindparam("id"))
-        )
-        self.update_article_query = self.update_article_query.values(
-            {
-                "snapshot_count": bindparam("snapshot_count"),
-                "last_snapshot_at": bindparam("last_snapshot_at"),
-                "next_snapshot_at": bindparam("next_snapshot_at"),
-            }
-        )
         self.queries.connect(os.getenv("DB_URL"))
 
-    def close_spider(self, spider):
-        self.connection.close()
+    def process_article(self, item):
+        if "article_id" not in item:
+            article_id = self.queries.insert_article(**item)
+            print(f"inserted new article {article_id}")
+            self.queries.update_site_crawl_time(
+                site_id=item["site_id"], last_crawl_at=int(time.time())
+            )
+            return article_id
+
+        else:
+            r = self.queries.update_article_snapshot_time(
+                article_id=item["article_id"],
+                last_snapshot_at=item["last_snapshot_at"],
+                snapshot_count=item["snapshot_count"],
+                next_snapshot_at=item["next_snapshot_at"],
+            )
+            print(f'updated {r} article {item["article_id"]}')
+            return item["article_id"]
 
     def process_item(self, item, spider):
-        if spider.name in ("discover_new_articles", "dcard_discover"):
-            query = db.insert(self.db_tables["article"])
-            exe = self.connection.execute(query, item["article"])
-            article_id = exe.inserted_primary_key
-            item["article_snapshot"]["article_id"] = article_id
-            query = db.insert(self.db_tables["article_snapshot"])
-            self.connection.execute(query, item["article_snapshot"])
-            self.queries.update_site_crawl_time(
-                site_id=item["article"]["site_id"], crawl_time=int(time.time())
-            )
+        article = item["article"]
+        snapshot = item["article_snapshot"]
 
-        elif spider.name in ("update_contents", "dcard_update"):
-            # update Article
-            article_dict = dict(item["article"])
-            article_dict["id"] = article_dict.pop(
-                "article_id"
-            )  # because cannot use article_id in bindparam
-            self.connection.execute(self.update_article_query, article_dict)
-
-            # insert to ArticleSnapshot
-            query = db.insert(self.db_tables["article_snapshot"])
-            self.connection.execute(query, item["article_snapshot"])
+        with self.queries.transaction() as t:
+            article_id = self.process_article(article)
+            if snapshot is not None:
+                snapshot.setdefault("article_id", article_id)
+                if snapshot["article_id"] != article_id:
+                    raise InvalidItemsError("Article id mismatch with snapshot")
+                self.queries.insert_snapshot(**snapshot)

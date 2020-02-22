@@ -92,9 +92,11 @@ ITEM_PIPELINES = {
 
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
 AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY", "")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_FILE = os.getenv("LOG_FILE", None)
+SITE_TYPES = json.loads(os.getenv("SITE_TYPES"))

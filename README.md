@@ -14,7 +14,7 @@ $ pipenv install
 $ pipenv run alembic upgrade head
 ```
 
-Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` to `.env`, and then:
+Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` and `SITE_TYPES=["<site_type_1>", "<site_type_2>",...]` to `.env`, and then:
 
 ```sh
 $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
@@ -23,30 +23,57 @@ $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
-$ python ./execute_spiders.py --discover --site_id {site_id}
+$ python site.py discover {site_id}
 ```
     Optional Arguments:
-        --depth: maximum search depth limit. default = 0, i.e. no limit.
+        --depth: maximum search depth limit. default = 5.
         --delay: delay time between each request. default = 1.5 (sec)
-        --ua: user agent string. default is the latest chrome (v78) user-agent string.
+        --ua: user agent string. default is the chrome v78 user-agent string.
 
 2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
- ```sh
-$ python ./batch_discover.py
+```sh 
+$ python ns.py discover
 ```
 
-    No optional argument.
-    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
+    Optional Arguments:
+            --limit-sec: time limit to run in seconds
+            
+    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table. 
     Otherwise the default values will be used.
 
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
-$ python ./execute_spiders.py --update
+# update all articles 
+$ python ns.py update
+```
+    Optional Arguments:
+            --limit-sec: time limit to run in seconds
+
+
+4. Revisit news articles in a specified site.
+```sh
+$ python site.py update {site_id}
 ```
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
             --ua: user agent string.
+            
+5. Revisit one article regardless of next_snapshot_time or snapshot_count.
+```sh
+$ python article.py update {article_id}
+```
+    Optional Arguments:
+            --selenium: use selenium to load the article.
+
+6. Discover a new article that does not exist in DB based on a provided url.  
+```sh
+$ python article.py discover {url}
+```
+    Optional Arguments:
+            --site_id: id of site of which the url belongs to. default = 0
+            --selenium: use selenium to load the article.
+
 
 ## Development
 
