@@ -1,25 +1,26 @@
-import sqlalchemy as db
+import json
+import pugsql
+import os
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
-from newsSpiders.helpers import connect_to_db
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
 from newsSpiders.spiders.discover_dcard_spider import DiscoverDcardPostsSpider
 
 
 def run(runner, site_id, args=None):
-    _, connection, tables = connect_to_db()
-    site = tables["Site"]
+    queries = pugsql.module("./queries")
+    queries.connect(os.getenv("DB_URL"))
 
-    query = db.select([site.columns.url, site.columns.type, site.columns.config]).where(
-        site.columns.site_id == site_id
-    )
-    site_info = dict(connection.execute(query).fetchone())
-    connection.close()
+    site_info = queries.get_site_by_id(site_id=site_id)
+
+    queries.disconnect()
+
     site_url = site_info["url"]
     site_type = site_info["type"]
     site_conf = SiteConfig.default()
-    site_conf.update(site_info["config"])
+    site_conf.update(json.loads(site_info["config"]))
+
     if args is not None:
         site_conf.update(args)
 
@@ -31,19 +32,21 @@ def run(runner, site_id, args=None):
     }
 
     if "dcard" in site_url:
+        crawler = Crawler(DiscoverDcardPostsSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
         runner.crawl(
-            Crawler(DiscoverDcardPostsSpider, settings),
-            site_id=site_id,
-            site_url=site_url,
-            site_type=site_type,
+            crawler, site_id=site_id, site_url=site_url, site_type=site_type,
         )
     else:
+        crawler = Crawler(DiscoverNewArticlesSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
         runner.crawl(
-            Crawler(DiscoverNewArticlesSpider, settings),
+            crawler,
             site_id=site_id,
             site_url=site_url,
             site_type=site_type,
             article_url_patterns=site_conf["article"],
             following_url_patterns=site_conf["following"],
-            selenium="True" if site_conf["selenium"] else "False",
+            selenium=site_conf.get("selenium", False),
         )

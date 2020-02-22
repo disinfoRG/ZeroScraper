@@ -1,6 +1,5 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from ast import literal_eval
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from newsSpiders.helpers import generate_next_fetch_time
 import zlib
@@ -17,7 +16,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         site_type="",
         article_url_patterns="",
         following_url_patterns="",
-        selenium="",
+        selenium=False,
         *args,
         **kwargs
     ):
@@ -26,7 +25,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         self.site_url = site_url
         self.start_urls = [site_url]
         self.site_type = site_type
-        self.selenium = literal_eval(selenium)
+        self.selenium = selenium
         article_url_patterns = article_url_patterns.split("; ")
         following_url_patterns = following_url_patterns.split("; ")
         social_media_links = [
@@ -78,6 +77,8 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         if "redirect_urls" in response.meta.keys():
             article["url"] = response.request.meta["redirect_urls"][0]
             article["redirect_to"] = response.url
+        else:
+            article["redirect_to"] = None
 
         # populate article_snapshot item
         article_snapshot["raw_data"] = response.text
