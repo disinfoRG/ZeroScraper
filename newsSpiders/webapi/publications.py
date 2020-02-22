@@ -1,16 +1,9 @@
 import math
 
 
-def get_publication_count(queries, search_string):
-    print("retrieving count...")
-    query = f"%{search_string}%"
-    pub_count = queries.get_publication_count_by_like(query=query)["publication_count"]
-    return pub_count
-
-
 def get_publication(queries, search_string):
-    query = f"%{search_string}%"
-    pubs = list(queries.get_publication_by_like(query=query))
+    pattern = f"%{search_string}%"
+    pubs = list(queries.get_publication_by_like(pattern=pattern))
     return pubs
 
 
