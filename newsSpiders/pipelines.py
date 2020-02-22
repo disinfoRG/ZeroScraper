@@ -9,7 +9,7 @@ import time
 
 class DuplicatesPipeline:
     def __init__(self):
-        self.queries = pugsql.module("queries/scraper")
+        self.queries = pugsql.module("queries/")
 
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))
@@ -37,7 +37,7 @@ class MySqlPipeline(object):
         self.db_tables = None
         self.values_list = None
         self.update_article_query = None
-        self.queries = pugsql.module("queries/scraper")
+        self.queries = pugsql.module("queries/")
 
     def open_spider(self, spider):
         _, connection, tables = connect_to_db()

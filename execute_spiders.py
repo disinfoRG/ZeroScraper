@@ -6,7 +6,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from newsSpiders.runner import discover, update
 
-queries = pugsql.module("queries/scraper")
+queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 parser = argparse.ArgumentParser()
