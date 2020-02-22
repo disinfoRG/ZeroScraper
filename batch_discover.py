@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import sys
 import argparse
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
@@ -57,7 +56,7 @@ def pid_lock(queries, proc_name):
 def main():
     args = parse_args()
 
-    queries = pugsql.module("queries/")
+    queries = pugsql.module("queries/scraper")
     queries.connect(os.getenv("DB_URL"))
 
     with pid_lock(queries, args.proc_name):
