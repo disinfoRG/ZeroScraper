@@ -35,7 +35,15 @@ class FindArticleByURL(Resource):
 
 class SiteArticleCount(Resource):
     def get(self, site_id):
-        article_count = sites.get_article_count(scraper_queries, site_id)
+        now = int(time.time())
+        discover_from = request.args.get("discoverFrom", None)
+        discover_until = request.args.get("discoverUntil", now)
+        if discover_from:
+            article_count = sites.get_article_count_in_interval(
+                scraper_queries, site_id, int(discover_from), int(discover_until)
+            )
+        else:
+            article_count = sites.get_article_count(scraper_queries, site_id)
         return article_count
 
 
