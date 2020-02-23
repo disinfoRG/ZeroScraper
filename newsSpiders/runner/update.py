@@ -46,13 +46,6 @@ def run(runner, site_id, args=None):
     current_time = int(time.time())
 
     if site_id is None:  # update all
-        runner.crawl(
-            Crawler(UpdateDcardPostsSpider, settings),
-            get_posts_to_update(
-                queries,
-                queries.get_all_dcard_posts_to_update(current_time=current_time),
-            ),
-        )
         for site in queries.get_sites_to_update(current_time=current_time):
             run(runner, site["site_id"], args)
 
