@@ -87,3 +87,10 @@ $ pipenv shell
 # install pre-commit hooks before hacking for the first time
 $ pre-commit install
 ```
+## API
+1. Retrieve article info with article_id: `GET /articles/[id]`
+2. Retrieve article info with url, only for exact match: `GET /articles?url=[url]`
+3. Retrieve publication by matching string in title and content: `GET /publications?q=[string]`
+4. Get total article count in a site: `GET /sites/[site_id]/article_count`
+5. Get article count in a site discovered in a time interval: `GET /sites/[site_id]/article_count?discoverFrom=[unix_time]&discoverUntil=[unix_time]`
+6. Get article discovered most recently in a site: `GET /sites/[site_id]/latest_article`
