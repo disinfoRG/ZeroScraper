@@ -2,12 +2,6 @@ import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from newsSpiders.helpers import generate_next_fetch_time
 import time
-import os
-import json
-import pugsql
-
-queries = pugsql.module("queries/")
-queries.connect(os.getenv("DB_URL"))
 
 
 class UpdateContentsSpider(scrapy.Spider):
@@ -15,21 +9,26 @@ class UpdateContentsSpider(scrapy.Spider):
     handle_httpstatus_list = [404]
 
     def __init__(
-        self, articles_to_update, site_id=None, selenium=False, *args, **kwargs
+        self,
+        articles_to_update,
+        site_id=None,
+        site_type=None,
+        selenium=False,
+        *args,
+        **kwargs,
     ):
         super(UpdateContentsSpider, self).__init__(*args, **kwargs)
-
-        if not site_id:  # if update all articles in db
-            self.selenium = True
-        else:  # if specified site_id, follow site config
-            self.selenium = selenium
-
-        current_time = int(time.time())
         self.articles_to_update = articles_to_update
+        self.site_id = site_id
+        self.site_type = site_type
+        # always start selenium if updating all sites
+        self.selenium = selenium if site_id else True
+        # for logging
+        self.name = f"{self.name}:{site_id}"
 
     def start_requests(self):
         for a in self.articles_to_update:
-            print(f"updating {a['article_id']}")
+            self.logger.info(f"updating {a['article_id']}")
             yield scrapy.Request(
                 url=a["url"],
                 callback=self.update_article,
@@ -44,7 +43,6 @@ class UpdateContentsSpider(scrapy.Spider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         now = int(time.time())
-        site_type = queries.get_site_by_id(site_id=site_id)["type"]
 
         article["article_id"] = article_id
         article["last_snapshot_at"] = now
@@ -56,7 +54,7 @@ class UpdateContentsSpider(scrapy.Spider):
         else:
             article["snapshot_count"] = snapshot_count + 1
             article["next_snapshot_at"] = generate_next_fetch_time(
-                site_type, article["snapshot_count"], now
+                self.site_type, article["snapshot_count"], now
             )
 
             article_snapshot["raw_data"] = response.text

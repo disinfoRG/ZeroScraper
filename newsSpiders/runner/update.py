@@ -12,6 +12,26 @@ queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 
+def get_last_comment_floor(queries, post):
+    last_snapshot_raw_data = queries.get_post_latest_snapshot(
+        article_id=post["article_id"]
+    )["raw_data"]
+    last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
+    if len(last_snapshot_comments) == 0:
+        return 0
+    elif "floor" not in last_snapshot_comments[-1]:
+        return 0
+    else:
+        return last_snapshot_comments[-1]["floor"]
+
+
+def get_posts_to_update(queries, posts):
+    return [
+        {**post, "last_comment_floor": get_last_comment_floor(queries, post)}
+        for post in posts
+    ]
+
+
 def run(runner, site_id, args=None):
     site_conf = SiteConfig.default()
     if args is not None:
@@ -26,7 +46,6 @@ def run(runner, site_id, args=None):
     current_time = int(time.time())
 
     if site_id is None:  # update all
-        runner.crawl(Crawler(UpdateDcardPostsSpider, settings))
         for site in queries.get_sites_to_update(current_time=current_time):
             run(runner, site["site_id"], args)
 
@@ -39,7 +58,16 @@ def run(runner, site_id, args=None):
         if "dcard" in url:
             crawler = Crawler(UpdateDcardPostsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
-            runner.crawl(crawler, site_id=site_id)
+            runner.crawl(
+                crawler,
+                site_id=site_id,
+                posts_to_update=get_posts_to_update(
+                    queries,
+                    queries.get_one_dcard_site_posts_to_update(
+                        site_id=site_id, current_time=current_time
+                    ),
+                ),
+            )
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
@@ -49,5 +77,6 @@ def run(runner, site_id, args=None):
                     site_id=site_id, current_time=current_time
                 ),
                 site_id=site_id,
+                site_type=site["type"],
                 selenium=site_conf["selenium"],
             )

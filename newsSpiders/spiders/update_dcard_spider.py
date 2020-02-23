@@ -2,63 +2,35 @@ import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
 from newsSpiders.helpers import generate_next_fetch_time
 import time
-import os
 import json
-import pugsql
-
-queries = pugsql.module("queries/")
-queries.connect(os.getenv("DB_URL"))
 
 
 class UpdateDcardPostsSpider(scrapy.Spider):
     name = "dcard_update"
     handle_httpstatus_list = [404]
 
-    def __init__(self, site_id=None, *args, **kwargs):
+    def __init__(self, posts_to_update, site_id=None, *args, **kwargs):
         super(UpdateDcardPostsSpider, self).__init__(*args, **kwargs)
         self.selenium = False
-        int_current_time = int(time.time())
+        self.posts_to_update = posts_to_update
+        self.site_id = site_id
         if site_id:
-            self.posts_to_update = [
-                dict(row)
-                for row in queries.get_one_dcard_site_posts_to_update(
-                    site_id=site_id, current_time=int_current_time
-                )
-            ]
-
-        else:
-            self.posts_to_update = [
-                dict(row)
-                for row in queries.get_all_dcard_posts_to_update(
-                    current_time=int_current_time
-                )
-            ]
+            self.name = f"{self.name}:{site_id}"
 
     def start_requests(self):
         for post in self.posts_to_update:
-            print(f'updating {post["article_id"]}')
+            self.logger.info(f'updating {post["article_id"]}')
             post_id = post["url"].split("/p/")[-1]
             post_api = f"https://www.dcard.tw/_api/posts/{post_id}/"
-            # retrieve last comment count
-            last_snapshot_raw_data = queries.get_post_latest_snapshot(
-                article_id=post["article_id"]
-            )["raw_data"]
-
-            last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
-            try:
-                last_comment_count = last_snapshot_comments[-1]["floor"]
-            except IndexError:
-                last_comment_count = 0
-            except KeyError:  # 上一篇的snapshot是error message，但沒有更新到Article
-                last_comment_count = 0
+            last_comment_floor = post["last_comment_floor"]
 
             yield scrapy.Request(
                 url=post_api,
                 callback=self.get_comments,
                 cb_kwargs={
                     "post_id": post_id,
-                    "last_comment_count": max(
-                        0, last_comment_count - 1
+                    "last_comment_floor": max(
+                        0, last_comment_floor - 1
                     ),  # so every snapshot has at least 1 comment
                     "article_id": post["article_id"],
                     "snapshot_count": post["snapshot_count"],
@@ -66,11 +38,11 @@ class UpdateDcardPostsSpider(scrapy.Spider):
             )
 
     def get_comments(
-        self, response, post_id, last_comment_count, article_id, snapshot_count
+        self, response, post_id, last_comment_floor, article_id, snapshot_count
     ):
 
         post_response = json.loads(response.body.decode("utf-8"))
-        comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?after={last_comment_count}"
+        comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?after={last_comment_floor}"
 
         yield scrapy.Request(
             url=comment_api,
