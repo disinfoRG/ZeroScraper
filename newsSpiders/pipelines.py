@@ -6,7 +6,7 @@ import time
 
 class DuplicatesPipeline:
     def __init__(self):
-        self.queries = pugsql.module("queries")
+        self.queries = pugsql.module("queries/")
 
     def open_spider(self, spider):
         self.queries.connect(os.getenv("DB_URL"))

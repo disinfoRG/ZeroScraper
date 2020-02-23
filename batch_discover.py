@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import sys
 import argparse
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
