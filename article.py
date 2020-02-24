@@ -65,7 +65,7 @@ def update_article_table(article_info, site_info, crawl_time):
         )
     queries.update_article_snapshot_time(
         article_id=article_id,
-        crawl_time=crawl_time,
+        snapshot_at=crawl_time,
         snapshot_count=snapshot_count + 1,
         next_snapshot_at=next_snapshot_at,
     )
@@ -100,7 +100,7 @@ def update(args):
 
     # add article snapshot
     queries.insert_snapshot(
-        article_id=article_info["article_id"], crawl_time=crawl_time, raw_data=snapshot
+        article_id=article_info["article_id"], snapshot_at=crawl_time, raw_data=snapshot
     )
 
 
@@ -147,7 +147,7 @@ def discover(args):
     )
 
     queries.insert_snapshot(
-        article_id=inserted_article_id, crawl_time=crawl_time, raw_data=snapshot
+        article_id=inserted_article_id, snapshot_at=crawl_time, raw_data=snapshot
     )
     print(f"Finish discover, new article_id = {inserted_article_id}")
     return inserted_article_id
