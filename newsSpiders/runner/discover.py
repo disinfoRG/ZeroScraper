@@ -13,7 +13,7 @@ def run(runner, site_id, args=None):
     queries.connect(os.getenv("DB_URL"))
 
     site_info = queries.get_site_by_id(site_id=site_id)
-    recent_articles = queries.get_recent_articles_by_site(site_id=site_id, limit=50000)
+    recent_articles = queries.get_recent_articles_by_site(site_id=site_id, limit=500)
 
     queries.disconnect()
 
