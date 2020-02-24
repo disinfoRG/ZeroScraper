@@ -52,6 +52,3 @@ class MySQLPipeline(object):
 
     def close_spider(self, spider):
         queries.disconnect()
-
-
-print(queries)
