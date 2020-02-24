@@ -13,6 +13,14 @@ from sitesAirtable.items import site_type_mapping
 queries = pugsql.module("queries/")
 
 
+def upsert_site(queries, value):
+    site = queries.get_site_by_airtable_id(airtable_id=value["airtable_id"])
+    if site is not None:
+        queries.update_site(site_id=site["site_id"], **value)
+    else:
+        queries.insert_site(value)
+
+
 class SiteItemPipeline(object):
     def process_item(self, item, spider):
         if item["type"] not in site_type_mapping.keys():
@@ -27,7 +35,8 @@ class MySQLPipeline(object):
         queries.connect(os.getenv("DB_URL"))
 
     def process_item(self, item, spider):
-        queries.upsert_site(
+        upsert_site(
+            queries,
             {
                 "airtable_id": item["airtable_id"],
                 "is_active": item["is_active"],
@@ -36,10 +45,13 @@ class MySQLPipeline(object):
                 "url": item["url"],
                 "config": json.dumps(item["config"]),
                 "site_info": json.dumps(item["site_info"]),
-            }
+            },
         )
 
         return item
 
     def close_spider(self, spider):
         queries.disconnect()
+
+
+print(queries)
