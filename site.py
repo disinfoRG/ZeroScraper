@@ -43,6 +43,11 @@ if __name__ == "__main__":
     discover_cmd.add_argument(
         "--depth", help="desired depth limit; 0 if no limit imposed.", type=int
     )
+    discover_cmd.add_argument(
+        "--dedup_limit",
+        help="number of recent articles url to store in memory",
+        type=int,
+    )
     discover_cmd.add_argument("--delay", help="time delayed for request.", type=int)
     discover_cmd.add_argument("--ua", help="user_agent", type=str)
 

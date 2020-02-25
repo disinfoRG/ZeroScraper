@@ -13,7 +13,10 @@ def run(runner, site_id, args=None):
     queries.connect(os.getenv("DB_URL"))
 
     site_info = queries.get_site_by_id(site_id=site_id)
-    recent_articles = queries.get_recent_articles_by_site(site_id=site_id, limit=500)
+    dedup_limit = 500 if args["dedup_limit"] is None else args["dedup_limit"]
+    recent_articles = queries.get_recent_articles_by_site(
+        site_id=site_id, limit=dedup_limit
+    )
 
     queries.disconnect()
 
