@@ -55,7 +55,7 @@ def discover(args):
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
         for site in sites:
-            newsSpiders.runner.discover.run(runner, site["site_id"])
+            newsSpiders.runner.discover.run(runner, site["site_id"], vars(args))
         d = runner.join()
         d.addBoth(lambda _: reactor.stop())
 
@@ -103,7 +103,11 @@ if __name__ == "__main__":
     discover_cmd.add_argument(
         "--proc-name", default="discover", help="process name to store PID"
     )
-
+    discover_cmd.add_argument(
+        "--dedup_limit",
+        help="number of recent articles url to store in memory",
+        type=int,
+    )
     update_cmd = cmds.add_parser("update", help="do update")
     update_cmd.add_argument(
         "--limit-sec", type=int, help="time limit to run in seconds"
