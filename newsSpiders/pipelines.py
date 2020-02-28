@@ -15,7 +15,8 @@ class DuplicatesPipeline:
         if "article_id" not in item["article"]:
             if (
                 self.queries.get_article_id_by_url(
-                    url=item["article"]["url"], url_hash=item["article"]["url_hash"]
+                    url=item["article"]["url"],
+                    url_hash=str(item["article"]["url_hash"]),
                 )
                 is not None
             ):
