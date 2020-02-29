@@ -64,6 +64,8 @@ def discover(args):
 
         reactor.run()
 
+    queries.disconnect()
+
 
 def update(args):
     queries = pugsql.module("queries/")
@@ -83,6 +85,8 @@ def update(args):
             reactor.callLater(args.limit_sec, Cleanup(runner).terminate)
 
         reactor.run()
+
+    queries.disconnect()
 
 
 def main(args):
