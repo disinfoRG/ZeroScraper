@@ -1,4 +1,4 @@
-# NewsScraping
+# ZeroScraper
 Scrape News contents provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 ### Running

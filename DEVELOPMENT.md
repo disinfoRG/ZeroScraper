@@ -24,7 +24,7 @@ $ python -V   # check Python version
 ## Git
 
 ```sh
-$ git clone git@github.com:disinfoRG/NewsScraping.git
+$ git clone git@github.com:disinfoRG/ZeroScraper.git
 $ cd NewsScraping
 ```
 
@@ -48,19 +48,19 @@ $ pipenv install myawesomethings  # add new dependencies
 我們用 MySQL 5.7。如果你的系統裡沒有 MySQL，有幾個辦法可以安裝：
 
 * macOS 的話，用 Homebrew 安裝：`brew install mysql`，然後每次開發時啟動服務：`mysql.server start`
-* 有 Docker 的話，另開一個 shell 用 MySQL docker image：`docker run --name newsscraping -e 'MYSQL_ROOT_PASSWORD=mysecret' -p 3306:3306 -p 33060:33060 -d mysql:latest`，然後每次開發時啟動container：`docker start -a newsscraping`
+* 有 Docker 的話，另開一個 shell 用 MySQL docker image：`docker run --name zeroscraper -e 'MYSQL_ROOT_PASSWORD=mysecret' -p 3306:3306 -p 33060:33060 -d mysql:latest`，然後每次開發時啟動container：`docker start -a zeroscraper`
 
 開一個 database：
 
 ```sh
-$ mysql -u root -p -e 'CREATE DATABASE NewsScraping CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+$ mysql -u root -p -e 'CREATE DATABASE ZeroScraper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
 ```
 
 設定 database connection：
 
 ```sh
-$ cd NewsScraping
-$ echo DB_URL=mysql+pymysql://root:mysecret@127.0.0.1/NewsScraping > .env
+$ cd ZeroScraper
+$ echo DB_URL=mysql+pymysql://root:mysecret@127.0.0.1/ZeroScraper > .env
 ```
 
 ## Alembic
