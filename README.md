@@ -1,5 +1,5 @@
 # ZeroScraper
-Scrape News contents provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
+Scrape News contents and forums provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 ### Running
 
@@ -30,7 +30,7 @@ $ python site.py discover {site_id}
         --delay: delay time between each request. default = 1.5 (sec)
         --ua: user agent string. default is the chrome v78 user-agent string.
 
-2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in Site table.
+2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
 ```sh 
 $ python ns.py discover
 ```
