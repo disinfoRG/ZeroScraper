@@ -13,9 +13,13 @@ queries.connect(os.getenv("DB_URL"))
 
 
 def get_last_comment_floor(queries, post):
-    last_snapshot_raw_data = queries.get_post_latest_snapshot(
-        article_id=post["article_id"]
-    )["raw_data"]
+    try:
+        last_snapshot_raw_data = queries.get_post_latest_snapshot(
+            article_id=post["article_id"]
+        )["raw_data"]
+    except TypeError:
+        return 0
+
     last_snapshot_comments = json.loads(last_snapshot_raw_data)["comments"]
     if len(last_snapshot_comments) == 0:
         return 0
@@ -51,7 +55,6 @@ def run(runner, site_id, args=None):
 
     else:
         site = queries.get_site_by_id(site_id=site_id)
-        print(site_id, site)
         url = site["url"]
         site_conf.update(json.loads(site["config"]))
 
@@ -68,6 +71,7 @@ def run(runner, site_id, args=None):
                     ),
                 ),
             )
+            print("finish set up crawl")
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
