@@ -25,7 +25,7 @@ $ python -V   # check Python version
 
 ```sh
 $ git clone git@github.com:disinfoRG/ZeroScraper.git
-$ cd NewsScraping
+$ cd ZeroScraper
 ```
 
 ## Pipenv

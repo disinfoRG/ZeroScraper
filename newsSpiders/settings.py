@@ -101,7 +101,7 @@ import os
 load_dotenv()
 
 CHROMEDRIVER_BIN = os.getenv(
-    "CHROMEDRIVER_BIN", os.getcwd().split("NewsScraping")[0] + "NewsScraping"
+    "CHROMEDRIVER_BIN", os.getcwd().split("ZeroScraper")[0] + "ZeroScraper"
 )
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_FILE = os.getenv("LOG_FILE", None)
