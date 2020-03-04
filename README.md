@@ -1,5 +1,5 @@
 # ZeroScraper
-Scrape News contents and forums provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
+Scrape News websites, content farms, ptt, and dcard forums provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 ### Running
 
