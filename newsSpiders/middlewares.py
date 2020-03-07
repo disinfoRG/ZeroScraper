@@ -10,6 +10,9 @@ from selenium import webdriver
 from scrapy.http import HtmlResponse
 import time
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class NewsspidersSpiderMiddleware(object):
@@ -111,7 +114,7 @@ class SeleniumDownloaderMiddleware(object):
         spider.logger.info("Spider opened: %s" % spider.name)
         # open selenium driver
         if spider.selenium:
-            print("Using Selenium")
+            logger.debug("Using Selenium")
             options = webdriver.ChromeOptions()
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
@@ -130,7 +133,7 @@ class SeleniumDownloaderMiddleware(object):
             spider.logger.info("Spider shutdown: %s" % spider.name)
 
         if self.driver:
-            print("\nShutting down selenium driver...")
+            logger.debug("\nShutting down selenium driver...")
             self.driver.quit()
 
 

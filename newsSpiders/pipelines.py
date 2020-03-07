@@ -1,7 +1,10 @@
 import os
+import logging
 import pugsql
 from scrapy.exceptions import DropItem
 import time
+
+logger = logging.getLogger(__name__)
 
 
 class DuplicatesPipeline:
@@ -43,7 +46,7 @@ class MySqlPipeline(object):
     def process_article(self, item):
         if "article_id" not in item:
             article_id = self.queries.insert_article(**item)
-            print(f"inserted new article {article_id}")
+            logger.debug(f"inserted new article {article_id}")
             self.queries.update_site_crawl_time(
                 site_id=item["site_id"], last_crawl_at=int(time.time())
             )
@@ -56,7 +59,7 @@ class MySqlPipeline(object):
                 snapshot_count=item["snapshot_count"],
                 next_snapshot_at=item["next_snapshot_at"],
             )
-            print(f'updated {r} article {item["article_id"]}')
+            logger.debug(f'updated {r} article {item["article_id"]}')
             return item["article_id"]
 
     def process_item(self, item, spider):

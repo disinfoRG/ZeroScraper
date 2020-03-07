@@ -3,6 +3,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s %(name)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=os.getenv("LOG_LEVEL", "INFO"),
+)
+logger = logging.getLogger(__name__)
+
 import argparse
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner

@@ -2,12 +2,14 @@ import time
 import os
 import pugsql
 import json
+import logging
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
 from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
 
+logger = logging.getLogger(__name__)
 queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
@@ -71,7 +73,7 @@ def run(runner, site_id, args=None):
                     ),
                 ),
             )
-            print("finish set up crawl")
+            logger.debug("finish set up crawl")
         else:
             crawler = Crawler(UpdateContentsSpider, settings)
             crawler.stats.set_value("site_id", site_id)
