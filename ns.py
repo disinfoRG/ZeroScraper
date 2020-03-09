@@ -40,12 +40,13 @@ class PIDLock:
     def __init__(self, queries, proc_name):
         self.queries = queries
         self.key = f"{proc_name}:pid"
+        self.proc_name = proc_name
 
     def __enter__(self):
         with self.queries.transaction():
             lock = self.queries.get_variable(key=self.key)
             if lock is not None and lock["value"]:
-                raise ProcessError(f"Another {proc_name} process already running.")
+                raise ProcessError(f"Another {self.proc_name} process already running.")
             self.queries.set_variable(key=self.key, value=str(os.getpid()))
 
     def __exit__(self, type_, value, traceback):
