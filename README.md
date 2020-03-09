@@ -1,7 +1,7 @@
 # ZeroScraper
 Scrape News websites, content farms, ptt, and dcard forums provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
-### Running
+### Setup
 
 We use MySQL.  To setup database connections, copy `.env.default` to `.env`, and set `DB_URL` value.  MySQL connection string should start with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
 
@@ -14,12 +14,18 @@ $ pipenv install
 $ pipenv run alembic upgrade head
 ```
 
-Then update your site table.  You need an API key from Airtable generated [here](https://airtable.com/account).  Add `AIRTABLE_API_KEY=<your_api_key>` and `SITE_TYPES=["<site_type_1>", "<site_type_2>",...]` to `.env`, and then:
-
+Then update your site table.  First, you need an API key from Airtable generated [here](https://airtable.com/account) and the id of your base (see [here](https://airtable.com/api) for info).  Add the following variables to `.env`:
+```sh
+$ echo AIRTABLE_BASE_ID=<id_of_your_airtable_base> >> .env
+$ echo AIRTABLE_API_KEY=<your_api_key> >> .env
+$ echo SITE_TYPES=["<site_type_1>", "<site_type_2>",...] >> .env
+```
+Afterwards, do the following to update your site table
 ```sh
 $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 ```
 
+### Running
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
