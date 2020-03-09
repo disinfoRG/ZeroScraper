@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -117,7 +119,7 @@ if __name__ == "__main__":
         "--proc-name", default="discover", help="process name to store PID"
     )
     discover_cmd.add_argument(
-        "--dedup_limit",
+        "--dedup-limit",
         help="number of recent articles url to store in memory",
         type=int,
     )

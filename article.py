@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from selenium import webdriver
 import requests
 from url_normalize import url_normalize
