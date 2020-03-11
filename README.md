@@ -3,7 +3,7 @@ Scraper for news websites, content farms, ptt, and dcard forums.
 
 0archive is scraping websites provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
-You could set up your website list by following the instruction in [Airtable.md](AIRTABLE.md).
+You could set up your website list by following the instruction in [AIRTABLE.md](AIRTABLE.md).
 ### Setup
 
 We use MySQL.  To setup database connections, copy `.env.default` to `.env`, and set `DB_URL` value.  MySQL connection string should start with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
