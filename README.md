@@ -19,9 +19,9 @@ $ pipenv run alembic upgrade head
 
 Then update your site table.  First, you need an API key from Airtable generated [here](https://airtable.com/account) and the id of your base (see [here](https://airtable.com/api) for info).  Add the following variables to `.env`:
 ```sh
-$ echo AIRTABLE_BASE_ID=<id_of_your_airtable_base> >> .env
-$ echo AIRTABLE_API_KEY=<your_api_key> >> .env
-$ echo SITE_TYPES=["<site_type_1>", "<site_type_2>",...] >> .env
+$ echo AIRTABLE_BASE_ID={id_of_your_airtable_base} >> .env
+$ echo AIRTABLE_API_KEY={your_api_key} >> .env
+$ echo SITE_TYPES=["{site_type_1}", "{site_type_2}",...] >> .env
 ```
 Afterwards, do the following to update your site table
 ```sh
