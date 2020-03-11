@@ -1,6 +1,9 @@
 # ZeroScraper
-Scrape News websites, content farms, ptt, and dcard forums provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
+Scraper for news websites, content farms, ptt, and dcard forums.
 
+0archive is scraping websites provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
+
+You could set up your website list by following the instruction in [Airtable.md](AIRTABLE.md).
 ### Setup
 
 We use MySQL.  To setup database connections, copy `.env.default` to `.env`, and set `DB_URL` value.  MySQL connection string should start with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
@@ -94,6 +97,7 @@ $ pipenv shell
 $ pre-commit install
 ```
 ## API
+To start api: `python3 application.py`
 1. Retrieve article info with article_id: `GET /articles/[id]`
 2. Retrieve article info with url, only for exact match: `GET /articles?url=[url]`
 3. Retrieve publication by matching string in title and content: `GET /publications?q=[string]`
