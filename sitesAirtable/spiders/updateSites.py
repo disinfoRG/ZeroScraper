@@ -24,7 +24,7 @@ class UpdatesitesSpider(scrapy.Spider):
             "selenium",
         ]
         url = (
-            "https://api.airtable.com/v0/appdh2WkMremF0G1L/Sites?"
+            f"https://api.airtable.com/v0/{self.settings.get('AIRTABLE_BASE_ID')}/Sites?"
             + "&".join([f"fields={f}" for f in req_fields])
             + "&filterByFormula=approved&view=List"
             + (f"&offset={offset}" if offset is not None else "")
