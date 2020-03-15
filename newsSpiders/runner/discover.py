@@ -6,6 +6,7 @@ from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
 from newsSpiders.spiders.discover_dcard_spider import DiscoverDcardPostsSpider
+from newsSpiders.spiders.discover_splash_spider import DiscoverSplashSpider
 
 
 def run(runner, site_id, args=None):
@@ -46,6 +47,22 @@ def run(runner, site_id, args=None):
             site_type=site_type,
             article_url_excludes=[a["url"] for a in recent_articles],
         )
+
+    elif site_conf['selenium']:
+        print('using splash')
+        crawler = Crawler(DiscoverSplashSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            site_url=site_url,
+            site_type=site_type,
+            article_url_patterns=site_conf["article"],
+            following_url_patterns=site_conf["following"],
+            article_url_excludes=[a["url"] for a in recent_articles],
+        )
+
     else:
         crawler = Crawler(DiscoverNewArticlesSpider, settings)
         crawler.stats.set_value("site_id", site_id)
