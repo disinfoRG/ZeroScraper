@@ -21,6 +21,7 @@ flask-restful = "*"
 url-normalize = "*"
 werkzeug = "*"
 requests = "*"
+scrapy-splash = "*"
 
 [requires]
 python_version = "3.7"
