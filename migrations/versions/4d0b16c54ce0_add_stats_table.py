@@ -21,8 +21,8 @@ def upgrade():
         "SiteStats",
         sa.Column("site_id", sa.Integer, nullable=False),
         sa.Column("date", sa.String(32), nullable=False),
-        sa.Column("new_posts_count", sa.Integer),
-        sa.Column("revisit_posts_count", sa.Integer),
+        sa.Column("new_article_count", sa.Integer),
+        sa.Column("updated_article_count", sa.Integer),
         sa.PrimaryKeyConstraint("site_id", "date", name="pk_SiteStats"),
     )
 

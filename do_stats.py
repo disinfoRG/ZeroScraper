@@ -28,9 +28,9 @@ def prep_entry_for_insert(stats_list):
 
 
 def main(args):
-    # date string to datetime obj
+    # parse date string to datetime obj
     dt = parse(args.date)
-    # uniformly format date, for use in insertion
+    # uniformly format date, for use in db insertion
     datestr = dt.strftime('%Y-%m-%d')
 
     date_unix = date_to_unix(dt)
@@ -44,8 +44,7 @@ def main(args):
 if __name__ == '__main__':
     utc_now = datetime.utcnow()
     tw_now = utc_now + timedelta(hours=8)
-    tw_today = tw_now.date()
-    tw_yesterday = tw_today-timedelta(days=1)
+    tw_yesterday = tw_now.date()-timedelta(days=1)
     str_tw_yesterday = tw_yesterday.strftime('%Y-%m-%d')
 
     parser = argparse.ArgumentParser()
