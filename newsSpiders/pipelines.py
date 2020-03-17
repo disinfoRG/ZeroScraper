@@ -1,3 +1,4 @@
+import zlib
 import os
 import logging
 import pugsql
@@ -5,6 +6,23 @@ from scrapy.exceptions import DropItem
 import time
 
 logger = logging.getLogger(__name__)
+
+
+class StandardizePipeline:
+    def __init__(self):
+        pass
+
+    def open_spider(self, spider):
+        pass
+
+    def process_item(self, item, spider):
+        url = item["article"]["url"]
+        if 'udn.com' in url:
+            url = url.split('?')[0]
+            url_hash = zlib.crc32(url.encode())
+            item["article"]["url"] = url
+            item["article"]["url_hash"] = url_hash
+        return item
 
 
 class DuplicatesPipeline:
