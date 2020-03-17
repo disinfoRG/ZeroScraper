@@ -177,7 +177,7 @@ if __name__ == "__main__":
         "--selenium", help="use selenium to load website", action="store_true"
     )
     discover_cmd.add_argument(
-        "--site_id",
+        "--site-id",
         help="the site id that this article belongs to. optional.",
         type=int,
         default=0,
