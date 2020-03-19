@@ -17,11 +17,14 @@ class StandardizePipeline:
 
     def process_item(self, item, spider):
         url = item["article"]["url"]
-        if 'udn.com' in url:
+        domains = ['udn', 'chinatimes']
+
+        if any(d in url for d in domains):
             url = url.split('?')[0]
             url_hash = zlib.crc32(url.encode())
             item["article"]["url"] = url
             item["article"]["url_hash"] = url_hash
+
         return item
 
 
