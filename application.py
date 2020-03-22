@@ -28,7 +28,8 @@ class FindArticleByURL(Resource):
     def get(self):
         url = request.args.get("url")
         result = articles.get_article_by_url(scraper_queries, url)
-        if "error_message" in result.keys():
+        print(result)
+        if "error_message" in result[0].keys():
             return result, 404
         return result
 
