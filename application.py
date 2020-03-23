@@ -3,7 +3,6 @@ from flask_restful import Resource, Api
 import pugsql
 import os
 import time
-from dateutil.parser import parse
 from dotenv import load_dotenv
 from newsSpiders.webapi import sites, articles, publications, stats
 
@@ -40,18 +39,29 @@ class GetActiveSites(Resource):
         return result
 
 
-class SiteNewArticles(Resource):
+class GetSiteNewArticles(Resource):
     def get(self, site_id):
         now = int(time.time())
         time_start = request.args.get("timeStart", 0)
         time_end = request.args.get("timeEnd", now)
-        result = sites.get_article_discovered_in_interval(
+        result = sites.get_articles_discovered_in_interval(
             scraper_queries, site_id, int(time_start), int(time_end)
         )
         return result
 
 
-class SiteLatestArticle(Resource):
+class GetSiteUpdatedArticles(Resource):
+    def get(self, site_id):
+        now = int(time.time())
+        time_start = request.args.get("timeStart", 0)
+        time_end = request.args.get("timeEnd", now)
+        result = sites.get_articles_updated_in_interval(
+            scraper_queries, site_id, int(time_start), int(time_end)
+        )
+        return result
+
+
+class GetSiteLatestArticle(Resource):
     def get(self, site_id):
         latest_article = sites.get_latest_article(scraper_queries, site_id)
         return latest_article
@@ -77,7 +87,7 @@ class GetStats(Resource):
         return result
 
 
-class PublicationSearch(Resource):
+class SearchPublication(Resource):
     publications = dict()
     check_points = dict()
     limit = 20
@@ -115,11 +125,12 @@ api.add_resource(Hello, "/")
 api.add_resource(GetArticleByID, "/articles/<int:article_id>")
 api.add_resource(GetArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
-api.add_resource(SiteNewArticles, "/sites/<int:site_id>/new_articles")
-api.add_resource(SiteLatestArticle, "/sites/<int:site_id>/latest_article")
+api.add_resource(GetSiteNewArticles, "/sites/<int:site_id>/new_articles")
+api.add_resource(GetSiteUpdatedArticles, "/sites/<int:site_id>/updated_articles")
+api.add_resource(GetSiteLatestArticle, "/sites/<int:site_id>/latest_article")
 api.add_resource(GetActiveSites, "/sites/active")
 api.add_resource(GetStats, "/stats")
-api.add_resource(PublicationSearch, "/publications")
+api.add_resource(SearchPublication, "/publications")
 
 if __name__ == "__main__":
     app.run(debug=True)

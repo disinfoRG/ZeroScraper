@@ -1,4 +1,4 @@
--- :name get_site_article_discovered_in_interval :many
+-- :name get_site_articles_discovered_in_interval :many
 SELECT *
 FROM Article
 WHERE
