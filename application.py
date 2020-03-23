@@ -34,18 +34,15 @@ class FindArticleByURL(Resource):
         return result
 
 
-class SiteArticleCount(Resource):
+class SiteNewArticles(Resource):
     def get(self, site_id):
         now = int(time.time())
-        discover_from = request.args.get("discoverFrom", None)
-        discover_until = request.args.get("discoverUntil", now)
-        if discover_from:
-            article_count = sites.get_article_count_in_interval(
-                scraper_queries, site_id, int(discover_from), int(discover_until)
-            )
-        else:
-            article_count = sites.get_article_count(scraper_queries, site_id)
-        return article_count
+        time_start = request.args.get("timeStart", 0)
+        time_end = request.args.get("timeEnd", now)
+        result = sites.get_article_discovered_in_interval(
+            scraper_queries, site_id, int(time_start), int(time_end)
+        )
+        return result
 
 
 class SiteLatestArticle(Resource):
@@ -98,7 +95,7 @@ api.add_resource(Hello, "/")
 api.add_resource(FindArticleByID, "/articles/<int:article_id>")
 api.add_resource(FindArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
-api.add_resource(SiteArticleCount, "/sites/<int:site_id>/article_count")
+api.add_resource(SiteNewArticles, "/sites/<int:site_id>/new_articles")
 api.add_resource(SiteLatestArticle, "/sites/<int:site_id>/latest_article")
 api.add_resource(PublicationSearch, "/publications")
 
