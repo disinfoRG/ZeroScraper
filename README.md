@@ -101,6 +101,7 @@ To start api: `python3 application.py`
 1. Retrieve article info with article_id: `GET /articles/[id]`
 2. Retrieve article info with url, only for exact match: `GET /articles?url=[url]`
 3. Retrieve publication by matching string in title and content: `GET /publications?q=[string]`
-4. Get total article count in a site: `GET /sites/[site_id]/article_count`
-5. Get article count in a site discovered in a time interval: `GET /sites/[site_id]/article_count?discoverFrom=[unix_time]&discoverUntil=[unix_time]`
-6. Get article discovered most recently in a site: `GET /sites/[site_id]/latest_article`
+4. Get active sites: `GET /sites/active`
+5. Get total article count in a site: `GET /sites/[site_id]/article_count`
+6. Get new article in a site discovered in a time interval: `GET /sites/[site_id]/new_articles?timeStart=[unix_time]&timeEnd=[unix_time]`
+7. Get article discovered most recently in a site: `GET /sites/[site_id]/latest_article`

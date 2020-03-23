@@ -1,3 +1,8 @@
+def get_active_sites(queries):
+    result = queries.get_active_sites()
+    result = list(result)
+    return result
+
 def get_article_count(queries, site_id):
     result = queries.get_site_article_count(site_id=site_id)
     return result

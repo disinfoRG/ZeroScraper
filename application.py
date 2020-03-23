@@ -28,9 +28,14 @@ class FindArticleByURL(Resource):
     def get(self):
         url = request.args.get("url")
         result = articles.get_article_by_url(scraper_queries, url)
-        print(result)
         if "error_message" in result[0].keys():
             return result, 404
+        return result
+
+
+class GetActiveSites(Resource):
+    def get(self):
+        result = sites.get_active_sites(scraper_queries)
         return result
 
 
@@ -97,6 +102,7 @@ api.add_resource(FindArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
 api.add_resource(SiteNewArticles, "/sites/<int:site_id>/new_articles")
 api.add_resource(SiteLatestArticle, "/sites/<int:site_id>/latest_article")
+api.add_resource(GetActiveSites, "/sites/active")
 api.add_resource(PublicationSearch, "/publications")
 
 if __name__ == "__main__":
