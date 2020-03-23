@@ -7,9 +7,6 @@ import pytz
 from dateutil.parser import parse
 from datetime import datetime, timedelta
 
-queries = pugsql.module('queries')
-queries.connect(os.getenv("DB_URL"))
-
 
 def date_to_unix(dt, timezone='Asia/Taipei'):
     tw = pytz.timezone(timezone)
@@ -28,6 +25,9 @@ def prep_entry_for_insert(stats_list):
 
 
 def main(args):
+    queries = pugsql.module('queries')
+    queries.connect(os.getenv("DB_URL"))
+
     # parse date string to datetime obj
     dt = parse(args.date)
     # uniformly format date, for use in db insertion
