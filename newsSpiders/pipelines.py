@@ -16,8 +16,11 @@ class StandardizePipeline:
         pass
 
     def process_item(self, item, spider):
+        if 'update' in spider.name:
+            return item
+
         url = item["article"]["url"]
-        domains = ['udn', 'chinatimes']
+        domains = ['udn', 'chinatimes', 'appledaily']
 
         if any(d in url for d in domains):
             url = url.split('?')[0]
