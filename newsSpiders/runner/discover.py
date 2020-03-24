@@ -4,8 +4,9 @@ import os
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
-from newsSpiders.spiders.discover_article_spider import DiscoverNewArticlesSpider
-from newsSpiders.spiders.discover_dcard_spider import DiscoverDcardPostsSpider
+from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
+from newsSpiders.spiders.dcard_dicsover_spider import DcardDiscoverSpider
+from newsSpiders.spiders.login_discover_spider import LogInDiscoverSpider
 
 
 def run(runner, site_id, args=None):
@@ -36,7 +37,7 @@ def run(runner, site_id, args=None):
     }
 
     if "dcard" in site_url:
-        crawler = Crawler(DiscoverDcardPostsSpider, settings)
+        crawler = Crawler(DcardDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
 
         runner.crawl(
@@ -46,8 +47,24 @@ def run(runner, site_id, args=None):
             site_type=site_type,
             article_url_excludes=[a["url"] for a in recent_articles],
         )
+    elif "appledaily" in site_url:
+        crawler = Crawler(LogInDiscoverSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            site_url=site_url,
+            site_type=site_type,
+            article_url_patterns=site_conf["article"],
+            following_url_patterns=site_conf["following"],
+            article_url_excludes=[a["url"] for a in recent_articles],
+            selenium=site_conf.get("selenium", False),
+            login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
+            credential_tag="appledaily"
+        )
     else:
-        crawler = Crawler(DiscoverNewArticlesSpider, settings)
+        crawler = Crawler(BasicDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
         runner.crawl(
             crawler,

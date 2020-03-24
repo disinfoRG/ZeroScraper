@@ -6,8 +6,9 @@ import logging
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
-from newsSpiders.spiders.update_contents_spider import UpdateContentsSpider
-from newsSpiders.spiders.update_dcard_spider import UpdateDcardPostsSpider
+from newsSpiders.spiders.basic_update_spider import BasicUpdateSpider
+from newsSpiders.spiders.dcard_update_spider import DcardUpdateSpider
+from newsSpiders.spiders.login_update_spider import LogInUpdateSpider
 
 logger = logging.getLogger(__name__)
 queries = pugsql.module("queries/")
@@ -61,7 +62,7 @@ def run(runner, site_id, args=None):
         site_conf.update(json.loads(site["config"]))
 
         if "dcard" in url:
-            crawler = Crawler(UpdateDcardPostsSpider, settings)
+            crawler = Crawler(DcardUpdateSpider, settings)
             crawler.stats.set_value("site_id", site_id)
             runner.crawl(
                 crawler,
@@ -73,9 +74,24 @@ def run(runner, site_id, args=None):
                     ),
                 ),
             )
-            logger.debug("finish set up crawl")
+
+        elif "appledaily" in url:
+            crawler = Crawler(LogInUpdateSpider, settings)
+            crawler.stats.set_value("site_id", site_id)
+            runner.crawl(
+                crawler,
+                articles_to_update=queries.get_articles_to_update(
+                    site_id=site_id, current_time=current_time
+                ),
+                site_id=site_id,
+                site_type=site["type"],
+                selenium=site_conf["selenium"],
+                login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
+                credential_tag="appledaily"
+            )
+
         else:
-            crawler = Crawler(UpdateContentsSpider, settings)
+            crawler = Crawler(BasicUpdateSpider, settings)
             crawler.stats.set_value("site_id", site_id)
             runner.crawl(
                 crawler,
@@ -86,3 +102,4 @@ def run(runner, site_id, args=None):
                 site_type=site["type"],
                 selenium=site_conf["selenium"],
             )
+        logger.debug("finish set up crawl")
