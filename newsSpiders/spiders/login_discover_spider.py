@@ -3,7 +3,11 @@ from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
 import os
 
 
-class LogInDiscoverSpider(BasicDiscoverSpider):
+class LoginError(Exception):
+    pass
+
+
+class LoginDiscoverSpider(BasicDiscoverSpider):
     name = "login_discover"
 
     def __init__(self, login_url, credential_tag, **kwargs,):
@@ -22,8 +26,7 @@ class LogInDiscoverSpider(BasicDiscoverSpider):
 
     def check_login_response(self, response):
         if self.credentials["email"] in response.body.decode("utf-8"):
-            self.logger.info("Log in successfully!")
+            self.logger.info("Login successfully.")
             return Request(self.site_url)
         else:
-            self.logger.info("Log in failed.")
-            raise Exception('LogInError')
+            raise LoginError("Login failed.")

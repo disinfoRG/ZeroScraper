@@ -3,7 +3,11 @@ from newsSpiders.spiders.basic_update_spider import BasicUpdateSpider
 import os
 
 
-class LogInUpdateSpider(BasicUpdateSpider):
+class LoginError(Exception):
+    pass
+
+
+class LoginUpdateSpider(BasicUpdateSpider):
     name = "login_update"
 
     def __init__(self, login_url, credential_tag, **kwargs,):
@@ -22,10 +26,9 @@ class LogInUpdateSpider(BasicUpdateSpider):
 
     def check_login_response(self, response):
         if self.credentials["email"] in response.body.decode("utf-8"):
-            self.logger.info("Log in successfully!")
+            self.logger.info("Login successfully.")
         else:
-            self.logger.info("Log in failed.")
-            raise Exception('LogInError')
+            raise LoginError('Login failed.')
 
         for a in self.articles_to_update:
             self.logger.info(f"updating {a['article_id']}")
