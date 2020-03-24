@@ -16,6 +16,9 @@ class StandardizePipeline:
         pass
 
     def process_item(self, item, spider):
+        if 'update' in spider.name:
+            return item
+
         url = item["article"]["url"]
         domains = ['udn', 'chinatimes']
 
