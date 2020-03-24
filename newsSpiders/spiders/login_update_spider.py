@@ -22,9 +22,9 @@ class LoginUpdateSpider(BasicUpdateSpider):
         yield Request(url=self.login_url, callback=self.login, dont_filter=True)
 
     def login(self, response):
-        return FormRequest.from_response(response, formdata=self.credentials, callback=self.check_login_response)
+        return FormRequest.from_response(response, formdata=self.credentials, callback=self.start_updates)
 
-    def check_login_response(self, response):
+    def start_updates(self, response):
         if self.credentials["email"] in response.body.decode("utf-8"):
             self.logger.info("Login successfully.")
         else:
