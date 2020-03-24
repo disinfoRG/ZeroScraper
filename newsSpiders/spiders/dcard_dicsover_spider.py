@@ -15,7 +15,7 @@ def parse_post_id(link):
     return m.group(1)
 
 
-class DiscoverDcardPostsSpider(scrapy.Spider):
+class DcardDiscoverSpider(scrapy.Spider):
     name = "dcard_discover"
 
     def __init__(
@@ -27,7 +27,7 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         *args,
         **kwargs,
     ):
-        super(DiscoverDcardPostsSpider, self).__init__(*args, **kwargs)
+        super(DcardDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
         self.site_type = site_type
         self.site_url = site_url

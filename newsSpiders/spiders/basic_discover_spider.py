@@ -6,8 +6,8 @@ import zlib
 import time
 
 
-class DiscoverNewArticlesSpider(CrawlSpider):
-    name = "discover_new_articles"
+class BasicDiscoverSpider(CrawlSpider):
+    name = "basic_discover"
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         *args,
         **kwargs,
     ):
-        super(DiscoverNewArticlesSpider, self).__init__(*args, **kwargs)
+        super(BasicDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
         self.site_url = site_url
         self.start_urls = [site_url]
@@ -41,7 +41,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             "line.naver.jp",
             "plus.google.com",
         ]
-        DiscoverNewArticlesSpider.rules = [
+        BasicDiscoverSpider.rules = [
             Rule(
                 LinkExtractor(allow=article_url_patterns, deny=social_media_links),
                 process_links=self.dedup_article_links,
@@ -49,10 +49,10 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             )
         ]
         if following_url_patterns:
-            DiscoverNewArticlesSpider.rules.append(
+            BasicDiscoverSpider.rules.append(
                 Rule(LinkExtractor(allow=following_url_patterns), follow=True)
             )
-        super(DiscoverNewArticlesSpider, self)._compile_rules()
+        super(BasicDiscoverSpider, self)._compile_rules()
         if site_id:
             self.name = f"{self.name}:{site_id}"
 
