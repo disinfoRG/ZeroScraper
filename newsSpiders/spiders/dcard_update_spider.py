@@ -5,12 +5,12 @@ import time
 import json
 
 
-class UpdateDcardPostsSpider(scrapy.Spider):
+class DcardUpdateSpider(scrapy.Spider):
     name = "dcard_update"
     handle_httpstatus_list = [404]
 
     def __init__(self, posts_to_update, site_id=None, *args, **kwargs):
-        super(UpdateDcardPostsSpider, self).__init__(*args, **kwargs)
+        super(DcardUpdateSpider, self).__init__(*args, **kwargs)
         self.selenium = False
         self.posts_to_update = posts_to_update
         self.site_id = site_id

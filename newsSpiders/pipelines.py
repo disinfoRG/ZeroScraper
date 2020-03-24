@@ -20,7 +20,7 @@ class StandardizePipeline:
             return item
 
         url = item["article"]["url"]
-        domains = ['udn', 'chinatimes']
+        domains = ['udn', 'chinatimes', 'appledaily']
 
         if any(d in url for d in domains):
             url = url.split('?')[0]
