@@ -14,14 +14,14 @@ def run(runner, site_id, args=None):
     queries.connect(os.getenv("DB_URL"))
 
     site_info = queries.get_site_by_id(site_id=site_id)
-    dedup_limit = 500 if args["dedup_limit"] is None else args["dedup_limit"]
+    dedup_limit = args["dedup_limit"] or 500
     recent_articles = queries.get_recent_articles_by_site(
         site_id=site_id, limit=dedup_limit
     )
 
     queries.disconnect()
 
-    site_url = site_info["url"]
+    site_url = args["url"] or site_info["url"]
     site_type = site_info["type"]
     site_conf = SiteConfig.default()
     site_conf.update(json.loads(site_info["config"]))
