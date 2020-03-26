@@ -3,7 +3,6 @@
 import argparse
 import pugsql
 import os
-import time
 import datetime
 from tabulate import tabulate
 
@@ -67,6 +66,15 @@ if __name__ == "__main__":
     discover_cmd = cmds.add_parser("discover", help="do discover")
     discover_cmd.add_argument(
         "id", type=int, help="id of the site to discover in news db", nargs="?"
+    )
+    discover_cmd.add_argument(
+        "--url", type=str, help="start url", nargs="?"
+    )
+    discover_cmd.add_argument(
+        "--article", type=str, help="article url pattern", nargs="?"
+    )
+    discover_cmd.add_argument(
+        "--following", type=str, help="following url pattern", nargs="?"
     )
     discover_cmd.add_argument(
         "--depth", help="desired depth limit; 0 if no limit imposed.", type=int

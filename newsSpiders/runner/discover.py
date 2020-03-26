@@ -14,17 +14,17 @@ def run(runner, site_id, args=None):
     queries.connect(os.getenv("DB_URL"))
 
     site_info = queries.get_site_by_id(site_id=site_id)
-    dedup_limit = 500 if args["dedup_limit"] is None else args["dedup_limit"]
+    dedup_limit = args["dedup_limit"] or 500
     recent_articles = queries.get_recent_articles_by_site(
         site_id=site_id, limit=dedup_limit
     )
 
     queries.disconnect()
 
-    site_url = site_info["url"]
-    site_type = site_info["type"]
     site_conf = SiteConfig.default()
     site_conf.update(json.loads(site_info["config"]))
+    site_conf["url"] = site_info["url"]
+    site_conf["type"] = site_info["type"]
 
     if args is not None:
         site_conf.update(args)
@@ -36,26 +36,26 @@ def run(runner, site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
-    if "dcard" in site_url:
+    if "dcard" in site_conf["url"]:
         crawler = Crawler(DcardDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
 
         runner.crawl(
             crawler,
             site_id=site_id,
-            site_url=site_url,
-            site_type=site_type,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
             article_url_excludes=[a["url"] for a in recent_articles],
         )
-    elif "appledaily" in site_url:
+    elif "appledaily" in site_conf["url"]:
         crawler = Crawler(LoginDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
 
         runner.crawl(
             crawler,
             site_id=site_id,
-            site_url=site_url,
-            site_type=site_type,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
             article_url_patterns=site_conf["article"],
             following_url_patterns=site_conf["following"],
             article_url_excludes=[a["url"] for a in recent_articles],
@@ -69,8 +69,8 @@ def run(runner, site_id, args=None):
         runner.crawl(
             crawler,
             site_id=site_id,
-            site_url=site_url,
-            site_type=site_type,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
             article_url_patterns=site_conf["article"],
             following_url_patterns=site_conf["following"],
             article_url_excludes=[a["url"] for a in recent_articles],
