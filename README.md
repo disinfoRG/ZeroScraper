@@ -35,10 +35,16 @@ $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 $ python site.py discover {site_id}
 ```
     Optional Arguments:
+        # crawler config
         --depth: maximum search depth limit. default = 5.
         --delay: delay time between each request. default = 1.5 (sec)
         --ua: user agent string. default is the chrome v78 user-agent string.
 
+        # site config
+        --url: url to start with of this crawl
+        --article: regex of article url pattern, e.g. '/story/(\d+).html'
+        --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
+        
 2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
 ```sh 
 $ python ns.py discover
