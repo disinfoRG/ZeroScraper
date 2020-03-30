@@ -41,7 +41,7 @@ $ python site.py discover {site_id}
         --ua: user agent string. default is the chrome v78 user-agent string.
 
         # site config
-        --url: url to start with of this crawl
+        --url: url to start with for this crawl
         --article: regex of article url pattern, e.g. '/story/(\d+).html'
         --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
         

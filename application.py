@@ -1,12 +1,24 @@
-from flask import Flask, request
-from flask_restful import Resource, Api
-import pugsql
 import os
 import time
+from datetime import timedelta
+
+import pugsql
 from dotenv import load_dotenv
+from flask import Flask, request, make_response, redirect
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    set_access_cookies, unset_access_cookies, get_jwt_identity, jwt_optional
+)
+from flask_restful import Resource, Api
+
 from newsSpiders.webapi import sites, articles, publications, stats
 
 app = Flask(__name__)
+app.config['JWT_SECRET_KEY'] = os.getenv("API_SECRET_KEY")
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
+app.config['JWT_ACCESS_COOKIE_PATH'] = ['/articles', '/sites', '/stats', '/publications']
+jwt = JWTManager(app)
 api = Api(app)
 
 load_dotenv()
@@ -18,28 +30,66 @@ pub_queries = pugsql.module("queries/parser")
 pub_queries.connect(os.getenv("PUB_DB_URL"))
 
 
+class Login(Resource):
+    def post(self):
+        if not request.is_json:
+            return {"message": "Missing JSON in request"}, 400
+
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+
+        if not password or not username:
+            return {"message": "Missing username or password."}, 400
+
+        if password != os.getenv("API_PASSWORD"):
+            return {"message": f"Wrong password"}, 401
+
+        access_token = create_access_token(identity=username)
+        response = make_response(redirect('/', 302))
+        set_access_cookies(response, access_token)
+
+        return response
+
+
+class Logout(Resource):
+    def post(self):
+        response = make_response({"logout": True})
+        unset_access_cookies(response)
+
+        return response
+
+
 class GetArticleByID(Resource):
+    @jwt_required
     def get(self, article_id):
         result = articles.get_article_by_id(scraper_queries, article_id)
         return result
 
 
 class GetArticleByURL(Resource):
+    @jwt_required
     def get(self):
-        url = request.args.get("url")
+        url = request.args.get("url", None)
+        if url is None:
+            return {"message": "please provide a valid url as params"}, 404
+
         result = articles.get_article_by_url(scraper_queries, url)
+
         if "error_message" in result[0].keys():
             return result, 404
+
         return result
 
 
 class GetActiveSites(Resource):
+    @jwt_required
     def get(self):
         result = sites.get_active_sites(scraper_queries)
         return result
 
 
 class GetSiteNewArticles(Resource):
+    @jwt_required
     def get(self, site_id):
         now = int(time.time())
         time_start = request.args.get("timeStart", 0)
@@ -51,6 +101,7 @@ class GetSiteNewArticles(Resource):
 
 
 class GetSiteUpdatedArticles(Resource):
+    @jwt_required
     def get(self, site_id):
         now = int(time.time())
         time_start = request.args.get("timeStart", 0)
@@ -62,18 +113,21 @@ class GetSiteUpdatedArticles(Resource):
 
 
 class GetSiteLatestArticle(Resource):
+    @jwt_required
     def get(self, site_id):
         latest_article = sites.get_latest_article(scraper_queries, site_id)
         return latest_article
 
 
 class SitesWarning(Resource):
+    @jwt_required
     def get(self, site_id):
-        warning_msg = f"Are you looking for </sites/{site_id}/article_count> or </sites/{site_id}/latest_article>?"
+        warning_msg = f"Are you looking for </sites/{site_id}/updated_articles>, <sites/{site_id}/new_articles>, or </sites/{site_id}/latest_article>?"
         return {"message": warning_msg}, 404
 
 
 class GetStats(Resource):
+    @jwt_required
     def get(self):
         site_id = request.args.get("site_id", None)
         date = request.args.get("date", None)
@@ -104,6 +158,7 @@ class SearchPublication(Resource):
 
         return self.publications[pattern]
 
+    @jwt_required
     def get(self):
         pattern = request.args.get("q")
         page = request.args.get("page", 1)
@@ -116,12 +171,19 @@ class SearchPublication(Resource):
 
 
 class Hello(Resource):
+    @jwt_optional
     def get(self):
-        welcome_msg = "Hello, welcome to the api of g0v 0archive"
+        username = get_jwt_identity()
+        if username:
+            welcome_msg = f"Hello {username}, welcome to the api of g0v 0archive"
+        else:
+            welcome_msg = "Hello, welcome to the api of g0v 0archive, please login first."
         return {"message": welcome_msg}
 
 
 api.add_resource(Hello, "/")
+api.add_resource(Login, "/login")
+api.add_resource(Logout, "/logout")
 api.add_resource(GetArticleByID, "/articles/<int:article_id>")
 api.add_resource(GetArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
