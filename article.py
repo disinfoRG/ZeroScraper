@@ -10,17 +10,30 @@ import time
 from random import uniform
 import argparse
 import zlib
+import logging
+from datetime import datetime
 from newsSpiders import helpers
 from newsSpiders.types import SiteConfig
 
+logging.basicConfig(
+    format="[%(levelname)s] %(asctime)s %(filename)s %(funcName)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level='INFO',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('{:%Y-%m-%d}.log'.format(datetime.now()), encoding="utf-8"),
+    ],
+)
+
+logger = logging.getLogger(__name__)
 
 queries = pugsql.module("./queries")
 queries.connect(os.getenv("DB_URL"))
 
 
-def get_article_by_request(url, user_agent):
+def get_article_by_request(url, user_agent, **kwargs):
     headers = {"User-Agent": user_agent}
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, **kwargs)
 
     return r.text
 
@@ -48,7 +61,7 @@ def get_dcard_article(url, user_agent):
     post_r = requests.get(post_api, headers=headers)
     result["post"] = post_r.json()
 
-    comment_api = f"https://www.dcard.tw/_api/posts/{post_id}/comments?limit=100"
+    comment_api = f"{post_api}/comments?limit=100"
     comment_r = requests.get(comment_api, headers=headers)
     result["comments"] = comment_r.json()
 
@@ -74,22 +87,19 @@ def update_article_table(article_info, site_info, crawl_time):
 
 
 def update(args):
-    print(args.selenium)
     # read url from article_id
     article_info = queries.get_article_by_id(article_id=args.id)
-    print(article_info)
 
     # crawler config (ua, selenium) from site
     site_info = queries.get_site_by_id(site_id=article_info["site_id"])
     site_config = json.loads(site_info["config"])
     crawler_config = SiteConfig.default()
     crawler_config.update(site_config)
-    # todo: command line argument should take precedence than config
-    user_agent = crawler_config["ua"]
-    use_selenium = crawler_config.get("selenium", args.selenium)
-    print(use_selenium)
+
+    user_agent = args.ua or crawler_config["ua"]
+    use_selenium = args.selenium or crawler_config["selenium"]
     # get html
-    crawl_time = int(time.time())
+    now = int(time.time())
     if "dcard" in article_info["url"]:
         snapshot = get_dcard_article(article_info["url"], user_agent)
     elif use_selenium:
@@ -98,29 +108,30 @@ def update(args):
         snapshot = get_article_by_request(article_info["url"], user_agent)
 
     # update article table: last_snapshot_at, snapshot_count
-    update_article_table(article_info, site_info, crawl_time)
+    update_article_table(article_info, site_info, now)
 
     # add article snapshot
     queries.insert_snapshot(
-        article_id=article_info["article_id"], snapshot_at=crawl_time, raw_data=snapshot
+        article_id=article_info["article_id"], snapshot_at=now, raw_data=snapshot
     )
 
 
 def discover(args):
     # check if args.url exists in db, if so, print message and exist.
     url = url_normalize(args.url)
-    exist = queries.check_article_existence(url=url)["exist"]
-    if exist == 1:
-        article_id = queries.get_article_by_url(url=url)["article_id"]
-        print(f"The given url exists in the database, having article_id {article_id}.")
-        print(f"Please do update instead.")
-        return article_id
+    url_hash = str(zlib.crc32(url.encode()))
+    result = queries.get_article_id_by_url(url=url, url_hash=url_hash)
+    if result is not None:
+        logger.info(f"URL exists in the database, with article_id {result['article_id']}. Please do update instead")
+        return
 
     crawler_config = SiteConfig.default()
-    user_agent = crawler_config["ua"]
+    user_agent = args.ua or crawler_config["ua"]
     crawl_time = int(time.time())
     if "dcard" in args.url:
         snapshot = get_dcard_article(args.url, user_agent)
+    elif "ptt" in args.url:
+        snapshot = get_article_by_request(args.url, user_agent, cookies={"over18": "1"})
     elif args.selenium:
         snapshot = get_article_by_selenium(args.url, user_agent)
     else:
@@ -151,7 +162,7 @@ def discover(args):
     queries.insert_snapshot(
         article_id=inserted_article_id, snapshot_at=crawl_time, raw_data=snapshot
     )
-    print(f"Finish discover, new article_id = {inserted_article_id}")
+    logger.info(f"Finish discover, new article_id = {inserted_article_id}")
     return inserted_article_id
 
 
@@ -174,6 +185,9 @@ if __name__ == "__main__":
         nargs="?",
     )
     discover_cmd.add_argument(
+        "--ua", type=str, help="user agent string", nargs="?"
+    )
+    discover_cmd.add_argument(
         "--selenium", help="use selenium to load website", action="store_true"
     )
     discover_cmd.add_argument(
@@ -186,6 +200,9 @@ if __name__ == "__main__":
     update_cmd = cmds.add_parser("update", help="do update")
     update_cmd.add_argument(
         "id", type=int, help="id of the article to update in news db", nargs="?"
+    )
+    update_cmd.add_argument(
+        "--ua", type=str, help="user agent string", nargs="?"
     )
     update_cmd.add_argument(
         "--selenium", help="use selenium to load website", action="store_true"
