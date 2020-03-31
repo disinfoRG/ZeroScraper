@@ -62,7 +62,10 @@ def discover(args):
     queries.connect(os.getenv("DB_URL"))
 
     with pid_lock(queries, args.proc_name):
-        sites = queries.get_sites_to_crawl()
+        sites = list(queries.get_sites_to_crawl())
+        if len(sites) == 0:
+            logger.info("No sites found.  Quit.")
+            return
 
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
@@ -84,7 +87,10 @@ def update(args):
     queries.connect(os.getenv("DB_URL"))
 
     with pid_lock(queries, args.proc_name):
-        sites = queries.get_sites_to_crawl()
+        sites = list(queries.get_sites_to_crawl())
+        if len(sites) == 0:
+            logger.info("No sites found.  Quit.")
+            return
 
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
