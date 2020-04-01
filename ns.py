@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+from getpass import getpass
 import logging
 
 logging.basicConfig(
@@ -15,13 +16,15 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 import argparse
+import pugsql
+import json
+import requests
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
 from scrapy.utils.log import configure_logging
 import newsSpiders.runner.discover
 import newsSpiders.runner.update
-import pugsql
 
 
 class Cleanup:
@@ -101,11 +104,50 @@ def update(args):
     queries.disconnect()
 
 
+def login():
+    username = input("username: ")
+    password = getpass("password: ")
+    user_credential = {"username": username, "password": password}
+
+    r = requests.post(os.getenv("API_URL") + "/login", json=user_credential)
+    if r.status_code == 200:
+        logger.info("Login successful. ")
+        json.dump(r.json(), open("secrets.json", "w"))
+    else:
+        logger.info(f"Login failed. Message: {r.json()['message']}")
+
+
+def stats(args):
+    try:
+        access_token = json.load(open("secrets.json"))["access_token"]
+    except FileNotFoundError:
+        logger.error("File secrets.json is missing. Please login first.")
+        return
+    else:
+        logger.debug("Found login credential.")
+        if args.site_id:
+            r = requests.get(f'{os.getenv("API_URL")}/stats?site_id={args.site_id}',
+                             cookies={'access_token_cookie': access_token})
+        elif args.date:
+            r = requests.get(f'{os.getenv("API_URL")}/stats?date={args.date}',
+                             cookies={'access_token_cookie': access_token})
+        else:
+            r = requests.get(f'{os.getenv("API_URL")}/stats',
+                             cookies={'access_token_cookie': access_token})
+        ## todo: what's an ideal way to return the result. using return doesn't seem ideal as a command-line tool.
+
+        return r.json()
+
+
 def main(args):
     if args.command == "discover":
         discover(args)
     elif args.command == "update":
         update(args)
+    elif args.command == "login":
+        login()
+    elif args.command == "stats":
+        stats(args)
 
 
 if __name__ == "__main__":
@@ -130,6 +172,16 @@ if __name__ == "__main__":
     )
     update_cmd.add_argument(
         "--proc-name", default="update", help="process name to store PID"
+    )
+
+    login_cmd = cmds.add_parser("login", help="log in to api")
+
+    stats_cmd = cmds.add_parser("stats", help="get stats from api")
+    stats_cmd.add_argument(
+        "--site-id", type=int, help="retrieve stats of a particular site", nargs="?"
+    )
+    stats_cmd.add_argument(
+        "--date", type=str, help="retrieve stats of a particular date"
     )
 
     args = parser.parse_args()

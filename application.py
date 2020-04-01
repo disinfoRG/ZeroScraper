@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import pugsql
 from dotenv import load_dotenv
-from flask import Flask, request, make_response, redirect
+from flask import Flask, request, make_response, redirect, jsonify
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     set_access_cookies, unset_access_cookies, get_jwt_identity, jwt_optional
@@ -16,7 +16,6 @@ from newsSpiders.webapi import sites, articles, publications, stats
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = os.getenv("API_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
 app.config['JWT_ACCESS_COOKIE_PATH'] = ['/articles', '/sites', '/stats', '/publications']
 jwt = JWTManager(app)
 api = Api(app)
@@ -44,8 +43,8 @@ class Login(Resource):
         if password != os.getenv("API_PASSWORD"):
             return {"message": f"Wrong password"}, 401
 
-        access_token = create_access_token(identity=username)
-        response = make_response(redirect('/', 302))
+        access_token = create_access_token(identity=username, expires_delta=False)
+        response = jsonify({'access_token': access_token})
         set_access_cookies(response, access_token)
 
         return response

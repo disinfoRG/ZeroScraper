@@ -139,3 +139,5 @@ dmypy.json
 *.jsonl
 *.ipynb
 *.out
+/prod_ptt.json
+/secrets.json
