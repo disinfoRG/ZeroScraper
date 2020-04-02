@@ -7,6 +7,7 @@ import os
 import sys
 import json
 import datetime
+from itertools import zip_longest
 from pathlib import Path
 import re
 import pugsql
@@ -18,6 +19,13 @@ queries = pugsql.module("queries")
 
 table_pat = re.compile("^(article)?snapshot\d*$", re.I)
 duration_pat = re.compile("^(\d+)([wd])")
+
+
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
 
 
 def parse_args():
@@ -96,22 +104,23 @@ def get_snapshots_in_keys(queries, date_range=None):
 
 def dump_snapshots(queries, fh, date_range=None):
     i = 0
-    for key in get_snapshots_in_keys(queries, date_range=date_range):
-        snapshot = queries.get_snapshot_by_keys(**key)
-        fh.write(
-            json.dumps(
-                {
-                    key: value
-                    for key, value in snapshot.items()
-                    if key in ["article_id", "snapshot_at", "raw_data"]
-                },
-                ensure_ascii=False,
+    for keys in grouper(get_snapshots_in_keys(queries, date_range=date_range), 1000):
+        snapshot_ats = set([k["snapshot_at"] for k in keys if k])
+        for snapshot in queries.get_snapshots_by_keys(snapshot_ats=snapshot_ats):
+            fh.write(
+                json.dumps(
+                    {
+                        key: value
+                        for key, value in snapshot.items()
+                        if key in ["article_id", "snapshot_at", "raw_data"]
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
             )
-            + "\n"
-        )
-        if i % 10000 == 0:
-            logger.info(f"exported snapshot #{i}")
-        i += 1
+            if i % 10000 == 0:
+                logger.info(f"exported snapshot #{i}")
+            i += 1
     logger.info(f"exported total {i} snapshots")
 
 
@@ -131,9 +140,9 @@ def load_dynamic_queries(queries, table):
     )
     add_query(
         queries,
-        f"""-- :name get_snapshot_by_keys :one
+        f"""-- :name get_snapshots_by_keys :many
         SELECT article_id, snapshot_at, raw_data FROM {table}
-        WHERE article_id = :article_id AND snapshot_at = :snapshot_at
+        WHERE snapshot_at in :snapshot_ats
         """,
     )
 
