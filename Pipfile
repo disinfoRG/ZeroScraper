@@ -23,6 +23,8 @@ werkzeug = "*"
 requests = "*"
 tabulate = "*"
 gunicorn = "*"
+flask-jwt-extended = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

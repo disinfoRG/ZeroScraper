@@ -32,7 +32,7 @@ $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
-$ python site.py discover {site_id}
+$ python site.py discover {site-id}
 ```
     Optional Arguments:
         # crawler config
@@ -41,7 +41,7 @@ $ python site.py discover {site_id}
         --ua: user agent string. default is the chrome v78 user-agent string.
 
         # site config
-        --url: url to start with of this crawl
+        --url: url to start with for this crawl
         --article: regex of article url pattern, e.g. '/story/(\d+).html'
         --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
 
@@ -68,7 +68,7 @@ $ python ns.py update
 
 4. Revisit news articles in a specified site.
 ```sh
-$ python site.py update {site_id}
+$ python site.py update {site-id}
 ```
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
@@ -76,7 +76,7 @@ $ python site.py update {site_id}
 
 5. Revisit one article regardless of next_snapshot_time or snapshot_count.
 ```sh
-$ python article.py update {article_id}
+$ python article.py update {article-id}
 ```
     Optional Arguments:
             --selenium: use selenium to load the article.
@@ -86,7 +86,7 @@ $ python article.py update {article_id}
 $ python article.py discover {url}
 ```
     Optional Arguments:
-            --site_id: id of site of which the url belongs to. default = 0
+            --site-id: id of site of which the url belongs to. default = 0
             --selenium: use selenium to load the article.
 
 
@@ -103,7 +103,13 @@ $ pipenv shell
 $ pre-commit install
 ```
 ## API
-To start api: `python3 application.py`
+### Command-line tools
+1. login first: `python ns.py login`, if successful, the credential would be saved in `secrets.json`.  
+
+### Browser
+1. login first: `GET /login` to fill out the form and submit.
+
+### API endpoints  
 1. Retrieve article info with article_id: `GET /articles/{article_id}`
 2. Retrieve article info with url, only for exact match: `GET /articles?url={url}`
 3. Retrieve publication by matching string in title and content: `GET /publications?q={string}`
