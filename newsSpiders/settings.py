@@ -72,6 +72,7 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
     "newsSpiders.pipelines.StandardizePipeline": 100,
     "newsSpiders.pipelines.DuplicatesPipeline": 200,
+    "newsSpiders.pipelines.OldArticlesPipeline": 200,
     "newsSpiders.pipelines.MySqlPipeline": 300,
 }
 
