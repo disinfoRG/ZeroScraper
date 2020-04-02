@@ -44,22 +44,22 @@ $ python site.py discover {site_id}
         --url: url to start with of this crawl
         --article: regex of article url pattern, e.g. '/story/(\d+).html'
         --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
-        
+
 2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
-```sh 
+```sh
 $ python ns.py discover
 ```
 
     Optional Arguments:
             --limit-sec: time limit to run in seconds
-            
-    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table. 
+
+    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
     Otherwise the default values will be used.
 
 3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
-# update all articles 
+# update all articles
 $ python ns.py update
 ```
     Optional Arguments:
@@ -73,7 +73,7 @@ $ python site.py update {site_id}
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
             --ua: user agent string.
-            
+
 5. Revisit one article regardless of next_snapshot_time or snapshot_count.
 ```sh
 $ python article.py update {article_id}
@@ -81,7 +81,7 @@ $ python article.py update {article_id}
     Optional Arguments:
             --selenium: use selenium to load the article.
 
-6. Discover a new article that does not exist in DB based on a provided url.  
+6. Discover a new article that does not exist in DB based on a provided url.
 ```sh
 $ python article.py discover {url}
 ```
@@ -105,13 +105,19 @@ $ pre-commit install
 ## API
 To start api: `python3 application.py`
 1. Retrieve article info with article_id: `GET /articles/{article_id}`
-1. Retrieve article info with url, only for exact match: `GET /articles?url={url}`
-1. Retrieve publication by matching string in title and content: `GET /publications?q={string}`
-1. Get active sites: `GET /sites/active`
-1. Get total article count in a site: `GET /sites/{site_id}/article_count`
-1. Get new articles in a site discovered during a time interval: `GET /sites/{site_id}/new_articles?timeStart={unix_time}&timeEnd={unix_time}`
-1. Get articles in a site updated during a time interval: `GET /sites/{site_id}/updated_articles?timeStart={unix_time}&timeEnd={unix_time}`
-1. Get article discovered most recently in a site: `GET /sites/{site_id}/latest_article`
-1. Get stats of a site: `GET /stats?site_id={site_id}`
-1. Get stats of a day: `GET /stats?date={date}`
-1. Get all stats: `GET /stats`
+2. Retrieve article info with url, only for exact match: `GET /articles?url={url}`
+3. Retrieve publication by matching string in title and content: `GET /publications?q={string}`
+4. Get active sites: `GET /sites/active`
+5. Get total article count in a site: `GET /sites/{site_id}/article_count`
+6. Get new articles in a site discovered during a time interval: `GET /sites/{site_id}/new_articles?timeStart={unix_time}&timeEnd={unix_time}`
+7. Get articles in a site updated during a time interval: `GET /sites/{site_id}/updated_articles?timeStart={unix_time}&timeEnd={unix_time}`
+8. Get article discovered most recently in a site: `GET /sites/{site_id}/latest_article`
+9. Get stats of a site: `GET /stats?site_id={site_id}`
+10. Get stats of a day: `GET /stats?date={date}`
+11. Get all stats: `GET /stats`
+
+## Archive snapshot table
+
+```sh
+$ ns-archive.py --table ArticleSnapshotYYYYMM --output YYYYMM.jsonl
+```
