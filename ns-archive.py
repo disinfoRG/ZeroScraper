@@ -3,6 +3,7 @@
 import logging
 import argparse
 import os
+import sys
 import json
 from pathlib import Path
 import pugsql
@@ -18,7 +19,9 @@ def parse_args():
     parser.add_argument(
         "-t", "--table", help="name of the snapshot table to archive", required=True
     )
-    parser.add_argument("-o", "--output", help="output filename", required=True)
+    parser.add_argument(
+        "-o", "--output", help="output filename; to STDOUT if not provide"
+    )
     return parser.parse_args()
 
 
@@ -34,35 +37,41 @@ def add_query(queries, stmt):
     queries._statements[s.name] = s
 
 
-def main(table, output):
+def write_export(fh):
+    i = 0
+    for snapshot in queries.get_snapshots():
+        fh.write(
+            json.dumps(
+                {
+                    key: value
+                    for key, value in snapshot.items()
+                    if key in ["article_id", "snapshot_at", "raw_data"]
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
+        if i % 10000 == 0:
+            logger.info(f"exporting snapshot #{i}")
+        i += 1
+    logger.info(f"exported {i} snapshots")
+
+
+def main(table, output=None):
     add_query(
         queries,
         f"""-- :name get_snapshots :many
         SELECT article_id, snapshot_at, raw_data FROM {table}
-        LIMIT 10
         """,
     )
 
     queries.connect(os.getenv("DB_URL"))
     try:
-        with Path(output).open("w") as fh:
-            i = 0
-            for snapshot in queries.get_snapshots():
-                fh.write(
-                    json.dumps(
-                        {
-                            key: value
-                            for key, value in snapshot.items()
-                            if key in ["article_id", "snapshot_at", "raw_data"]
-                        },
-                        ensure_ascii=False,
-                    )
-                    + "\n"
-                )
-                if i % 10000 == 0:
-                    logger.info(f"exporting snapshot #{i}")
-                i += 1
-        logger.info(f"exported {i} snapshots")
+        if output is None:
+            write_export(sys.stdout)
+        else:
+            with Path(output).open("w") as fh:
+                write_export(fh)
     except Exception as e:
         logger.error(e)
     queries.disconnect()
