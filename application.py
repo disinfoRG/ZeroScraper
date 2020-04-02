@@ -3,7 +3,7 @@ import time
 
 import pugsql
 from dotenv import load_dotenv
-from flask import Flask, request, make_response, redirect, jsonify, render_template
+from flask import Flask, request, make_response, jsonify, render_template
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     set_access_cookies, unset_access_cookies, get_jwt_identity, jwt_optional
@@ -44,7 +44,7 @@ class Login(Resource):
             return {"message": f"Wrong password"}, 401
 
         access_token = create_access_token(identity=username, expires_delta=False)
-        response = jsonify({'access_token': access_token})
+        response = jsonify({"message": "Login successful."})
         set_access_cookies(response, access_token)
 
         return response

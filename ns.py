@@ -112,7 +112,8 @@ def login():
     r = requests.post(os.getenv("API_URL") + "/login", data=user_credential)
     if r.status_code == 200:
         logger.info("Login successful. ")
-        json.dump(r.json(), open("secrets.json", "w"))
+        cookie = {"access_token": r.cookies['access_token_cookie']}
+        json.dump(cookie, open("secrets.json", "w"))
     else:
         logger.info(f"Login failed. Message: {r.json()['message']}")
 
