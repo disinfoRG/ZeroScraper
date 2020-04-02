@@ -1,10 +1,9 @@
 import os
 import time
-from datetime import timedelta
 
 import pugsql
 from dotenv import load_dotenv
-from flask import Flask, request, make_response, redirect, jsonify
+from flask import Flask, request, make_response, redirect, jsonify, render_template
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     set_access_cookies, unset_access_cookies, get_jwt_identity, jwt_optional
@@ -30,12 +29,13 @@ pub_queries.connect(os.getenv("PUB_DB_URL"))
 
 
 class Login(Resource):
-    def post(self):
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 400
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('login_form.html'), 200, headers)
 
-        username = request.json.get('username', None)
-        password = request.json.get('password', None)
+    def post(self):
+        username = request.form.get('username')
+        password = request.form.get('password')
 
         if not password or not username:
             return {"message": "Missing username or password."}, 400

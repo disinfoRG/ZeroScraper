@@ -109,7 +109,7 @@ def login():
     password = getpass("password: ")
     user_credential = {"username": username, "password": password}
 
-    r = requests.post(os.getenv("API_URL") + "/login", json=user_credential)
+    r = requests.post(os.getenv("API_URL") + "/login", data=user_credential)
     if r.status_code == 200:
         logger.info("Login successful. ")
         json.dump(r.json(), open("secrets.json", "w"))
