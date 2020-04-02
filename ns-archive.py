@@ -8,7 +8,8 @@ from pathlib import Path
 import pugsql
 import pugsql.parser
 
-logger = logging.getLogger(os.getenv("LOG_LEVEL", "INFO"))
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
+logger = logging.getLogger(__name__)
 queries = pugsql.module("queries")
 
 
@@ -45,6 +46,7 @@ def main(table, output):
     queries.connect(os.getenv("DB_URL"))
     try:
         with Path(output).open("w") as fh:
+            i = 0
             for snapshot in queries.get_snapshots():
                 fh.write(
                     json.dumps(
@@ -57,6 +59,10 @@ def main(table, output):
                     )
                     + "\n"
                 )
+                if i % 10000 == 0:
+                    logger.info(f"exporting snapshot #{i}")
+                i += 1
+        logger.info(f"exported {i} snapshots")
     except Exception as e:
         logger.error(e)
     queries.disconnect()
