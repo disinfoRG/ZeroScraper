@@ -116,8 +116,8 @@ To start api: `python3 application.py`
 10. Get stats of a day: `GET /stats?date={date}`
 11. Get all stats: `GET /stats`
 
-## Archive snapshot table
+## Dump snapshot table
 
 ```sh
-$ ns-archive.py --table ArticleSnapshotYYYYMM --output YYYYMM.jsonl
+$ ns-dump.py --table ArticleSnapshotYYYYMM --output YYYYMM.jsonl
 ```

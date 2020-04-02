@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+import traceback
 import argparse
 import os
 import sys
@@ -15,7 +16,9 @@ queries = pugsql.module("queries")
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="dump article snapshot table data into JSONLines format"
+    )
     parser.add_argument(
         "-t", "--table", help="name of the snapshot table to archive", required=True
     )
@@ -39,7 +42,8 @@ def add_query(queries, stmt):
 
 def write_export(fh):
     i = 0
-    for snapshot in queries.get_snapshots():
+    for key in queries.get_snapshots_in_keys():
+        snapshot = queries.get_snapshot_by_keys(**key)
         fh.write(
             json.dumps(
                 {
@@ -52,16 +56,23 @@ def write_export(fh):
             + "\n"
         )
         if i % 10000 == 0:
-            logger.info(f"exporting snapshot #{i}")
+            logger.info(f"exported snapshot #{i}")
         i += 1
-    logger.info(f"exported {i} snapshots")
+    logger.info(f"exported total {i} snapshots")
 
 
 def main(table, output=None):
     add_query(
         queries,
-        f"""-- :name get_snapshots :many
+        f"""-- :name get_snapshots_in_keys :many
+        SELECT article_id, snapshot_at FROM {table}
+        """,
+    )
+    add_query(
+        queries,
+        f"""-- :name get_snapshot_by_keys :one
         SELECT article_id, snapshot_at, raw_data FROM {table}
+        WHERE article_id = :article_id AND snapshot_at = :snapshot_at
         """,
     )
 
@@ -72,8 +83,8 @@ def main(table, output=None):
         else:
             with Path(output).open("w") as fh:
                 write_export(fh)
-    except Exception as e:
-        logger.error(e)
+    except Exception:
+        logger.error(traceback.format_exc())
     queries.disconnect()
 
 
