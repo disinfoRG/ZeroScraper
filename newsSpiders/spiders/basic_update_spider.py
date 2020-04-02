@@ -1,6 +1,6 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time
+from newsSpiders.helpers import generate_next_snapshot_time
 import time
 
 
@@ -52,7 +52,7 @@ class BasicUpdateSpider(scrapy.Spider):
             article_snapshot = None
         else:
             article["snapshot_count"] = snapshot_count + 1
-            article["next_snapshot_at"] = generate_next_fetch_time(
+            article["next_snapshot_at"] = generate_next_snapshot_time(
                 self.site_type, article["snapshot_count"], now
             )
 

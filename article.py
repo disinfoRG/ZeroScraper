@@ -75,8 +75,8 @@ def update_article_table(article_info, site_info, crawl_time):
     site_type = site_info["type"]
 
     if next_snapshot_at != 0:
-        next_snapshot_at = helpers.generate_next_fetch_time(
-            site_type, fetch_count=1, snapshot_time=crawl_time
+        next_snapshot_at = helpers.generate_next_snapshot_time(
+            site_type, snapshot_count=1, snapshot_time=crawl_time
         )
     queries.update_article_snapshot_time(
         article_id=article_id,
@@ -143,8 +143,8 @@ def discover(args):
     next_snapshot_at = (
         0
         if site_type is None
-        else helpers.generate_next_fetch_time(
-            site_type, fetch_count=1, snapshot_time=crawl_time
+        else helpers.generate_next_snapshot_time(
+            site_type, snapshot_count=1, snapshot_time=crawl_time
         )
     )
     inserted_article_id = queries.insert_article(

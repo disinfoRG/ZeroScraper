@@ -34,42 +34,22 @@ def get_site_type(queries, site_id):
     return site_type
 
 
-def generate_next_fetch_time(site_type, fetch_count, snapshot_time):
+def generate_next_snapshot_time(site_type, snapshot_count, snapshot_time):
     """
     A method that generates next fetch time based on site type
     :param site_type: str, the type of site where articles are from
-    :param fetch_count: int, how many times have this article fetched?
+    :param snapshot_count: int, how many times have this article fetched?
     :param snapshot_time: a unix timestamp
     :return: next fetch time, in unix timestamp
     """
     # turn to datetime object
     parse_time = datetime.fromtimestamp(snapshot_time)
     # Default
-    if 7 > fetch_count >= 1:
-        next_fetch_time = parse_time + timedelta(days=1)
-        return datetime.timestamp(next_fetch_time)
+    if 3 > snapshot_count >= 1:
+        next_snapshot_time = parse_time + timedelta(days=1)
+        return datetime.timestamp(next_snapshot_time)
+    elif snapshot_count == 3:
+        next_snapshot_time = parse_time + timedelta(days=4)
+        return datetime.timestamp(next_snapshot_time)
     else:
         return 0
-
-    # if site_type == 'content_farm':
-    #     # 1/day for 1 week, 1/week for 1 month
-    #     if 11 > fetch_count >= 7:
-    #         next_fetch_time = (parse_time + timedelta(weeks=1)).strftime('%y%m%d%H%M')
-    #         return int(next_fetch_time)
-    #     elif 7 > fetch_count >= 1:
-    #         next_fetch_time = (parse_time + timedelta(days=1)).strftime('%y%m%d%H%M%S')
-    #         return int(next_fetch_time)
-    #     else:
-    #         return 0
-    #
-    # elif site_type == 'news_website':
-    #     # 1/hour for 1 day
-    #     if fetch_count < 24:
-    #         next_fetch_time = (parse_time + timedelta(hours=1)).strftime('%y%m%d%H%M')
-    #         return next_fetch_time
-    #     else:
-    #         return 0
-    # elif site_type == 'organization_website':
-    #     if 7 > fetch_count >= 1:
-    #         next_fetch_time = (parse_time + timedelta(days=1)).strftime('%y%m%d%H%M')
-    #         return next_fetch_time
