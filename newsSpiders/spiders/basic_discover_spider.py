@@ -85,7 +85,6 @@ class BasicDiscoverSpider(CrawlSpider):
         # populate article item
         article["site_id"] = self.site_id
         article["url"] = response.url
-        article["url_hash"] = zlib.crc32(article["url"].encode())
         article["article_type"] = self.assign_article_type()
         article["first_snapshot_at"] = now
         article["last_snapshot_at"] = now
@@ -98,6 +97,7 @@ class BasicDiscoverSpider(CrawlSpider):
             article["redirect_to"] = response.url
         else:
             article["redirect_to"] = None
+        article["url_hash"] = zlib.crc32(article["url"].encode())
 
         # populate article_snapshot item
         article_snapshot["raw_data"] = response.text
