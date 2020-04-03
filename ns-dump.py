@@ -83,6 +83,28 @@ def parse_args():
     return args
 
 
+def dump_snapshots(queries, fh, date_range=None):
+    i = 0
+    for keys in grouper(queries.get_snapshots_in_keys(date_range=date_range), 1000):
+        snapshot_ats = set([k["snapshot_at"] for k in keys if k])
+        for snapshot in queries.get_snapshots_by_keys(snapshot_ats=snapshot_ats):
+            fh.write(
+                json.dumps(
+                    {
+                        key: snapshot[key]
+                        for key in ["article_id", "snapshot_at", "raw_data"]
+                        if key in snapshot
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
+            if i % 10000 == 0:
+                logger.info(f"exported snapshot #{i}")
+            i += 1
+    logger.info(f"exported total {i} snapshots")
+
+
 def add_query(queries, stmt):
     """
     Dynamically add queries to pugsql modules.  A hack.
@@ -95,45 +117,22 @@ def add_query(queries, stmt):
     queries._statements[s.name] = s
 
 
-def get_snapshots_in_keys(queries, date_range=None):
-    if date_range is None:
-        return queries.get_snapshots_in_keys()
-    else:
-        return queries.get_snapshots_in_date_range_in_keys(**date_range)
-
-
-def dump_snapshots(queries, fh, date_range=None):
-    i = 0
-    for keys in grouper(get_snapshots_in_keys(queries, date_range=date_range), 1000):
-        snapshot_ats = set([k["snapshot_at"] for k in keys if k])
-        for snapshot in queries.get_snapshots_by_keys(snapshot_ats=snapshot_ats):
-            fh.write(
-                json.dumps(
-                    {
-                        key: value
-                        for key, value in snapshot.items()
-                        if key in ["article_id", "snapshot_at", "raw_data"]
-                    },
-                    ensure_ascii=False,
-                )
-                + "\n"
-            )
-            if i % 10000 == 0:
-                logger.info(f"exported snapshot #{i}")
-            i += 1
-    logger.info(f"exported total {i} snapshots")
-
-
 def load_dynamic_queries(queries, table):
+    """
+    Load queries to a pugsql module base on `table` value.  Many hacks.
+    """
+    # check SQL injection
+    if not table_pat.match(table):
+        raise ValueError(f"invalid table name {table}")
     add_query(
         queries,
-        f"""-- :name get_snapshots_in_keys :many
+        f"""-- :name get_snapshots_in_keys_all :many
         SELECT article_id, snapshot_at FROM {table}
         """,
     )
     add_query(
         queries,
-        f"""-- :name get_snapshots_in_date_range_in_keys :many
+        f"""-- :name get_snapshots_in_keys_date_ranged :many
         SELECT article_id, snapshot_at FROM {table}
         WHERE snapshot_at >= :start_date AND snapshot_at < :end_date
         """,
@@ -145,6 +144,14 @@ def load_dynamic_queries(queries, table):
         WHERE snapshot_at in :snapshot_ats
         """,
     )
+
+    def get_snapshots_in_keys(queries, date_range=None):
+        if date_range is None:
+            return queries.get_snapshots_in_keys_all()
+        else:
+            return queries.get_snapshots_in_keys_date_ranged(**date_range)
+
+    queries.get_snapshots_in_keys = get_snapshots_in_keys.__get__(queries)
 
 
 def main(table, output=None, date_range=None):
