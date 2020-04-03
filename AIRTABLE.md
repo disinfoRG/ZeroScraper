@@ -1,7 +1,7 @@
 # Set up Airtable
 
-0. create a base with an arbitrary name
-1. create a table inside the base called `Sites`
+0. Create a base with an arbitrary name
+1. Inside the base, create a table called `Sites`.
 2. Inside `Sites`, create the following fields
 
 | Field name | Field type  | Type details  | Explanation | 

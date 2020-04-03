@@ -1,16 +1,16 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time
+from newsSpiders.helpers import generate_next_snapshot_time
 import time
 import json
 
 
-class UpdateDcardPostsSpider(scrapy.Spider):
+class DcardUpdateSpider(scrapy.Spider):
     name = "dcard_update"
     handle_httpstatus_list = [404]
 
     def __init__(self, posts_to_update, site_id=None, *args, **kwargs):
-        super(UpdateDcardPostsSpider, self).__init__(*args, **kwargs)
+        super(DcardUpdateSpider, self).__init__(*args, **kwargs)
         self.selenium = False
         self.posts_to_update = posts_to_update
         self.site_id = site_id
@@ -75,7 +75,7 @@ class UpdateDcardPostsSpider(scrapy.Spider):
 
         else:
             article["snapshot_count"] = snapshot_count + 1
-            article["next_snapshot_at"] = generate_next_fetch_time(
+            article["next_snapshot_at"] = generate_next_snapshot_time(
                 site_type, article["snapshot_count"], now
             )
 

@@ -3,7 +3,7 @@ import re
 import json
 import zlib
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time
+from newsSpiders.helpers import generate_next_snapshot_time
 import time
 
 
@@ -15,7 +15,7 @@ def parse_post_id(link):
     return m.group(1)
 
 
-class DiscoverDcardPostsSpider(scrapy.Spider):
+class DcardDiscoverSpider(scrapy.Spider):
     name = "dcard_discover"
 
     def __init__(
@@ -27,7 +27,7 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         *args,
         **kwargs,
     ):
-        super(DiscoverDcardPostsSpider, self).__init__(*args, **kwargs)
+        super(DcardDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
         self.site_type = site_type
         self.site_url = site_url
@@ -73,24 +73,24 @@ class DiscoverDcardPostsSpider(scrapy.Spider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         # get current time
-        parse_time = int(time.time())
+        now = int(time.time())
 
         # populate article item
         article["site_id"] = self.site_id
         article["url"] = f"https://www.dcard.tw/f/{self.forum_name}/p/{post_id}"
         article["url_hash"] = zlib.crc32(article["url"].encode())
         article["article_type"] = "Dcard"
-        article["first_snapshot_at"] = parse_time
-        article["last_snapshot_at"] = parse_time
+        article["first_snapshot_at"] = now
+        article["last_snapshot_at"] = now
         article["snapshot_count"] = 1
-        article["next_snapshot_at"] = generate_next_fetch_time(
-            self.site_type, article["snapshot_count"], parse_time
+        article["next_snapshot_at"] = generate_next_snapshot_time(
+            self.site_type, article["snapshot_count"], now
         )
         article["redirect_to"] = None
 
         # populate article_snapshot item
         post_comments = {"post": post_info, "comments": comments_api_result}
         article_snapshot["raw_data"] = json.dumps(post_comments)
-        article_snapshot["snapshot_at"] = parse_time
+        article_snapshot["snapshot_at"] = now
 
         yield {"article": article, "article_snapshot": article_snapshot}

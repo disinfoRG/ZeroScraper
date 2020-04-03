@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import pugsql
 import os
-import time
+import datetime
+from tabulate import tabulate
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
@@ -28,10 +29,34 @@ def main(args):
 
     elif args.command == "activate":
         print("activate")
-        queries.activate_site(site_id=args.id)
+        for site_id in args.id:
+            queries.activate_site(site_id=site_id)
 
     elif args.command == "deactivate":
-        queries.deactivate_site(site_id=args.id)
+        for site_id in args.id:
+            queries.deactivate_site(site_id=site_id)
+
+    elif args.command == "list":
+        print(
+            tabulate(
+                [
+                    [
+                        site["site_id"],
+                        site["name"],
+                        site["url"],
+                        ("v" if site["is_active"] else ""),
+                        (
+                            datetime.datetime.fromtimestamp(site["last_crawl_at"])
+                            if site["last_crawl_at"]
+                            else ""
+                        ),
+                        site["airtable_id"],
+                    ]
+                    for site in queries.get_sites()
+                ],
+                headers=["id", "name", "url", "active", "last crawl at", "airtable id"],
+            )
+        )
 
 
 if __name__ == "__main__":
@@ -43,10 +68,19 @@ if __name__ == "__main__":
         "id", type=int, help="id of the site to discover in news db", nargs="?"
     )
     discover_cmd.add_argument(
+        "--url", type=str, help="start url", nargs="?"
+    )
+    discover_cmd.add_argument(
+        "--article", type=str, help="article url pattern", nargs="?"
+    )
+    discover_cmd.add_argument(
+        "--following", type=str, help="following url pattern", nargs="?"
+    )
+    discover_cmd.add_argument(
         "--depth", help="desired depth limit; 0 if no limit imposed.", type=int
     )
     discover_cmd.add_argument(
-        "--dedup_limit",
+        "--dedup-limit",
         help="number of recent articles url to store in memory",
         type=int,
     )
@@ -62,13 +96,15 @@ if __name__ == "__main__":
 
     activate_cmd = cmds.add_parser("activate", help="activate a site in news db")
     activate_cmd.add_argument(
-        "id", type=int, help="id of the site to be set to active", nargs="?"
+        "id", type=int, help="id of the site to be set to active", nargs="+"
     )
 
     deactivate_cmd = cmds.add_parser("deactivate", help="deactivate a site in news db")
     deactivate_cmd.add_argument(
-        "id", type=int, help="id of the site to be deactivated", nargs="?"
+        "id", type=int, help="id of the site to be deactivated", nargs="+"
     )
+
+    list_cmd = cmds.add_parser("list", help="list all sites")
 
     args = parser.parse_args()
     main(args)

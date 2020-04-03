@@ -21,7 +21,10 @@ flask-restful = "*"
 url-normalize = "*"
 werkzeug = "*"
 requests = "*"
-scrapy-splash = "*"
+tabulate = "*"
+gunicorn = "*"
+flask-jwt-extended = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

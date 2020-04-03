@@ -1,11 +1,11 @@
 import scrapy
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time
+from newsSpiders.helpers import generate_next_snapshot_time
 import time
 
 
-class UpdateContentsSpider(scrapy.Spider):
-    name = "update_contents"
+class BasicUpdateSpider(scrapy.Spider):
+    name = "basic_update"
     handle_httpstatus_list = [404]
 
     def __init__(
@@ -17,7 +17,7 @@ class UpdateContentsSpider(scrapy.Spider):
         *args,
         **kwargs,
     ):
-        super(UpdateContentsSpider, self).__init__(*args, **kwargs)
+        super(BasicUpdateSpider, self).__init__(*args, **kwargs)
         self.articles_to_update = articles_to_update
         self.site_id = site_id
         self.site_type = site_type
@@ -34,12 +34,11 @@ class UpdateContentsSpider(scrapy.Spider):
                 callback=self.update_article,
                 cb_kwargs={
                     "article_id": a["article_id"],
-                    "site_id": a["site_id"],
                     "snapshot_count": a["snapshot_count"],
                 },
             )
 
-    def update_article(self, response, article_id, site_id, snapshot_count):
+    def update_article(self, response, article_id, snapshot_count):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         now = int(time.time())
@@ -53,7 +52,7 @@ class UpdateContentsSpider(scrapy.Spider):
             article_snapshot = None
         else:
             article["snapshot_count"] = snapshot_count + 1
-            article["next_snapshot_at"] = generate_next_fetch_time(
+            article["next_snapshot_at"] = generate_next_snapshot_time(
                 self.site_type, article["snapshot_count"], now
             )
 

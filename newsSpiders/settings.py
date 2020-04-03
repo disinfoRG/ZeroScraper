@@ -22,7 +22,7 @@ NEWSPIDER_MODULE = "newsSpiders.spiders"
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 1
+CONCURRENT_REQUESTS = 16
 
 REACTOR_THREADPOOL_MAXSIZE = 100
 
@@ -70,8 +70,10 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "newsSpiders.pipelines.DuplicatesPipeline": 100,
-    "newsSpiders.pipelines.MySqlPipeline": 300,
+    "newsSpiders.pipelines.StandardizePipeline": 100,
+    "newsSpiders.pipelines.DuplicatesPipeline": 200,
+    "newsSpiders.pipelines.OldArticlesPipeline": 300,
+    "newsSpiders.pipelines.MySqlPipeline": 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -94,6 +96,11 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# if breadth-first search uncomment the following three lines
+# DEPTH_PRIORITY = 1
+# SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleFifoDiskQueue'
+# SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
 
 from dotenv import load_dotenv
 import os

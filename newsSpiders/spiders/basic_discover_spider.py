@@ -1,13 +1,13 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from newsSpiders.items import ArticleItem, ArticleSnapshotItem
-from newsSpiders.helpers import generate_next_fetch_time
+from newsSpiders.helpers import generate_next_snapshot_time
 import zlib
 import time
 
 
-class DiscoverNewArticlesSpider(CrawlSpider):
-    name = "discover_new_articles"
+class BasicDiscoverSpider(CrawlSpider):
+    name = "basic_discover"
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         *args,
         **kwargs,
     ):
-        super(DiscoverNewArticlesSpider, self).__init__(*args, **kwargs)
+        super(BasicDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
         self.site_url = site_url
         self.start_urls = [site_url]
@@ -41,7 +41,7 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             "line.naver.jp",
             "plus.google.com",
         ]
-        DiscoverNewArticlesSpider.rules = [
+        BasicDiscoverSpider.rules = [
             Rule(
                 LinkExtractor(allow=article_url_patterns, deny=social_media_links),
                 process_links=self.dedup_article_links,
@@ -49,10 +49,10 @@ class DiscoverNewArticlesSpider(CrawlSpider):
             )
         ]
         if following_url_patterns:
-            DiscoverNewArticlesSpider.rules.append(
+            BasicDiscoverSpider.rules.append(
                 Rule(LinkExtractor(allow=following_url_patterns), follow=True)
             )
-        super(DiscoverNewArticlesSpider, self)._compile_rules()
+        super(BasicDiscoverSpider, self)._compile_rules()
         if site_id:
             self.name = f"{self.name}:{site_id}"
 
@@ -80,27 +80,27 @@ class DiscoverNewArticlesSpider(CrawlSpider):
         article = ArticleItem()
         article_snapshot = ArticleSnapshotItem()
         # get current time
-        parse_time = int(time.time())
+        now = int(time.time())
 
         # populate article item
         article["site_id"] = self.site_id
         article["url"] = response.url
-        article["url_hash"] = zlib.crc32(article["url"].encode())
         article["article_type"] = self.assign_article_type()
-        article["first_snapshot_at"] = parse_time
-        article["last_snapshot_at"] = parse_time
+        article["first_snapshot_at"] = now
+        article["last_snapshot_at"] = now
         article["snapshot_count"] = 1
-        article["next_snapshot_at"] = generate_next_fetch_time(
-            self.site_type, article["snapshot_count"], parse_time
+        article["next_snapshot_at"] = generate_next_snapshot_time(
+            self.site_type, article["snapshot_count"], now
         )
         if "redirect_urls" in response.meta.keys():
             article["url"] = response.request.meta["redirect_urls"][0]
             article["redirect_to"] = response.url
         else:
             article["redirect_to"] = None
+        article["url_hash"] = zlib.crc32(article["url"].encode())
 
         # populate article_snapshot item
         article_snapshot["raw_data"] = response.text
-        article_snapshot["snapshot_at"] = parse_time
+        article_snapshot["snapshot_at"] = now
 
         yield {"article": article, "article_snapshot": article_snapshot}
