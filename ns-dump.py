@@ -67,11 +67,11 @@ def parse_args():
         "-t",
         "--table",
         type=table,
-        help="name of the snapshot table to archive",
+        help="name of the snapshot table to dump",
         required=True,
     )
     parser.add_argument(
-        "-o", "--output", help="output filename; to STDOUT if not provide"
+        "-o", "--output", help="output filename; to STDOUT if not provided"
     )
     parser.add_argument(
         "-r",
