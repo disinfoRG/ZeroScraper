@@ -7,6 +7,7 @@ from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
 from newsSpiders.spiders.dcard_dicsover_spider import DcardDiscoverSpider
 from newsSpiders.spiders.login_discover_spider import LoginDiscoverSpider
+from newsSpiders.spiders.initium_discover_spider import InitiumDiscoverSpider
 
 
 def run(runner, site_id, args=None):
@@ -62,6 +63,23 @@ def run(runner, site_id, args=None):
             selenium=site_conf.get("selenium", False),
             login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
             credential_tag="appledaily"
+        )
+
+    elif "initium" in site_conf["url"]:
+        crawler = Crawler(InitiumDiscoverSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
+            article_url_patterns=site_conf["article"],
+            following_url_patterns=site_conf["following"],
+            article_url_excludes=[a["url"] for a in recent_articles],
+            selenium=site_conf.get("selenium", False),
+            login_url="https://api.theinitium.com/api/v1/auth/login/?language=zh-hant",
+            credential_tag="initium"
         )
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)
