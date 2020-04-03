@@ -21,7 +21,7 @@ class StandardizePipeline:
             return item
 
         url = item["article"]["url"]
-        domains = ['udn', 'chinatimes', 'appledaily', 'thenewslens']
+        domains = ['udn', 'chinatimes', 'appledaily', 'thenewslens', 'storm.mg']
 
         if any(d in url for d in domains):
             url = url.split('?')[0]
@@ -73,10 +73,10 @@ class OldArticlesPipeline:
             article_info = self.queries.get_article_by_id(article_id=item["article"]["article_id"])
             first_snapshot_at = article_info["first_snapshot_at"]
             keep_alive_duration = int(timedelta(days=60).total_seconds())
-            if first_snapshot_at <= item["article_snapshot"]["snapshot_at"] - keep_alive_duration:
+            if first_snapshot_at <= item["article"]["last_snapshot_at"] - keep_alive_duration:
                 del item["article_snapshot"]
                 self.queries.close_snapshot(article_id=item["article"]["article_id"])
-                raise DropItem(f"Item too old: {item['article']['url']}")
+                raise DropItem(f"Item too old: {item['article']['article_id']}")
             else:
                 return item
         else:
