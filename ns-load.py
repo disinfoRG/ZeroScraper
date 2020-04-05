@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-import os
-import sys
+from newsSpiders.itertools import grouper
 from pathlib import Path
 import argparse
-import re
 import json
 import logging
-import traceback
 import newsSpiders.pugsql as pugsql
-from newsSpiders.itertools import grouper
+import os
+import re
+import sys
+import traceback
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 logger = logging.getLogger(__name__)
