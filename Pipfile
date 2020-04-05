@@ -25,6 +25,7 @@ tabulate = "*"
 gunicorn = "*"
 flask-jwt-extended = "*"
 pyjwt = "*"
+s3cmd = "*"
 
 [requires]
 python_version = "3.7"
