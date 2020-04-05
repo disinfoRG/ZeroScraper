@@ -44,11 +44,10 @@ def parse_args():
 
 def load_dynamic_queries(queries, table):
     queries.add_query(
-        queries,
-        f"""-- :name insert_snapshots :insert
-        INSERT {table} (article_id, snapshot_at, raw_data, snapshot_at_date)
+        f"""-- :name replace_snapshots :insert
+        REPLACE {table} (article_id, snapshot_at, raw_data, snapshot_at_date)
         VALUES (:article_id, :snapshot_at, :raw_data, FROM_UNIXTIME(:snapshot_at))
-        """,
+        """
     )
 
 
@@ -64,7 +63,7 @@ def load_snapshots(queries, fh):
             for line in lines
             if line
         ]
-        queries.insert_snapshots(*snapshots)
+        queries.replace_snapshots(*snapshots)
         if i % 10000 == 0:
             logger.info(f"loaded snapshot #{i}")
         i += len(snapshots)
