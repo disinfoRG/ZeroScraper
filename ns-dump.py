@@ -100,9 +100,9 @@ def dump_snapshots(queries, fh, date_range=None):
                 + "\n"
             )
             if i % 10000 == 0:
-                logger.info(f"exported snapshot #{i}")
+                logger.info(f"dumped snapshot #{i}")
             i += 1
-    logger.info(f"exported total {i} snapshots")
+    logger.info(f"dumped total {i} snapshots")
 
 
 def add_query(queries, stmt):
@@ -169,6 +169,4 @@ def main(table, output=None, date_range=None):
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main(**vars(parse_args())))
