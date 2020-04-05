@@ -63,6 +63,21 @@ def run(runner, site_id, args=None):
             login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
             credential_tag="appledaily"
         )
+
+    elif site_conf["selenium"]:
+        crawler = Crawler(SplashDiscoverSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
+            article_url_patterns=site_conf["article"],
+            following_url_patterns=site_conf["following"],
+            article_url_excludes=[a["url"] for a in recent_articles],
+            selenium=site_conf.get("selenium", False),
+        )
+
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
