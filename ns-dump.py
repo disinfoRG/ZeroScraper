@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
-import logging
-import traceback
-import argparse
-import os
-import sys
-import json
-import datetime
-from itertools import zip_longest
+from newsSpiders.itertools import grouper
 from pathlib import Path
+import argparse
+import datetime
+import json
+import logging
+import newsSpiders.pugsql as pugsql
+import os
 import re
-import pugsql
-import pugsql.parser
+import sys
+import traceback
 
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 logger = logging.getLogger(__name__)
@@ -19,13 +18,6 @@ queries = pugsql.module("queries")
 
 table_pat = re.compile("^(article)?snapshot\d*$", re.I)
 duration_pat = re.compile("^(\d+)([wd])")
-
-
-def grouper(iterable, n, fillvalue=None):
-    "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return zip_longest(*args, fillvalue=fillvalue)
 
 
 def parse_args():
@@ -105,18 +97,6 @@ def dump_snapshots(queries, fh, date_range=None):
     logger.info(f"dumped total {i} snapshots")
 
 
-def add_query(queries, stmt):
-    """
-    Dynamically add queries to pugsql modules.  A hack.
-    """
-    s = pugsql.parser.parse(stmt, ctx=None)
-    if hasattr(queries, s.name):
-        raise ValueError('Please choose another name than "%s".' % s.name)
-    s.set_module(queries)
-    setattr(queries, s.name, s)
-    queries._statements[s.name] = s
-
-
 def load_dynamic_queries(queries, table):
     """
     Load queries to a pugsql module base on `table` value.  Many hacks.
@@ -124,25 +104,22 @@ def load_dynamic_queries(queries, table):
     # check SQL injection
     if not table_pat.match(table):
         raise ValueError(f"invalid table name {table}")
-    add_query(
-        queries,
+    queries.add_query(
         f"""-- :name get_snapshots_in_keys_all :many
         SELECT article_id, snapshot_at FROM {table}
-        """,
+        """
     )
-    add_query(
-        queries,
+    queries.add_query(
         f"""-- :name get_snapshots_in_keys_date_ranged :many
         SELECT article_id, snapshot_at FROM {table}
         WHERE snapshot_at >= :start_date AND snapshot_at < :end_date
-        """,
+        """
     )
-    add_query(
-        queries,
+    queries.add_query(
         f"""-- :name get_snapshots_by_keys :many
         SELECT article_id, snapshot_at, raw_data FROM {table}
         WHERE snapshot_at in :snapshot_ats
-        """,
+        """
     )
 
     def get_snapshots_in_keys(queries, date_range=None):
