@@ -1,7 +1,7 @@
 CHROMEDRIVER_URL=https://chromedriver.storage.googleapis.com/79.0.3945.36/chromedriver_linux64.zip
 CHROME_URL=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-apt-get install -y libnss3-dev
+apt-get update -y && apt-get install -y libnss3-dev default-mysql-client
 if [ ! -x /usr/local/bin/chromedriver ]; then
   curl -O ${CHROMEDRIVER_URL}
   unzip -o chromedriver_linux64.zip
