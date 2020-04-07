@@ -103,9 +103,9 @@ $ pipenv shell
 $ pre-commit install
 ```
 ## API
-### Command-line tools
-1. login first: `python ns-api.py login`, if successful, the credential would be saved in `secrets.json`.  
-1. get site stats:
+### Using Command-line tools
+1. Login first: `python ns-api.py login`, if successful, the credential would be saved in `secrets.json`.  
+2. To get site stats:
 ```sh
 $ python ns-api.py stats
 ```
@@ -114,7 +114,7 @@ $ python ns-api.py stats
             --date: view stats of a particular date. e.g. 2020-04-03
             -o / --output: filename to save the json output.
 
-1. get variable:
+3. To get variable:
 ```sh
 $ python ns-api.py variable {variable-key}
 ```
@@ -122,21 +122,24 @@ $ python ns-api.py variable {variable-key}
             -o / --output: filename to save the json output.
 
 
-### Browser
+### Using Browser
 1. login first: `GET /login` to fill out the form and submit.
 
 ### API endpoints  
-1. Retrieve article info with article_id: `GET /articles/{article_id}`
-2. Retrieve article info with url, only for exact match: `GET /articles?url={url}`
-3. Retrieve publication by matching string in title and content: `GET /publications?q={string}`
-4. Get active sites: `GET /sites/active`
-5. Get total article count in a site: `GET /sites/{site_id}/article_count`
-6. Get new articles in a site discovered during a time interval: `GET /sites/{site_id}/new_articles?timeStart={unix_time}&timeEnd={unix_time}`
-7. Get articles in a site updated during a time interval: `GET /sites/{site_id}/updated_articles?timeStart={unix_time}&timeEnd={unix_time}`
-8. Get article discovered most recently in a site: `GET /sites/{site_id}/latest_article`
-9. Get stats of a site: `GET /stats?site_id={site_id}`
-10. Get stats of a day: `GET /stats?date={date}`
-11. Get all stats: `GET /stats`
+- Retrieve article info with article_id: `GET /articles/{article_id}`
+- Retrieve article info with url, only for exact match: `GET /articles?url={url}`
+- Retrieve publication by matching string in title and content: `GET /publications?q={string}`
+- Get active sites: `GET /sites/active`
+- Get total article count in a site: `GET /sites/{site_id}/article_count`
+- Get new articles in a site discovered during a time interval: `GET /sites/{site_id}/new_articles?timeStart={unix_time}&timeEnd={unix_time}`
+- Get articles in a site updated during a time interval: `GET /sites/{site_id}/updated_articles?timeStart={unix_time}&timeEnd={unix_time}`
+- Get article discovered most recently in a site: `GET /sites/{site_id}/latest_article`
+- Get stats of a site: `GET /stats?site_id={site_id}`
+- Get stats of a day: `GET /stats?date={date}`
+- Get all stats: `GET /stats`
+- Get health: `GET /health`
+- Get variable: `GET /variable?key={variable-key}`
+
 
 ## Dump snapshot table
 
