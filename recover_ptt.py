@@ -29,7 +29,6 @@ for i in tqdm(range(len(lost_ptt))):
                                                  last_snapshot_at=now)
         time.sleep(uniform(3, 5))
         lost_ptt.remove(ptt)
-        break
     else:
         failed_ptt.append(ptt)
 
