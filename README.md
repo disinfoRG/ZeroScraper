@@ -104,7 +104,23 @@ $ pre-commit install
 ```
 ## API
 ### Command-line tools
-1. login first: `python ns.py login`, if successful, the credential would be saved in `secrets.json`.  
+1. login first: `python ns-api.py login`, if successful, the credential would be saved in `secrets.json`.  
+1. get site stats:
+```sh
+$ python ns-api.py stats
+```
+    Optional Arguments:
+            --site-id: view stats of a particular site. 
+            --date: view stats of a particular date. e.g. 2020-04-03
+            -o / --output: filename to save the json output.
+
+1. get variable:
+```sh
+$ python ns-api.py variable {variable-key}
+```
+    Optional Arguments:
+            -o / --output: filename to save the json output.
+
 
 ### Browser
 1. login first: `GET /login` to fill out the form and submit.
