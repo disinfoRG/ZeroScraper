@@ -3,6 +3,7 @@ import time
 
 import pugsql
 from dotenv import load_dotenv
+from datetime import timedelta
 from flask import Flask, request, make_response, jsonify, render_template
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -52,10 +53,22 @@ class Login(Resource):
 
 class Logout(Resource):
     def post(self):
-        response = make_response({"logout": True})
+        response = make_response({"message": "Logout successful."})
         unset_access_cookies(response)
 
         return response
+
+
+class Health(Resource):
+    def get(self):
+        latest_snapshot_at = scraper_queries.get_max_snapshot_at()["max_snapshot_at"]
+        now = int(time.time())
+        if latest_snapshot_at > now - int(timedelta(minutes=15).total_seconds()):
+            result = {"message": "okay"}
+        else:
+            result = {"message": "not okay"}
+
+        return result
 
 
 class GetArticleByID(Resource):
@@ -183,6 +196,7 @@ class Hello(Resource):
 api.add_resource(Hello, "/")
 api.add_resource(Login, "/login")
 api.add_resource(Logout, "/logout")
+api.add_resource(Health, "/health")
 api.add_resource(GetArticleByID, "/articles/<int:article_id>")
 api.add_resource(GetArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
