@@ -71,6 +71,15 @@ class Health(Resource):
         return result
 
 
+class GetVariable(Resource):
+    @jwt_required
+    def get(self):
+        key = request.args.get("key")
+        result = scraper_queries.get_variable(key=key)
+
+        return result
+
+
 class GetArticleByID(Resource):
     @jwt_required
     def get(self, article_id):
@@ -197,6 +206,7 @@ api.add_resource(Hello, "/")
 api.add_resource(Login, "/login")
 api.add_resource(Logout, "/logout")
 api.add_resource(Health, "/health")
+api.add_resource(GetVariable, "/variable")
 api.add_resource(GetArticleByID, "/articles/<int:article_id>")
 api.add_resource(GetArticleByURL, "/articles")
 api.add_resource(SitesWarning, "/sites/<int:site_id>", "/sites/<int:site_id>/")
