@@ -104,6 +104,8 @@ def update(args):
         snapshot = get_dcard_article(article_info["url"], user_agent)
     elif use_selenium:
         snapshot = get_article_by_selenium(article_info["url"], user_agent)
+    elif "ptt" in args.url:
+        snapshot = get_article_by_request(args.url, user_agent, cookies={"over18": "1"})
     else:
         snapshot = get_article_by_request(article_info["url"], user_agent)
 
