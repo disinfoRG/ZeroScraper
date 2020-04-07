@@ -64,9 +64,9 @@ class Health(Resource):
         latest_snapshot_at = scraper_queries.get_max_snapshot_at()["max_snapshot_at"]
         now = int(time.time())
         if latest_snapshot_at > now - int(timedelta(minutes=15).total_seconds()):
-            result = {"message": "okay"}
+            result = make_response('okay')
         else:
-            result = {"message": "not okay"}
+            result = make_response('not okay')
 
         return result
 
