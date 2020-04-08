@@ -28,7 +28,6 @@ for i in tqdm(range(len(lost_ptt))):
                                                  next_snapshot_at=0,
                                                  last_snapshot_at=now)
         time.sleep(uniform(3, 5))
-        lost_ptt.remove(ptt)
     else:
         failed_ptt.append(ptt)
 
