@@ -9,7 +9,7 @@ import argparse
 queries = pugsql.module("./queries")
 queries.connect(os.getenv("DB_URL"))
 
-netloc = "https:/www.ptt.cc"
+netloc = "https://www.ptt.cc"
 
 
 def get_website(url):
@@ -23,18 +23,19 @@ def collect_article_urls(args):
     for d in range(args.depth):
         r = get_website(target_url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        article_urls += [netloc + x.find('a')['href'] for x in soup.find_all('div', {'class': 'r-ent'})]
+        url_elements = [x.find('a') for x in soup.find_all('div', {'class': 'r-ent'}) if x.find('a')]
+        article_urls += [netloc + x['href'] for x in url_elements]
         print(target_url)
         target_url = netloc + soup.find_all('a', {"class": "btn wide"})[1]['href']
     return article_urls
 
 
 def main(args):
-    site_url = queries.get_site_by_id(site_id=args.site_id)["url"]
+    site_url = queries.get_site_by_id(site_id=args.id)["url"]
     args.url = site_url
     article_urls = collect_article_urls(args)
     recent_urls_in_db = [x['url'] for x in
-                         queries.get_recent_articles_by_site(site_id=args.site_id, limit=args.dedup_limit)
+                         queries.get_recent_articles_by_site(site_id=args.id, limit=args.dedup_limit)
                          ]
 
     article_urls = list(set(article_urls)-set(recent_urls_in_db))
@@ -42,20 +43,21 @@ def main(args):
     for url in article_urls:
         article = SimpleNamespace()
         article.url = url
-        article.site_id = args.site_id
+        article.site_id = args.id
+        article.ua = "Mozilla 5.0"
         discover(article)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "site_id", type=int
+        "id", type=int
     )
     parser.add_argument(
         "--depth", type=int, default=200
     )
     parser.add_argument(
-        "--dedup_limit", type=int, default=2000
+        "--dedup-limit", type=int, default=2000
     )
     args = parser.parse_args()
     main(args)
