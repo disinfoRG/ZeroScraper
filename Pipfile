@@ -27,6 +27,7 @@ flask-jwt-extended = "*"
 pyjwt = "*"
 s3cmd = "*"
 beautifulsoup4 = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"

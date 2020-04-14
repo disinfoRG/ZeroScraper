@@ -1,18 +1,4 @@
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine
-from sqlalchemy import MetaData
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-def connect_to_db():
-    engine = create_engine(os.getenv("DB_URL"))
-    connection = engine.connect()
-    metadata = MetaData()
-    metadata.reflect(bind=engine)
-    return engine, connection, metadata.tables
 
 
 def get_article_type(url):
