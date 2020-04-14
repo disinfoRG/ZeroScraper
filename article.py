@@ -18,11 +18,7 @@ from newsSpiders.types import SiteConfig
 logging.basicConfig(
     format="[%(levelname)s] %(asctime)s %(filename)s %(funcName)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    level='INFO',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('{:%Y-%m-%d}.log'.format(datetime.now()), encoding="utf-8"),
-    ],
+    level=os.getenv("LOG_LEVEL", "INFO"),
 )
 
 logger = logging.getLogger(__name__)
@@ -164,7 +160,7 @@ def discover(args):
     queries.insert_snapshot(
         article_id=inserted_article_id, snapshot_at=crawl_time, raw_data=snapshot
     )
-    logger.info(f"Finish discover, new article_id = {inserted_article_id}")
+    logger.info(f"Finish discover {args.url}, new article_id = {inserted_article_id}")
     return inserted_article_id
 
 

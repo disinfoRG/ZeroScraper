@@ -26,6 +26,7 @@ gunicorn = "*"
 flask-jwt-extended = "*"
 pyjwt = "*"
 s3cmd = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.7"
