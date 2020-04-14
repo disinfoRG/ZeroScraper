@@ -19,4 +19,5 @@ FROM
 	AND
 		ArticleSnapshot.snapshot_at < :time_end
 ) as T
-group by site_id
+GROUP BY site_id
+HAVING discover_count > 0 or update_count > 0;
