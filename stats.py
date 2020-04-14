@@ -1,33 +1,29 @@
 import argparse
 import os
-from itertools import groupby
 import pugsql
 from dateutil.parser import parse
 from datetime import datetime, timedelta
+import pytz
 
 
-def prep_entry_for_insert(stats_list):
-    for k, v in groupby(sorted(stats_list, key=lambda x: x['site_id']), key=lambda x: x['site_id']):
-        dicts = list(v)
-        result = {'discover_count': 0, 'update_count': 0}
-        for d in dicts: result.update(d)
-        yield result
+def date_to_unix(date_str, timezone='Asia/Taipei'):
+    date = parse(date_str)
+    tw = pytz.timezone(timezone)
+    loc_dt = tw.localize(date)
+    start_unix = loc_dt.timestamp()
+    end_unix = start_unix + 86400
+    return start_unix, end_unix
 
 
 def main(args):
     queries = pugsql.module('queries')
     queries.connect(os.getenv("DB_URL"))
 
-    # parse date string to datetime obj
-    dt = parse(args.date)
-    # uniformly format date, for use in db insertion
-    datestr = dt.strftime('%Y-%m-%d')
+    date_start_unix, date_end_unix = date_to_unix(args.date)
 
-    discover_stats = list(queries.count_articles_discovered_in_interval(date=datestr))
-    update_stats = list(queries.count_articles_updated_in_interval(date=datestr))
-    combined_stats_list = discover_stats + update_stats
-    for entry in prep_entry_for_insert(combined_stats_list):
-        queries.upsert_stats({**entry, 'date': datestr})
+    for stats in queries.count_site_stats(time_start=date_start_unix,
+                                          time_end=date_end_unix):
+        queries.upsert_stats({**stats, 'date': args.date})
 
 
 if __name__ == '__main__':
