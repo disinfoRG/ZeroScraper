@@ -18,6 +18,7 @@ class UpdatesitesSpider(scrapy.Spider):
             "type",
             "article",
             "following",
+            "login_url",
             "depth",
             "delay",
             "ua",

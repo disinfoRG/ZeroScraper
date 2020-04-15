@@ -19,7 +19,7 @@ site_type_mapping = {
     "YouTube 帳號": "youtube_user",
 }
 
-site_config_fields = ["article", "following", "depth", "delay", "ua", "selenium"]
+site_config_fields = ["article", "following", "login_url", "depth", "delay", "ua", "selenium"]
 
 
 class SiteItem(scrapy.Item):

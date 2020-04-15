@@ -73,7 +73,7 @@ def run(runner, site_id, args=None):
             following_url_patterns=site_conf["following"],
             article_url_excludes=[a["url"] for a in recent_articles],
             selenium=site_conf.get("selenium", False),
-            login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
+            login_url=site_conf["login_url"],
             credential_tag="appledaily"
         )
     else:
