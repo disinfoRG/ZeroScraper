@@ -7,6 +7,7 @@ from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
 from newsSpiders.spiders.dcard_dicsover_spider import DcardDiscoverSpider
 from newsSpiders.spiders.login_discover_spider import LoginDiscoverSpider
+from newsSpiders.spiders.toutiao_discover_spider import ToutiaoDiscoverSpider
 
 
 def run(runner, site_id, args=None):
@@ -47,6 +48,18 @@ def run(runner, site_id, args=None):
             site_type=site_conf["type"],
             article_url_excludes=[a["url"] for a in recent_articles],
         )
+    elif "toutiao" in site_conf["url"]:
+        crawler = Crawler(ToutiaoDiscoverSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            site_url=site_conf["url"],
+            site_type=site_conf["type"],
+            article_url_excludes=[a["url"] for a in recent_articles],
+        )
+
     elif "appledaily" in site_conf["url"]:
         crawler = Crawler(LoginDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
