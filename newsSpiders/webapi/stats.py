@@ -1,21 +1,17 @@
 from dateutil.parser import parse
+from flask import request
 
 
-def get_stats_by_site(queries, site_id):
-    result = queries.get_stats_by_site(site_id=site_id)
-    result = list(result)
-    return result
+def get_stats(queries):
+    site_id = request.args.get("site_id", None)
+    date = request.args.get("date", None)
+    if site_id:
+        site_id = int(site_id)
+        body = list(queries.get_stats_by_site(site_id=site_id))
+    elif date:
+        date = parse(date).strftime("%Y-%m-%d")
+        body = list(queries.get_stats_by_date(date=date))
+    else:
+        body = list(queries.get_all_stats())
 
-
-def get_stats_by_date(queries, date):
-    date = parse(date).strftime("%Y-%m-%d")
-    result = queries.get_stats_by_date(date=date)
-    result = list(result)
-    return result
-
-
-def get_all_stats(queries):
-    result = queries.get_all_stats()
-    result = list(result)
-    return result
-
+    return {'body': body}
