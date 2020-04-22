@@ -13,7 +13,12 @@ def add_query(queries, stmt):
     queries._statements[s.name] = s
 
 
+def add_method(queries, name, fn):
+    setattr(queries, name, fn.__get__(queries))
+
+
 def module(*args, **kwargs):
     queries = pugsql.module(*args, **kwargs)
     queries.add_query = add_query.__get__(queries)
+    queries.add_method = add_method.__get__(queries)
     return queries

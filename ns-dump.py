@@ -77,9 +77,9 @@ def parse_args():
 
 def dump_snapshots(queries, fh, date_range=None):
     i = 0
-    for keys in grouper(queries.get_snapshots_in_keys(date_range=date_range), 1000):
-        snapshot_ats = set([k["snapshot_at"] for k in keys if k])
-        for snapshot in queries.get_snapshots_by_keys(snapshot_ats=snapshot_ats):
+    for batch in grouper(queries.get_snapshot_ats(date_range=date_range), 1000):
+        snapshot_ats = [row["snapshot_at"] for row in batch if row]
+        for snapshot in queries.get_snapshots_by_snapshot_at(snapshot_ats=snapshot_ats):
             fh.write(
                 json.dumps(
                     {
@@ -91,9 +91,8 @@ def dump_snapshots(queries, fh, date_range=None):
                 )
                 + "\n"
             )
-            if i % 10000 == 0:
-                logger.info(f"dumped snapshot #{i}")
             i += 1
+        logger.info(f"dumped snapshot #{i}")
     logger.info(f"dumped total {i} snapshots")
 
 
@@ -105,30 +104,30 @@ def load_dynamic_queries(queries, table):
     if not table_pat.match(table):
         raise ValueError(f"invalid table name {table}")
     queries.add_query(
-        f"""-- :name get_snapshots_in_keys_all :many
-        SELECT article_id, snapshot_at FROM {table}
+        f"""-- :name get_snapshot_ats_all :many
+        SELECT DISTINCT(snapshot_at) FROM {table}
         """
     )
     queries.add_query(
-        f"""-- :name get_snapshots_in_keys_date_ranged :many
-        SELECT article_id, snapshot_at FROM {table}
-        WHERE snapshot_at >= :start_date AND snapshot_at < :end_date
+        f"""-- :name get_snapshot_ats_date_ranged :many
+        SELECT DISTINCT(snapshot_at) FROM {table}
+        WHERE snapshot_at BETWEEN :start_date AND (:end_date - 1)
         """
     )
     queries.add_query(
-        f"""-- :name get_snapshots_by_keys :many
+        f"""-- :name get_snapshots_by_snapshot_at :many
         SELECT article_id, snapshot_at, raw_data FROM {table}
         WHERE snapshot_at in :snapshot_ats
         """
     )
 
-    def get_snapshots_in_keys(queries, date_range=None):
+    def get_snapshot_ats(queries, date_range=None):
         if date_range is None:
-            return queries.get_snapshots_in_keys_all()
+            return queries.get_snapshot_ats_all()
         else:
-            return queries.get_snapshots_in_keys_date_ranged(**date_range)
+            return queries.get_snapshot_ats_date_ranged(**date_range)
 
-    queries.get_snapshots_in_keys = get_snapshots_in_keys.__get__(queries)
+    queries.add_method("get_snapshot_ats", get_snapshot_ats)
 
 
 def main(table, output=None, date_range=None):
