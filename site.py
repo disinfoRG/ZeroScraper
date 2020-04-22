@@ -67,9 +67,7 @@ if __name__ == "__main__":
     discover_cmd.add_argument(
         "id", type=int, help="id of the site to discover in news db", nargs="?"
     )
-    discover_cmd.add_argument(
-        "--url", type=str, help="start url", nargs="?"
-    )
+    discover_cmd.add_argument("--url", type=str, help="start url", nargs="?")
     discover_cmd.add_argument(
         "--article", type=str, help="article url pattern", nargs="?"
     )

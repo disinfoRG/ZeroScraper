@@ -120,7 +120,9 @@ def discover(args):
     url_hash = str(zlib.crc32(url.encode()))
     result = queries.get_article_id_by_url(url=url, url_hash=url_hash)
     if result is not None:
-        logger.info(f"URL exists in the database, with article_id {result['article_id']}. Please do update instead")
+        logger.info(
+            f"URL exists in the database, with article_id {result['article_id']}. Please do update instead"
+        )
         return
 
     crawler_config = SiteConfig.default()
@@ -182,9 +184,7 @@ if __name__ == "__main__":
         help="url of the article to be snapshot first-time in the db.",
         nargs="?",
     )
-    discover_cmd.add_argument(
-        "--ua", type=str, help="user agent string", nargs="?"
-    )
+    discover_cmd.add_argument("--ua", type=str, help="user agent string", nargs="?")
     discover_cmd.add_argument(
         "--selenium", help="use selenium to load website", action="store_true"
     )
@@ -199,9 +199,7 @@ if __name__ == "__main__":
     update_cmd.add_argument(
         "id", type=int, help="id of the article to update in news db", nargs="?"
     )
-    update_cmd.add_argument(
-        "--ua", type=str, help="user agent string", nargs="?"
-    )
+    update_cmd.add_argument("--ua", type=str, help="user agent string", nargs="?")
     update_cmd.add_argument(
         "--selenium", help="use selenium to load website", action="store_true"
     )

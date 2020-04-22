@@ -1,33 +1,20 @@
+from flask import request
 from url_normalize import url_normalize
 
 
 def get_article_by_id(queries, article_id):
-    article_entry = queries.get_article_by_id(article_id=article_id)
-    snapshot_times = [
-        x["snapshot_at"]
-        for x in queries.get_article_snapshot_time(article_id=article_id)
-    ]
-    result = {**article_entry, "snapshot_time": snapshot_times}
-    return result
+    body = queries.get_article_by_id(article_id=article_id)
+    return {"body": body}
 
 
-def get_article_by_url(queries, url):
+def get_article_by_url(queries):
+    url = request.args.get("url", None)
     normalized_url = url_normalize(url)
-    url_info = {"input_url": url, "normalized_url": normalized_url}
 
-    article_entry = list(queries.get_article_by_url(url=normalized_url))
+    if url is None:
+        body = {"message": "please provide a valid url as params"}
+        return {"body": body, "status_code": 404}
 
-    if article_entry:
-        result = list()
-        for entry in article_entry:
-            snapshot_time = [
-                x["snapshot_at"]
-                for x in queries.get_article_snapshot_time(
-                    article_id=entry["article_id"]
-                )
-            ]
-            result.append({**url_info, **entry, "snapshot_time": snapshot_time})
-    else:
-        result = [{**url_info, "error_message": "url does not exist in the database."}]
+    body = list(queries.get_article_by_url(url=normalized_url))
 
-    return result
+    return {"body": body}

@@ -74,7 +74,7 @@ def run(runner, site_id, args=None):
             article_url_excludes=[a["url"] for a in recent_articles],
             selenium=site_conf.get("selenium", False),
             login_url=site_conf["login_url"],
-            credential_tag="appledaily"
+            credential_tag="appledaily",
         )
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)

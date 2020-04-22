@@ -36,7 +36,9 @@ class ToutiaoDiscoverSpider(scrapy.Spider):
         if article_url_excludes is None:
             self.article_id_excludes = []
         else:
-            self.article_id_excludes = [parse_article_id(url) for url in article_url_excludes]
+            self.article_id_excludes = [
+                parse_article_id(url) for url in article_url_excludes
+            ]
 
     def start_requests(self):
         api_url = f"https://www.toutiao.com/api/pc/realtime_news/"
@@ -45,8 +47,9 @@ class ToutiaoDiscoverSpider(scrapy.Spider):
 
     def get_article_urls(self, response):
         response_json = json.loads(response.body.decode("utf-8"))["data"]
-        article_ids = [re.search(r"/group/(\d+)/", x["open_url"]).group(1)
-                       for x in response_json]
+        article_ids = [
+            re.search(r"/group/(\d+)/", x["open_url"]).group(1) for x in response_json
+        ]
 
         for aid in article_ids:
             if aid in self.article_id_excludes:
@@ -55,9 +58,7 @@ class ToutiaoDiscoverSpider(scrapy.Spider):
 
             article_url = f"https://www.toutiao.com/a{aid}/"
 
-            yield scrapy.Request(
-                url=article_url, callback=self.parse_articles
-            )
+            yield scrapy.Request(url=article_url, callback=self.parse_articles)
 
     def parse_articles(self, response):
         # init
