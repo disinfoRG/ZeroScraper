@@ -21,6 +21,16 @@ def make_json_output(args, json_output):
         print(json_output)
 
 
+def load_token():
+    try:
+        access_token = json.load(open("secrets.json"))["access_token"]
+    except FileNotFoundError:
+        logger.exception("Cannot find secrets.json. Please login first.")
+    else:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        return headers
+
+
 def login():
     username = input("username: ")
     password = getpass("password: ")
@@ -36,41 +46,25 @@ def login():
 
 
 def stats(args):
-    try:
-        access_token = json.load(open("secrets.json"))["access_token"]
-    except FileNotFoundError:
-        logger.exception("Cannot find secrets.json. Please login first.")
+    headers = load_token()
+    if args.site_id:
+        r = requests.get(
+            f'{os.getenv("API_URL")}/stats?site_id={args.site_id}', headers=headers
+        )
+    elif args.date:
+        r = requests.get(
+            f'{os.getenv("API_URL")}/stats?date={args.date}', headers=headers
+        )
     else:
-        if args.site_id:
-            r = requests.get(
-                f'{os.getenv("API_URL")}/stats?site_id={args.site_id}',
-                cookies={"access_token_cookie": access_token},
-            )
-        elif args.date:
-            r = requests.get(
-                f'{os.getenv("API_URL")}/stats?date={args.date}',
-                cookies={"access_token_cookie": access_token},
-            )
-        else:
-            r = requests.get(
-                f'{os.getenv("API_URL")}/stats',
-                cookies={"access_token_cookie": access_token},
-            )
+        r = requests.get(f'{os.getenv("API_URL")}/stats', headers=headers)
 
-        make_json_output(args, r.json())
+    make_json_output(args, r.json())
 
 
 def variable(args):
-    try:
-        access_token = json.load(open("secrets.json"))["access_token"]
-    except FileNotFoundError:
-        logger.exception("Cannot find secrets.json. Please login first.")
-    else:
-        r = requests.get(
-            f'{os.getenv("API_URL")}/variable?key={args.key}',
-            cookies={"access_token_cookie": access_token},
-        )
-        make_json_output(args, r.json())
+    headers = load_token()
+    r = requests.get(f'{os.getenv("API_URL")}/variable?key={args.key}', headers=headers)
+    make_json_output(args, r.json())
 
 
 def main(args):
