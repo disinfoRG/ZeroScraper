@@ -17,14 +17,14 @@ class StandardizePipeline:
         pass
 
     def process_item(self, item, spider):
-        if 'update' in spider.name:
+        if "update" in spider.name:
             return item
 
         url = item["article"]["url"]
-        domains = ['udn', 'chinatimes', 'appledaily', 'thenewslens', 'storm.mg']
+        domains = ["udn", "chinatimes", "appledaily", "thenewslens", "storm.mg"]
 
         if any(d in url for d in domains):
-            url = url.split('?')[0]
+            url = url.split("?")[0]
             url_hash = zlib.crc32(url.encode())
             item["article"]["url"] = url
             item["article"]["url_hash"] = url_hash
@@ -62,6 +62,7 @@ class OldArticlesPipeline:
     A pipeline that detects if the article is over 2 months old since it's first discovered.
     If so, do not insert new snapshot and update next_snapshot_at to 0
     """
+
     def __init__(self):
         self.queries = pugsql.module("queries/")
 
@@ -70,10 +71,15 @@ class OldArticlesPipeline:
 
     def process_item(self, item, spider):
         if "article_id" in item["article"]:
-            article_info = self.queries.get_article_by_id(article_id=item["article"]["article_id"])
+            article_info = self.queries.get_article_by_id(
+                article_id=item["article"]["article_id"]
+            )
             first_snapshot_at = article_info["first_snapshot_at"]
             keep_alive_duration = int(timedelta(days=60).total_seconds())
-            if first_snapshot_at <= item["article"]["last_snapshot_at"] - keep_alive_duration:
+            if (
+                first_snapshot_at
+                <= item["article"]["last_snapshot_at"] - keep_alive_duration
+            ):
                 del item["article_snapshot"]
                 self.queries.close_snapshot(article_id=item["article"]["article_id"])
                 raise DropItem(f"Item too old: {item['article']['article_id']}")

@@ -14,4 +14,4 @@ def get_stats(queries):
     else:
         body = list(queries.get_all_stats())
 
-    return {'body': body}
+    return {"body": body}

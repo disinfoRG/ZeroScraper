@@ -29,7 +29,7 @@ def login():
     r = requests.post(os.getenv("API_URL") + "/login", data=user_credential)
     if r.status_code == 200:
         logger.info("Login successful. ")
-        token = {"access_token": r.json()['access_token']}
+        token = {"access_token": r.json()["access_token"]}
         json.dump(token, open("secrets.json", "w"))
     else:
         logger.info(f"Login failed. Message: {r.json()['message']}")
@@ -42,14 +42,20 @@ def stats(args):
         logger.exception("Cannot find secrets.json. Please login first.")
     else:
         if args.site_id:
-            r = requests.get(f'{os.getenv("API_URL")}/stats?site_id={args.site_id}',
-                             cookies={'access_token_cookie': access_token})
+            r = requests.get(
+                f'{os.getenv("API_URL")}/stats?site_id={args.site_id}',
+                cookies={"access_token_cookie": access_token},
+            )
         elif args.date:
-            r = requests.get(f'{os.getenv("API_URL")}/stats?date={args.date}',
-                             cookies={'access_token_cookie': access_token})
+            r = requests.get(
+                f'{os.getenv("API_URL")}/stats?date={args.date}',
+                cookies={"access_token_cookie": access_token},
+            )
         else:
-            r = requests.get(f'{os.getenv("API_URL")}/stats',
-                             cookies={'access_token_cookie': access_token})
+            r = requests.get(
+                f'{os.getenv("API_URL")}/stats',
+                cookies={"access_token_cookie": access_token},
+            )
 
         make_json_output(args, r.json())
 
@@ -60,8 +66,10 @@ def variable(args):
     except FileNotFoundError:
         logger.exception("Cannot find secrets.json. Please login first.")
     else:
-        r = requests.get(f'{os.getenv("API_URL")}/variable?key={args.key}',
-                         cookies={'access_token_cookie': access_token})
+        r = requests.get(
+            f'{os.getenv("API_URL")}/variable?key={args.key}',
+            cookies={"access_token_cookie": access_token},
+        )
         make_json_output(args, r.json())
 
 
@@ -86,17 +94,11 @@ if __name__ == "__main__":
     stats_cmd.add_argument(
         "--date", type=str, help="retrieve stats of a particular date"
     )
-    stats_cmd.add_argument(
-        "-o", "--output", type=str, help="output filename"
-    )
+    stats_cmd.add_argument("-o", "--output", type=str, help="output filename")
 
     variable_cmd = cmds.add_parser("variable", help="get variable from api")
-    variable_cmd.add_argument(
-        "key", type=str, help="the key of variable to retrieve"
-    )
-    variable_cmd.add_argument(
-        "-o", "--output", type=str, help="output filename"
-    )
+    variable_cmd.add_argument("key", type=str, help="the key of variable to retrieve")
+    variable_cmd.add_argument("-o", "--output", type=str, help="output filename")
 
     args = parser.parse_args()
     main(args)

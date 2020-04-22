@@ -87,7 +87,7 @@ def run(runner, site_id, args=None):
                 site_type=site["type"],
                 selenium=site_conf["selenium"],
                 login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
-                credential_tag="appledaily"
+                credential_tag="appledaily",
             )
 
         else:

@@ -3,7 +3,7 @@ from flask import request
 
 
 def get_all_sites(queries):
-    return {'body': list(queries.get_sites())}
+    return {"body": list(queries.get_sites())}
 
 
 def get_active_sites(queries):
@@ -25,7 +25,9 @@ def get_articles_discovered_in_interval(queries, site_id):
     time_start = request.args.get("timeStart", 0)
     time_end = request.args.get("timeEnd", now)
     body = list(
-        queries.get_site_articles_discovered_in_interval(site_id=site_id, time_start=time_start, time_end=time_end)
+        queries.get_site_articles_discovered_in_interval(
+            site_id=site_id, time_start=time_start, time_end=time_end
+        )
     )
     return {"body": body}
 
@@ -35,7 +37,8 @@ def get_articles_updated_in_interval(queries, site_id):
     time_start = request.args.get("timeStart", 0)
     time_end = request.args.get("timeEnd", now)
     body = list(
-        queries.get_site_articles_updated_in_interval(site_id=site_id, time_start=time_start, time_end=time_end)
+        queries.get_site_articles_updated_in_interval(
+            site_id=site_id, time_start=time_start, time_end=time_end
+        )
     )
-    return {'body': body}
-
+    return {"body": body}
