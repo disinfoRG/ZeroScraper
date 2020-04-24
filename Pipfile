@@ -28,6 +28,7 @@ pyjwt = "*"
 s3cmd = "*"
 beautifulsoup4 = "*"
 sqlalchemy = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"
