@@ -50,7 +50,7 @@ response_headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 }
 
 api_password = os.getenv("API_PASSWORD")
