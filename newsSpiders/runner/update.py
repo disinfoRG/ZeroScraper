@@ -52,54 +52,48 @@ def run(runner, site_id, args=None):
 
     current_time = int(time.time())
 
-    if site_id is None:  # update all
-        for site in queries.get_sites_to_update(current_time=current_time):
-            run(runner, site["site_id"], args)
+    site = queries.get_site_by_id(site_id=site_id)
+    site_conf.update(json.loads(site["config"]))
+
+    if "dcard" in site["url"]:
+        crawler = Crawler(DcardUpdateSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(
+            crawler,
+            site_id=site_id,
+            posts_to_update=get_posts_to_update(
+                queries,
+                queries.get_one_dcard_site_posts_to_update(
+                    site_id=site_id, current_time=current_time
+                ),
+            ),
+        )
+
+    elif "appledaily" in site["url"]:
+        crawler = Crawler(LoginUpdateSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(
+            crawler,
+            articles_to_update=queries.get_articles_to_update(
+                site_id=site_id, current_time=current_time
+            ),
+            site_id=site_id,
+            site_url=site["url"],
+            selenium=site_conf["selenium"],
+            login_url=site_conf["login_url"],
+            credential_tag="appledaily",
+        )
 
     else:
-        site = queries.get_site_by_id(site_id=site_id)
-        url = site["url"]
-        site_conf.update(json.loads(site["config"]))
-
-        if "dcard" in url:
-            crawler = Crawler(DcardUpdateSpider, settings)
-            crawler.stats.set_value("site_id", site_id)
-            runner.crawl(
-                crawler,
-                site_id=site_id,
-                posts_to_update=get_posts_to_update(
-                    queries,
-                    queries.get_one_dcard_site_posts_to_update(
-                        site_id=site_id, current_time=current_time
-                    ),
-                ),
-            )
-
-        elif "appledaily" in url:
-            crawler = Crawler(LoginUpdateSpider, settings)
-            crawler.stats.set_value("site_id", site_id)
-            runner.crawl(
-                crawler,
-                articles_to_update=queries.get_articles_to_update(
-                    site_id=site_id, current_time=current_time
-                ),
-                site_id=site_id,
-                site_type=site["type"],
-                selenium=site_conf["selenium"],
-                login_url="https://auth.appledaily.com/web/v7/apps/598aee773b729200504d1f31/login",
-                credential_tag="appledaily",
-            )
-
-        else:
-            crawler = Crawler(BasicUpdateSpider, settings)
-            crawler.stats.set_value("site_id", site_id)
-            runner.crawl(
-                crawler,
-                articles_to_update=queries.get_articles_to_update(
-                    site_id=site_id, current_time=current_time
-                ),
-                site_id=site_id,
-                site_type=site["type"],
-                selenium=site_conf["selenium"],
-            )
-        logger.debug("finish set up crawl")
+        crawler = Crawler(BasicUpdateSpider, settings)
+        crawler.stats.set_value("site_id", site_id)
+        runner.crawl(
+            crawler,
+            articles_to_update=queries.get_articles_to_update(
+                site_id=site_id, current_time=current_time
+            ),
+            site_id=site_id,
+            site_url=site["url"],
+            selenium=site_conf["selenium"],
+        )
+    logger.debug("finish set up crawl")
