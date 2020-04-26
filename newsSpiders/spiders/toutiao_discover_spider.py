@@ -20,17 +20,10 @@ class ToutiaoDiscoverSpider(scrapy.Spider):
     name = "toutiao_discover"
 
     def __init__(
-        self,
-        site_id="",
-        site_url="",
-        site_type="",
-        article_url_excludes=None,
-        *args,
-        **kwargs,
+        self, site_id="", site_url="", article_url_excludes=None, *args, **kwargs
     ):
         super(ToutiaoDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
-        self.site_type = site_type
         self.site_url = site_url
         self.selenium = False
         if article_url_excludes is None:
@@ -75,7 +68,7 @@ class ToutiaoDiscoverSpider(scrapy.Spider):
         article["last_snapshot_at"] = now
         article["snapshot_count"] = 1
         article["next_snapshot_at"] = generate_next_snapshot_time(
-            self.site_type, article["snapshot_count"], now
+            self.site_url, article["snapshot_count"], now
         )
         if "redirect_urls" in response.meta.keys():
             article["url"] = response.request.meta["redirect_urls"][0]
