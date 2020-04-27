@@ -36,7 +36,7 @@ app.config["JWT_ACCESS_COOKIE_PATH"] = [
 ]
 jwt = JWTManager(app)
 CORS(app)
-limiter = Limiter(app, key_func=get_remote_address)
+limiter = Limiter(app, key_func=get_remote_address, default_limits=["10/second"])
 
 # scraper db
 scraper_queries = pugsql.module("queries/")
@@ -163,14 +163,12 @@ def get_stats():
 
 
 @app.route("/playground/random", methods=["GET"])
-@limiter.limit("10/second")
 def get_random_title():
     result = playground.get_random_title(playground_queries)
     return create_response(**result)
 
 
 @app.route("/playground/add_record", methods=["POST"])
-@limiter.limit("10/second")
 def post_token():
     result = playground.add_record(playground_queries)
     return create_response(**result)
