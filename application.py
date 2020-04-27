@@ -1,6 +1,9 @@
 import os
 import pugsql
 from flask import Flask, request, make_response, jsonify, render_template
+from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
@@ -32,6 +35,8 @@ app.config["JWT_ACCESS_COOKIE_PATH"] = [
     "/publications",
 ]
 jwt = JWTManager(app)
+CORS(app)
+limiter = Limiter(app, key_func=get_remote_address, default_limits=["10/second"])
 
 # scraper db
 scraper_queries = pugsql.module("queries/")
@@ -47,6 +52,8 @@ playground_queries.connect(os.getenv("PLAY_DB_URL"))
 response_headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 }
 
 api_password = os.getenv("API_PASSWORD")
