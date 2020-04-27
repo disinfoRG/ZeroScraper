@@ -2,6 +2,8 @@ import os
 import pugsql
 from flask import Flask, request, make_response, jsonify, render_template
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
@@ -34,6 +36,7 @@ app.config["JWT_ACCESS_COOKIE_PATH"] = [
 ]
 jwt = JWTManager(app)
 CORS(app)
+limiter = Limiter(app, key_func=get_remote_address)
 
 # scraper db
 scraper_queries = pugsql.module("queries/")
@@ -160,12 +163,14 @@ def get_stats():
 
 
 @app.route("/playground/random", methods=["GET"])
+@limiter.limit("10/second")
 def get_random_title():
     result = playground.get_random_title(playground_queries)
     return create_response(**result)
 
 
 @app.route("/playground/add_record", methods=["POST"])
+@limiter.limit("10/second")
 def post_token():
     result = playground.add_record(playground_queries)
     return create_response(**result)
