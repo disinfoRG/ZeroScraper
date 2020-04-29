@@ -2,19 +2,19 @@ ZeroScraper API
 ===
 ## Contents
 1. [API endpoints](#api-endpoints)
-    1. [authentication](#api-auth)
+    1. [authentication](#authentication)
     2. [system monitoring](#api-monitor)
-    3. [sites](#api-sites)
-    4. [articles](#api-articles)
-    5. [stats](#api-stats)
-    5. [publications](#api-pubs)
-    6. [playground](#api-play)
+    3. [stats](#stats)
+    4. [articles](#articles)
+    5. [sites](#sites)
+    6. [publications](#publications)
+    7. [playground](#playground)
     
 2. [Using Browser](#using-browser)
 3. [Using Command-line tools](#using-command-line-tools)
 ---
 ### API endpoints
-1. <a class="anchor" href="#api-auth">authentication</a>
+1. #####authentication
     - `POST /login?username=:username&password=:password`: To login. 
 
         ```json
@@ -25,7 +25,7 @@ ZeroScraper API
         ```
     - `POST /logout`: To logout.
 
-1. <a class="anchor" href="#api-monitor"> system monitoring</a> 
+1. #####system monitoring
 
     - `GET /health`: Check if scheduled scraping activity is executing as expected: 
     
@@ -55,7 +55,7 @@ ZeroScraper API
           ]
         }
         ```
-1. <a class="anchor" href="#api-stats">stats</a>
+1. #####stats
     - `GET /stats`: Get stats of all days and sites 
         
         ```json
@@ -99,7 +99,7 @@ ZeroScraper API
         }
         ```
 
-1. <a class="anchor" href="#api-articles"> articles</a>
+1. #####articles
 
     - `GET /articles`: Returning 10 recent articles.
         
@@ -147,7 +147,7 @@ ZeroScraper API
         }
         ```
 
-1. <a class="anchor" href="#api-sites"> sites</a>
+1. #####sites
 
     - `GET /sites`: Get all sites. 
 
@@ -206,7 +206,7 @@ ZeroScraper API
         }
         ```
 
-1. <a class="anchor" href="#api-pubs"> publications</a>
+1. #####publications
 
     - `GET /publications?q=:search_string`: Get publications where title or text contains the search string.
 
@@ -221,7 +221,7 @@ ZeroScraper API
         }
         ```
 
-1. <a class="anchor" href="#api-play"> playground</a>
+1. #####playground
 
     - `GET /playground/random`: Get a random publication title. 
 
