@@ -4,8 +4,16 @@ from dateutil.parser import parse
 def get_stats(queries, args):
     site_id = args.get("site_id", None)
     date = args.get("date", None)
+
     if site_id:
-        site_id = int(site_id)
+        try:
+            site_id = int(site_id)
+        except ValueError:
+            return {
+                "body": {"message": f"invalid site_id: {site_id}", "result": list()},
+                "status_code": 404,
+            }
+
         site = queries.get_site_by_id(site_id=site_id)
         if site:
             stats = list(queries.get_stats_by_site(site_id=site_id, days=30))
@@ -23,7 +31,14 @@ def get_stats(queries, args):
             }
 
     elif date:
-        date = parse(date).strftime("%Y-%m-%d")
+        try:
+            date = parse(date).strftime("%Y-%m-%d")
+        except:
+            return {
+                "body": {"message": f"invalid date: {date}", "result": list()},
+                "status_code": 404,
+            }
+
         stats = list(queries.get_stats_by_date(date=date))
         if stats:
             return {

@@ -11,7 +11,7 @@ def get_random_title(queries):
     return {"body": body}
 
 
-def pass_verification(record):
+def pass_verification(queries, record):
     if not isinstance(record, dict):
         return False
 
@@ -20,14 +20,22 @@ def pass_verification(record):
     if not tokens or not publication_id:
         return False
 
-    if not isinstance(tokens, list):
+    if not isinstance(tokens, list) or not isinstance(publication_id, str):
+        return False
+
+    if not queries.get_title_by_id(publication_id=publication_id):
         return False
 
     for t in tokens:
         if {"text", "pos", "sentiment"} - t.keys():
             return False
+
         if not all(t.values()):
             return False
+
+        if not set(map(type, t.values())) == {str}:
+            return False
+
     else:
         return True
 
@@ -35,22 +43,22 @@ def pass_verification(record):
 def add_record(queries):
     record = request.get_json()
     now = int(time.time())
-    if pass_verification(record):
+    if pass_verification(queries, record):
+        queries.update_publication_play_time(
+            publication_id=record["publication_id"], last_play_at=now
+        )
+
         record_id = queries.insert_record(
             publication_id=record["publication_id"],
             content=json.dumps(record["tokens"]),
             play_at=now,
         )
 
-        queries.update_publication_play_time(
-            publication_id=record["publication_id"], last_play_at=now
-        )
-
         body = {
             "message": "Add new record successfully.",
-            "record_id": record_id,
+            "record": {**record, "play_at": now},
         }
         return {"body": body}
     else:
-        body = {"status": "bad", "message": "invalid data.", "data": record}
+        body = {"message": "invalid record.", "record": record}
         return {"body": body, "status_code": 400}
