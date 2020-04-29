@@ -1,6 +1,5 @@
 import time
 from datetime import timedelta
-from flask import request
 
 
 def check_health(queries):
@@ -14,8 +13,21 @@ def check_health(queries):
     return {"body": body}
 
 
-def get_variable(queries):
-    key = request.args.get("key")
-    body = queries.get_variable(key=key)
+def get_variables(queries, args):
+    status_code = 200
+    key = args.get("key", None)
+    if not key:
+        result = list(queries.get_all_variables())
+        response_body = {"message": "returning all variables", "result": result}
+    else:
+        result = list(queries.get_variables_by_key(key=key))
+        if result:
+            response_body = {
+                "message": f"returning variables with key {key}",
+                "result": result,
+            }
+        else:
+            response_body = {"message": f"key {key} does not exist.", "result": list()}
+            status_code = 404
 
-    return {"body": body}
+    return {"body": response_body, "status_code": status_code}

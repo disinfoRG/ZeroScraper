@@ -47,8 +47,7 @@ def add_record(queries):
         )
 
         body = {
-            "status": "good",
-            "message": "add new record successfully.",
+            "message": "Add new record successfully.",
             "record_id": record_id,
         }
         return {"body": body}

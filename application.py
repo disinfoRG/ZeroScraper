@@ -25,6 +25,7 @@ from newsSpiders.webapi import (
 import dotenv
 
 dotenv.load_dotenv()
+
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv("API_SECRET_KEY")
 app.config["JWT_TOKEN_LOCATION"] = ("headers", "cookies")
@@ -41,9 +42,6 @@ limiter = Limiter(app, key_func=get_remote_address, default_limits=["10/second"]
 # scraper db
 scraper_queries = pugsql.module("queries/")
 scraper_queries.connect(os.getenv("DB_URL"))
-# publication db
-pub_queries = pugsql.module("queries/parser")
-pub_queries.connect(os.getenv("PUB_DB_URL"))
 # playground db
 playground_queries = pugsql.module("queries/playground")
 playground_queries.connect(os.getenv("PLAY_DB_URL"))
@@ -54,6 +52,7 @@ response_headers = {
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Content-Type": "application/json",
 }
 
 api_password = os.getenv("API_PASSWORD")
@@ -75,7 +74,7 @@ def hello():
         welcome_msg = f"Hello {username}, welcome to the api of g0v 0archive"
     else:
         welcome_msg = "Hello, welcome to the api of g0v 0archive, please login first."
-    return create_response({"message": welcome_msg})
+    return create_response(welcome_msg)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -94,7 +93,7 @@ def login():
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
-    response = create_response({"message": "Logout successful."})
+    response = create_response("Logout successfully.")
     unset_access_cookies(response)
 
     return response
@@ -106,10 +105,17 @@ def check_health():
     return create_response(**result)
 
 
-@app.route("/variable", methods=["GET"])
+@app.route("/variables", methods=["GET"])
 @jwt_required
 def get_variable():
-    result = monitor.get_variable(scraper_queries)
+    result = monitor.get_variables(scraper_queries, request.args)
+    return create_response(**result)
+
+
+@app.route("/articles", methods=["GET"])
+@jwt_required
+def get_articles():
+    result = articles.get_articles(scraper_queries, request.args)
     return create_response(**result)
 
 
@@ -120,17 +126,10 @@ def get_article_by_id(article_id):
     return create_response(**result)
 
 
-@app.route("/articles", methods=["GET"])
-@jwt_required
-def get_article_by_url():
-    result = articles.get_article_by_url(scraper_queries)
-    return create_response(**result)
-
-
 @app.route("/sites", methods=["GET"])
 @jwt_required
-def get_all_sites():
-    result = sites.get_all_sites(scraper_queries)
+def get_sites():
+    result = sites.get_sites(scraper_queries, request.args)
     return create_response(**result)
 
 
@@ -141,24 +140,38 @@ def get_active_sites():
     return create_response(**result)
 
 
-@app.route("/sites/<int:site_id>/new_articles", methods=["GET"])
+@app.route("/sites/<int:site_id>", methods=["GET"])
 @jwt_required
-def get_articles_discovered_in_interval(site_id):
-    result = sites.get_articles_discovered_in_interval(scraper_queries, site_id)
+def get_site_by_id(site_id):
+    result = sites.get_site_by_id(scraper_queries, site_id)
     return create_response(**result)
 
 
-@app.route("/sites/<int:site_id>/updated_articles", methods=["GET"])
+@app.route("/sites/<int:site_id>/article_count", methods=["GET"])
 @jwt_required
-def get_articles_updated_in_interval(site_id):
-    result = sites.get_articles_updated_in_interval(scraper_queries, site_id)
+def get_site_article_count(site_id):
+    result = sites.get_article_count(scraper_queries, site_id)
+    return create_response(**result)
+
+
+@app.route("/sites/<int:site_id>/latest_article", methods=["GET"])
+@jwt_required
+def get_site_latest_article(site_id):
+    result = sites.get_latest_article(scraper_queries, site_id)
     return create_response(**result)
 
 
 @app.route("/stats", methods=["GET"])
 @jwt_required
 def get_stats():
-    result = stats.get_stats(scraper_queries)
+    result = stats.get_stats(scraper_queries, request.args)
+    return create_response(**result)
+
+
+@app.route("/publications", methods=["GET"])
+@jwt_required
+def search_publication():
+    result = publications.search_publication(os.getenv("PUB_SEARCH_URL"), request.args)
     return create_response(**result)
 
 
