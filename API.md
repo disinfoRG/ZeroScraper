@@ -246,8 +246,9 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
 
 3. To get variable:
     ```sh
-    $ python ns-api.py variable {variable-key}
+    $ python ns-api.py variables
     ```
         Optional Arguments:
+                --key: variable key
                 -o / --output: filename to save the json output.
 
