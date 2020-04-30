@@ -4,6 +4,7 @@ import os
 from scrapy.crawler import Crawler
 from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
+from newsSpiders import ptt
 from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
 from newsSpiders.spiders.dcard_dicsover_spider import DcardDiscoverSpider
 from newsSpiders.spiders.toutiao_discover_spider import ToutiaoDiscoverSpider
@@ -59,6 +60,9 @@ def run(runner, site_id, args=None):
             site_url=site_conf["url"],
             article_url_excludes=[a["url"] for a in recent_articles],
         )
+    elif "ptt.cc" in site_conf["url"]:
+        ptt.DiscoverSite(site_info).run(depth=site_conf["depth"])
+
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
