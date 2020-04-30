@@ -108,5 +108,5 @@ See [API.md](API.md)
 ## Dump snapshot table
 
 ```sh
-$ ns-dump.py --table ArticleSnapshotYYYYMM --output YYYYMM.jsonl
+$ zs-dump.py --table ArticleSnapshotYYYYMM --output YYYYMM.jsonl
 ```

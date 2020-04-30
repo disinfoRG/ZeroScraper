@@ -50,9 +50,7 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
 
 		{
           "message": "returning variables with key :key", 
-          "result": [
-        	{variable info}
-          ]
+          "result": {variable info}
         }
         
 ##### stats
@@ -97,7 +95,7 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
 ##### articles
 
 1. `GET /articles`: Returning 10 recent articles.
-    ```    
+ 
         {
           "message": "Returning 10 most recent articles.", 
           "result": [
@@ -118,34 +116,32 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
             ...
           ]
         }
-   ```
 
 2. `GET /articles?url=:url`. Get articles with url, only for exact match. 
     The query find matches in both requested url and redirected url. 
 
-	```
-      {
+        {
           "message": "Returning articles that matches url :url,
           "result": [
              {article info},
              {article info},
              ...
           ]
-      }
-    ```
+        }
+
 
 3. `GET /articles/:id`: Get article info with article_id: 
-	```
+
         {
           "message": "Returning article with id :id", 
           "result": {article info}
         }
-    ```
+
 
 ##### sites
 
 1. `GET /sites`: Get all sites. 
-	```
+
         {
           "message": "Returning all sites",
           "result": [
@@ -165,9 +161,9 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
             ...
           ]
         }
-    ```
+
 2. `GET /sites/active`: Get all active sites. 
-	```
+
         {
           "message": "Returning active sites",
           "result": [
@@ -176,10 +172,9 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
             ...
           ]
         }
-	```
+
 3. `GET /sites/:id/article_count`: Get article count in a site. 
 
-   ```
         {
           "message": "Returning article count of site :id",
           "result": {
@@ -187,22 +182,20 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
             "article_count": 100
           }
         }
-   ```
+
 4. `GET /sites/:id/latest_article`: Get most recently added article of a site: 
 
-   ```
         {
           "message": "Returning latest article from site :id",
           "result": {
             "latest_article": {article info},
             "site": {site :id info}
         }
-   ```
 
 ##### publications
 
 1. `GET /publications?q=:search_string`: Get publications where title or text contains the search string.
-    ```
+
         {
           "message": "Return publications that matches :search_string",
           "result": [
@@ -210,24 +203,22 @@ If the latest inserted article is less than 15 minutes ago, return `okay`. Other
             {publication info},
             ...
           ]
-        }
-    ```    
+        }    
 
 ##### playground
 1. `GET /playground/random`: Get a random publication title. 
-	```
+        
         {
           "publication_id": "xxx",
           "text": "yyy"
         }
-	```
 2. `POST /playground/add_record`: Add a record. 
-	```
-      {
+
+        {
           "message": "Add new record successfully.",
           "record_id": 123,
-      }
-    ```
+        }
+
 
 ### Using Browser
 1. login first: `GET /login` to fill out the form and submit.
