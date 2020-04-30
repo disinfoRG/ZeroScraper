@@ -15,9 +15,9 @@ queries = pugsql.module("queries/")
 queries.connect(os.getenv("DB_URL"))
 
 
-def get_last_comment_floor(queries, post):
+def get_last_comment_floor(post):
     try:
-        last_snapshot_raw_data = queries.get_post_latest_snapshot(
+        last_snapshot_raw_data = queries.get_article_latest_snapshot(
             article_id=post["article_id"]
         )["raw_data"]
     except TypeError:
@@ -32,10 +32,9 @@ def get_last_comment_floor(queries, post):
         return last_snapshot_comments[-1]["floor"]
 
 
-def get_posts_to_update(queries, posts):
+def get_posts_to_update(posts):
     return [
-        {**post, "last_comment_floor": get_last_comment_floor(queries, post)}
-        for post in posts
+        {**post, "last_comment_floor": get_last_comment_floor(post)} for post in posts
     ]
 
 
@@ -62,7 +61,6 @@ def run(runner, site_id, args=None):
             crawler,
             site_id=site_id,
             posts_to_update=get_posts_to_update(
-                queries,
                 queries.get_one_dcard_site_posts_to_update(
                     site_id=site_id, current_time=current_time
                 ),
