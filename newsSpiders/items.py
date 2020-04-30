@@ -25,21 +25,3 @@ class ArticleSnapshotItem(scrapy.Item):
     article_id = scrapy.Field()
     snapshot_at = scrapy.Field()
     raw_data = scrapy.Field()
-
-
-class FBPostSnapshotItem(scrapy.Item):
-    article_id = scrapy.Field()
-    snapshot_at = scrapy.Field()
-    raw_data = scrapy.Field()
-    author = scrapy.Field()
-    shared_url = scrapy.Field()
-    reactions = scrapy.Field()
-
-
-class FBCommentSnapshotItem(scrapy.Item):
-    article_id = scrapy.Field()
-    snapshot_at = scrapy.Field()
-    raw_data = scrapy.Field()
-    author = scrapy.Field()
-    reply_to = scrapy.Field()
-    reactions = scrapy.Field()
