@@ -1,6 +1,6 @@
 #!/bin/bash
 DATE=${1:-"yesterday"}
-NS_DUMP=./ns-dump.py
+NS_DUMP=./zs-dump.py
 YESTERDAY=$(date --date=$DATE '+%Y-%m-%d')
 SNAPSHOT_TABLE=ArticleSnapshot
 OUTPUT_FILE="${SNAPSHOT_TABLE}$(echo ${YESTERDAY} | sed -e 's/\-//g').jsonl.bz2"

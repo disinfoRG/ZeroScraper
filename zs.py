@@ -22,39 +22,7 @@ from scrapy.utils.project import get_project_settings
 from scrapy.utils.log import configure_logging
 import newsSpiders.runner.discover
 import newsSpiders.runner.update
-
-
-class Cleanup:
-    def __init__(self, runner):
-        self.runner = runner
-
-    def terminate(self):
-        self.runner.stop()
-
-
-class ProcessError(Exception):
-    pass
-
-
-class PIDLock:
-    def __init__(self, queries, proc_name):
-        self.queries = queries
-        self.key = f"{proc_name}:pid"
-        self.proc_name = proc_name
-
-    def __enter__(self):
-        with self.queries.transaction():
-            lock = self.queries.get_variable(key=self.key)
-            if lock is not None and lock["value"]:
-                raise ProcessError(f"Another {self.proc_name} process already running.")
-            self.queries.set_variable(key=self.key, value=str(os.getpid()))
-
-    def __exit__(self, type_, value, traceback):
-        self.queries.delete_variable(key=self.key)
-
-
-def pid_lock(queries, proc_name):
-    return PIDLock(queries, proc_name)
+from newsSpiders.process import pid_lock, Cleanup
 
 
 def discover(args):

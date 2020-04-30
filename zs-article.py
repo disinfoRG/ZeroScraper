@@ -38,8 +38,10 @@ def get_article_by_selenium(url, user_agent):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument(f"user-agent={user_agent}")
-    options.add_argument("--proxy-server={}".format(os.getenv("PROXY_URL")))
     options.headless = True
+    proxy_url = os.getenv("PROXY_URL")
+    if proxy_url:
+        options.add_argument("--proxy-server={}".format(os.getenv("PROXY_URL")))
 
     driver = webdriver.Chrome(os.getenv("CHROMEDRIVER_BIN"), options=options)
     driver.get(url)
