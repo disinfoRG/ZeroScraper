@@ -11,7 +11,6 @@ from random import uniform
 import argparse
 import zlib
 import logging
-from datetime import datetime
 from newsSpiders import helpers
 from newsSpiders.types import SiteConfig
 
@@ -68,11 +67,10 @@ def update_article_table(article_info, site_info, crawl_time):
     next_snapshot_at = article_info
     article_id = article_info["article_id"]
     snapshot_count = article_info["snapshot_count"]
-    site_type = site_info["type"]
 
     if next_snapshot_at != 0:
         next_snapshot_at = helpers.generate_next_snapshot_time(
-            site_type, snapshot_count=1, snapshot_time=crawl_time
+            site_info["url"], snapshot_count=1, snapshot_time=crawl_time
         )
     queries.update_article_snapshot_time(
         article_id=article_id,
@@ -127,7 +125,7 @@ def discover(args):
 
     crawler_config = SiteConfig.default()
     user_agent = args.ua or crawler_config["ua"]
-    crawl_time = int(time.time())
+    now = int(time.time())
     if "dcard" in args.url:
         snapshot = get_dcard_article(args.url, user_agent)
     elif "ptt" in args.url:
@@ -139,20 +137,25 @@ def discover(args):
 
     article_type = helpers.get_article_type(args.url)
     url_hash = zlib.crc32(args.url.encode())
-    site_type = helpers.get_site_type(queries, args.site_id)
+    if args.site_id:
+        site_info = queries.get_site_by_id(site_id=args.site_id)
+    else:
+        site_info = None
+
     next_snapshot_at = (
         0
-        if site_type is None
+        if site_info is None
         else helpers.generate_next_snapshot_time(
-            site_type, snapshot_count=1, snapshot_time=crawl_time
+            site_info["url"], snapshot_count=1, snapshot_time=now
         )
     )
+
     inserted_article_id = queries.insert_article(
         site_id=args.site_id,
         url=args.url,
         url_hash=url_hash,
-        first_snapshot_at=crawl_time,
-        last_snapshot_at=crawl_time,
+        first_snapshot_at=now,
+        last_snapshot_at=now,
         next_snapshot_at=next_snapshot_at,
         snapshot_count=1,
         redirect_to=None,
@@ -160,7 +163,7 @@ def discover(args):
     )
 
     queries.insert_snapshot(
-        article_id=inserted_article_id, snapshot_at=crawl_time, raw_data=snapshot
+        article_id=inserted_article_id, snapshot_at=now, raw_data=snapshot
     )
     logger.info(f"Finish discover {args.url}, new article_id = {inserted_article_id}")
     return inserted_article_id

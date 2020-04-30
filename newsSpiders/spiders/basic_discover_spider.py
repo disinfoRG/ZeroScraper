@@ -13,7 +13,6 @@ class BasicDiscoverSpider(CrawlSpider):
         self,
         site_id="",
         site_url="",
-        site_type="",
         article_url_patterns="",
         following_url_patterns="",
         article_url_excludes=None,
@@ -25,7 +24,6 @@ class BasicDiscoverSpider(CrawlSpider):
         self.site_id = site_id
         self.site_url = site_url
         self.start_urls = [site_url]
-        self.site_type = site_type
         self.selenium = selenium
         self.article_url_excludes = (
             article_url_excludes if article_url_excludes is not None else []
@@ -90,7 +88,7 @@ class BasicDiscoverSpider(CrawlSpider):
         article["last_snapshot_at"] = now
         article["snapshot_count"] = 1
         article["next_snapshot_at"] = generate_next_snapshot_time(
-            self.site_type, article["snapshot_count"], now
+            self.site_url, article["snapshot_count"], now
         )
         if "redirect_urls" in response.meta.keys():
             article["url"] = response.request.meta["redirect_urls"][0]

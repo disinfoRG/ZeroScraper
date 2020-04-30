@@ -19,17 +19,10 @@ class DcardDiscoverSpider(scrapy.Spider):
     name = "dcard_discover"
 
     def __init__(
-        self,
-        site_id="",
-        site_url="",
-        site_type="",
-        article_url_excludes=None,
-        *args,
-        **kwargs,
+        self, site_id="", site_url="", article_url_excludes=None, *args, **kwargs
     ):
         super(DcardDiscoverSpider, self).__init__(*args, **kwargs)
         self.site_id = site_id
-        self.site_type = site_type
         self.site_url = site_url
         self.selenium = False
         self.forum_name = re.search("/f/(.*)", self.site_url).group(1).split("?")[0]
@@ -84,7 +77,7 @@ class DcardDiscoverSpider(scrapy.Spider):
         article["last_snapshot_at"] = now
         article["snapshot_count"] = 1
         article["next_snapshot_at"] = generate_next_snapshot_time(
-            self.site_type, article["snapshot_count"], now
+            "dcard", article["snapshot_count"], now
         )
         article["redirect_to"] = None
 

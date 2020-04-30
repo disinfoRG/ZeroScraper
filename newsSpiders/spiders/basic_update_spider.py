@@ -12,7 +12,7 @@ class BasicUpdateSpider(scrapy.Spider):
         self,
         articles_to_update,
         site_id=None,
-        site_type=None,
+        site_url=None,
         selenium=False,
         *args,
         **kwargs,
@@ -20,7 +20,7 @@ class BasicUpdateSpider(scrapy.Spider):
         super(BasicUpdateSpider, self).__init__(*args, **kwargs)
         self.articles_to_update = articles_to_update
         self.site_id = site_id
-        self.site_type = site_type
+        self.site_url = site_url
         # always start selenium if updating all sites
         self.selenium = selenium if site_id else True
         # for logging
@@ -53,7 +53,7 @@ class BasicUpdateSpider(scrapy.Spider):
         else:
             article["snapshot_count"] = snapshot_count + 1
             article["next_snapshot_at"] = generate_next_snapshot_time(
-                self.site_type, article["snapshot_count"], now
+                self.site_url, article["snapshot_count"], now
             )
 
             article_snapshot["raw_data"] = response.text

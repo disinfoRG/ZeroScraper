@@ -6,7 +6,6 @@ from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.basic_discover_spider import BasicDiscoverSpider
 from newsSpiders.spiders.dcard_dicsover_spider import DcardDiscoverSpider
-from newsSpiders.spiders.login_discover_spider import LoginDiscoverSpider
 from newsSpiders.spiders.toutiao_discover_spider import ToutiaoDiscoverSpider
 
 
@@ -37,6 +36,9 @@ def run(runner, site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
+    if "appledaily" in site_conf["url"]:
+        site_conf["selenium"] = True
+
     if "dcard" in site_conf["url"]:
         crawler = Crawler(DcardDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
@@ -45,7 +47,6 @@ def run(runner, site_id, args=None):
             crawler,
             site_id=site_id,
             site_url=site_conf["url"],
-            site_type=site_conf["type"],
             article_url_excludes=[a["url"] for a in recent_articles],
         )
     elif "toutiao" in site_conf["url"]:
@@ -56,25 +57,7 @@ def run(runner, site_id, args=None):
             crawler,
             site_id=site_id,
             site_url=site_conf["url"],
-            site_type=site_conf["type"],
             article_url_excludes=[a["url"] for a in recent_articles],
-        )
-
-    elif "appledaily" in site_conf["url"]:
-        crawler = Crawler(LoginDiscoverSpider, settings)
-        crawler.stats.set_value("site_id", site_id)
-
-        runner.crawl(
-            crawler,
-            site_id=site_id,
-            site_url=site_conf["url"],
-            site_type=site_conf["type"],
-            article_url_patterns=site_conf["article"],
-            following_url_patterns=site_conf["following"],
-            article_url_excludes=[a["url"] for a in recent_articles],
-            selenium=site_conf.get("selenium", False),
-            login_url=site_conf["login_url"],
-            credential_tag="appledaily",
         )
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)
@@ -83,7 +66,6 @@ def run(runner, site_id, args=None):
             crawler,
             site_id=site_id,
             site_url=site_conf["url"],
-            site_type=site_conf["type"],
             article_url_patterns=site_conf["article"],
             following_url_patterns=site_conf["following"],
             article_url_excludes=[a["url"] for a in recent_articles],
