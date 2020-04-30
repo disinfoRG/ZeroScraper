@@ -53,6 +53,7 @@ $ pipenv install myawesomethings  # add new dependencies
 開一個 database：
 
 ```sh
+$ docker exec -it zeroscraper bash
 $ mysql -u root -p -e 'CREATE DATABASE ZeroScraper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
 ```
 

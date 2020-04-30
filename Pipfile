@@ -7,6 +7,8 @@ verify_ssl = true
 ipython = "*"
 pre-commit = "*"
 black = "==19.3b0"
+invoke = "*"
+mypy = "*"
 
 [packages]
 scrapy="==1.8"
