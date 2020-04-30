@@ -52,7 +52,7 @@ def main(args):
                         ),
                         site["airtable_id"],
                     ]
-                    for site in queries.get_sites()
+                    for site in queries.get_all_sites()
                 ],
                 headers=["id", "name", "url", "active", "last crawl at", "airtable id"],
             )

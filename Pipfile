@@ -32,6 +32,7 @@ beautifulsoup4 = "*"
 sqlalchemy = "*"
 flask-cors = "*"
 flask-limiter = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"

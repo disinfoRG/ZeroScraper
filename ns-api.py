@@ -58,13 +58,18 @@ def stats(args):
     else:
         r = requests.get(f'{os.getenv("API_URL")}/stats', headers=headers)
 
-    make_json_output(args, r.json())
+    make_json_output(args, r.json()["result"])
 
 
-def variable(args):
+def variables(args):
     headers = load_token()
-    r = requests.get(f'{os.getenv("API_URL")}/variable?key={args.key}', headers=headers)
-    make_json_output(args, r.json())
+    if args.key:
+        r = requests.get(
+            f'{os.getenv("API_URL")}/variables?key={args.key}', headers=headers
+        )
+    else:
+        r = requests.get(f'{os.getenv("API_URL")}/variables', headers=headers)
+    make_json_output(args, r.json()["result"])
 
 
 def main(args):
@@ -72,8 +77,8 @@ def main(args):
         login()
     elif args.command == "stats":
         stats(args)
-    elif args.command == "variable":
-        variable(args)
+    elif args.command == "variables":
+        variables(args)
 
 
 if __name__ == "__main__":
@@ -90,8 +95,8 @@ if __name__ == "__main__":
     )
     stats_cmd.add_argument("-o", "--output", type=str, help="output filename")
 
-    variable_cmd = cmds.add_parser("variable", help="get variable from api")
-    variable_cmd.add_argument("key", type=str, help="the key of variable to retrieve")
+    variable_cmd = cmds.add_parser("variables", help="get variable from api")
+    variable_cmd.add_argument("--key", type=str, help="the key of variable to retrieve")
     variable_cmd.add_argument("-o", "--output", type=str, help="output filename")
 
     args = parser.parse_args()
