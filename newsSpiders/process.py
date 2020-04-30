@@ -20,7 +20,7 @@ class PIDLock:
 
     def __enter__(self):
         with self.queries.transaction():
-            lock = self.queries.get_variable(key=self.key)
+            lock = self.queries.get_variable_by_key(key=self.key)
             if lock is not None and lock["value"]:
                 raise ProcessError("Another discover process already running.")
             self.queries.set_variable(key=self.key, value=str(os.getpid()))

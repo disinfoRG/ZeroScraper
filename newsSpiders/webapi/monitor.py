@@ -20,14 +20,14 @@ def get_variables(queries, args):
         result = list(queries.get_all_variables())
         response_body = {"message": "returning all variables", "result": result}
     else:
-        result = list(queries.get_variables_by_key(key=key))
+        result = queries.get_variable_by_key(key=key)
         if result:
             response_body = {
                 "message": f"returning variables with key {key}",
                 "result": result,
             }
         else:
-            response_body = {"message": f"key {key} does not exist.", "result": list()}
+            response_body = {"message": f"key {key} does not exist.", "result": dict()}
             status_code = 404
 
     return {"body": response_body, "status_code": status_code}
