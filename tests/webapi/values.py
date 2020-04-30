@@ -1,5 +1,6 @@
 import json
 import os
+
 import dotenv
 
 dotenv.load_dotenv()
@@ -8,6 +9,11 @@ auth_header = {
     "Authorization": f'Bearer {json.load(open("secrets.json"))["access_token"]}'
 }
 api_url = os.getenv("API_URL")
+
+
+class AuthValues:
+    username = os.getenv("API_USERNAME")
+    password = os.getenv("API_PASSWORD")
 
 
 class StatsValues:
@@ -44,6 +50,7 @@ class SitesValues:
 
 
 class PlaygroundValues:
+    TEST_PLAY_DB_URL = os.getenv("PLAY_DB_URL")
     invalid_records = [
         None,
         list(),
@@ -81,6 +88,10 @@ class PlaygroundValues:
     valid_records = [
         {
             "publication_id": "000133F4825411EA8627F23C92E71BAD",
-            "tokens": [{"text": "1", "sentiment": "123", "pos": "123"}],
+            "tokens": [
+                {"text": "228", "sentiment": "中", "pos": "名"},
+                {"text": "連假", "sentiment": "中", "pos": "名"},
+                {"text": "前夕", "sentiment": "中", "pos": "形"},
+            ],
         }
     ]

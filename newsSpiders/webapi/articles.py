@@ -1,4 +1,5 @@
 from url_normalize import url_normalize
+import zlib
 
 
 def get_article_by_id(queries, article_id):
@@ -23,7 +24,8 @@ def get_articles(queries, args):
 
     if url:
         normalized_url = url_normalize(url)
-        result = list(queries.get_article_by_url(url=normalized_url))
+        url_hash = str(zlib.crc32(normalized_url.encode()))
+        result = list(queries.get_article_by_url(url=normalized_url, url_hash=url_hash))
         if result:
             response_body = {
                 "message": f"Returning articles that matches url {normalized_url}",

@@ -1,5 +1,5 @@
 import requests
-from values import api_url, auth_header, SitesValues
+from values import api_url, auth_header, SitesValues as V
 from assert_functions import assert_valid_response, assert_invalid_response
 
 
@@ -10,19 +10,19 @@ def test_not_authorized():
 
 def test_route():
     r = requests.get(api_url + f"/sites", headers=auth_header)
-    assert_valid_response(r, SitesValues.result_fields)
+    assert_valid_response(r, V.result_fields)
 
 
 def test_get_active_sites():
     r = requests.get(api_url + f"/sites/active", headers=auth_header)
-    assert_valid_response(r, SitesValues.result_fields)
+    assert_valid_response(r, V.result_fields)
     assert {x["is_active"] for x in r.json()["result"]} == {1}
 
 
 def test_existing_site_id():
-    site_id = SitesValues.existing_site_id
+    site_id = V.existing_site_id
     r = requests.get(api_url + f"/sites/{site_id}", headers=auth_header)
-    assert_valid_response(r, SitesValues.result_fields, dict_result=True)
+    assert_valid_response(r, V.result_fields, dict_result=True)
 
     r = requests.get(api_url + f"/sites/{site_id}/article_count", headers=auth_header)
     assert_valid_response(r, result_fields={"site", "article_count"}, dict_result=True)
@@ -38,7 +38,7 @@ def test_existing_site_id():
 
 
 def test_nonexisting_site_id():
-    site_id = SitesValues.nonexisting_site_id
+    site_id = V.nonexisting_site_id
     r = requests.get(api_url + f"/sites/{site_id}", headers=auth_header)
     assert_invalid_response(r)
 

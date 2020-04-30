@@ -48,7 +48,7 @@ def add_record(queries):
             publication_id=record["publication_id"], last_play_at=now
         )
 
-        record_id = queries.insert_record(
+        queries.insert_record(
             publication_id=record["publication_id"],
             content=json.dumps(record["tokens"]),
             play_at=now,
