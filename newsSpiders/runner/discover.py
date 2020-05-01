@@ -61,8 +61,8 @@ def run(runner, site_id, args=None):
             article_url_excludes=[a["url"] for a in recent_articles],
         )
     elif "ptt.cc" in site_conf["url"]:
-        # ptt.DiscoverSite(site_info).run(depth=site_conf["depth"])
-        pass
+        ptt.DiscoverSite(site_info).run(depth=site_conf["depth"])
+
     else:
         crawler = Crawler(BasicDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
