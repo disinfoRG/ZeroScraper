@@ -38,6 +38,8 @@ def discover(args):
         configure_logging()
         runner = CrawlerRunner(get_project_settings())
         for site in sites:
+            if "ptt.cc" in site["url"]:
+                continue
             newsSpiders.runner.discover.run(runner, site["site_id"], vars(args))
         d = runner.join()
         d.addBoth(lambda _: reactor.stop())
