@@ -22,6 +22,11 @@ def migrate(c):
 
 
 @task
+def update_sites(c):
+    c.run("SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites")
+
+
+@task
 def m2sh(c):
     c.run(os.getenv("M2_SHELL"), pty=True)
 
