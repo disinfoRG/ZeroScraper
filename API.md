@@ -27,10 +27,12 @@ ZeroScraper API
 
 ##### system monitoring
 
-1. `GET /health`: Check if scheduled scraping activity is executing as expected: 
-
-If the latest inserted article is less than 15 minutes ago, return `okay`. Otherwise, 
-`not okay`. 
+1. `GET /health`: Check if scheduled scraping activity is executing as expected:
+ 
+        {
+          "discover": "okay",  // or "not okay"
+          "update": "okay" // or "not okay"
+        }
 
 2. `GET /variables`: Get all variables 
 

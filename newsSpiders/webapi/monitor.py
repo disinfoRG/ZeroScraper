@@ -2,15 +2,23 @@ import time
 from datetime import timedelta
 
 
-def check_health(queries):
-    latest_snapshot_at = queries.get_max_snapshot_at()["max_snapshot_at"]
+def find_earlier_time(minutes):
     now = int(time.time())
-    if latest_snapshot_at > now - int(timedelta(minutes=15).total_seconds()):
-        body = "okay"
-    else:
-        body = "not okay"
+    return now - int(timedelta(minutes=minutes).total_seconds())
 
-    return {"body": body}
+
+def check_health(queries):
+    counts = queries.count_recent_articles_by_process(
+        after=find_earlier_time(minutes=15)
+    )
+    result = {}
+    for key in counts.keys():
+        if counts[key] > 0:
+            result[key] = "okay"
+        else:
+            result[key] = "not okay"
+
+    return {"body": result}
 
 
 def get_variables(queries, args):
