@@ -16,6 +16,15 @@ class AuthValues:
     password = os.getenv("API_PASSWORD")
 
 
+class MonitorValues:
+    variable_fields = {"key", "value"}
+    variable_tests = [
+        {"key": "test:pid", "value": "12345"},
+        {"key": "test2:pid", "value": "789"},
+    ]
+    health_fields = {"discover", "update"}
+
+
 class StatsValues:
     result_fields = {"site_id", "date", "new_article_count", "updated_article_count"}
     existing_site_id = 98

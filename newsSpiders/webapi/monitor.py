@@ -9,7 +9,7 @@ def find_earlier_time(minutes):
 
 def check_health(queries):
     counts = queries.count_recent_articles_by_process(
-        after=find_earlier_time(minutes=15)
+        after=find_earlier_time(minutes=30)
     )
     result = {}
     for key in counts.keys():
