@@ -13,7 +13,7 @@ def check(c):
 
 @task
 def test(c):
-    c.run("python -m unittest")
+    c.run("pytest")
 
 
 @task
