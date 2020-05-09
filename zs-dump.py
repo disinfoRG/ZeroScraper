@@ -71,13 +71,14 @@ def parse_args():
         type=date_range,
         help="select only snapshots taken in given date range specified in '<start_date>:<end_date>' or '<duration>:<end_date>'; date format must be 'YYYY-MM-DD'; duration may be '<n>d', '<n>w'.",
     )
+    parser.add_argument("--batch-size", type=int, default=1000)
     args = parser.parse_args()
     return args
 
 
-def dump_snapshots(queries, fh, date_range=None):
+def dump_snapshots(queries, fh, date_range=None, batch_size=1000):
     i = 0
-    for batch in grouper(queries.get_snapshot_ats(date_range=date_range), 1000):
+    for batch in grouper(queries.get_snapshot_ats(date_range=date_range), batch_size):
         snapshot_ats = [row["snapshot_at"] for row in batch if row]
         for snapshot in queries.get_snapshots_by_snapshot_at(snapshot_ats=snapshot_ats):
             fh.write(
@@ -130,15 +131,19 @@ def load_dynamic_queries(queries, table):
     queries.add_method("get_snapshot_ats", get_snapshot_ats)
 
 
-def main(table, output=None, date_range=None):
+def main(table, output=None, date_range=None, batch_size=1000):
     load_dynamic_queries(queries, table)
     queries.connect(os.getenv("DB_URL"))
     try:
         if output is None:
-            dump_snapshots(queries, sys.stdout, date_range=date_range)
+            dump_snapshots(
+                queries, sys.stdout, date_range=date_range, batch_size=batch_size
+            )
         else:
             with Path(output).open("w") as fh:
-                dump_snapshots(queries, fh, date_range=date_range)
+                dump_snapshots(
+                    queries, fh, date_range=date_range, batch_size=batch_size
+                )
     except Exception:
         logger.error(traceback.format_exc())
     queries.disconnect()
