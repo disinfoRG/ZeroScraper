@@ -32,7 +32,7 @@ $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
-$ python site.py discover {site-id}
+$ python zs-site.py discover {site-id}
 ```
     Optional Arguments:
         # crawler config
@@ -47,7 +47,7 @@ $ python site.py discover {site-id}
 
 2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
 ```sh
-$ python ns.py discover
+$ python zs.py discover
 ```
 
     Optional Arguments:
@@ -60,7 +60,7 @@ $ python ns.py discover
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
 # update all articles
-$ python ns.py update
+$ python zs.py update
 ```
     Optional Arguments:
             --limit-sec: time limit to run in seconds
@@ -68,7 +68,7 @@ $ python ns.py update
 
 4. Revisit news articles in a specified site.
 ```sh
-$ python site.py update {site-id}
+$ python zs-site.py update {site-id}
 ```
     Optional Arguments:
             --delay: delay time between each request. default = 1.5 (sec)
@@ -76,14 +76,14 @@ $ python site.py update {site-id}
 
 5. Revisit one article regardless of next_snapshot_time or snapshot_count.
 ```sh
-$ python article.py update {article-id}
+$ python zs-article.py update {article-id}
 ```
     Optional Arguments:
             --selenium: use selenium to load the article.
 
 6. Discover a new article that does not exist in DB based on a provided url.
 ```sh
-$ python article.py discover {url}
+$ python zs-article.py discover {url}
 ```
     Optional Arguments:
             --site-id: id of site of which the url belongs to. default = 0
