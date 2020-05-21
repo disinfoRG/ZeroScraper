@@ -6,7 +6,7 @@ import time
 
 class BasicUpdateSpider(scrapy.Spider):
     name = "basic_update"
-    handle_httpstatus_list = [404]
+    handle_httpstatus_list = [404, 500]
 
     def __init__(
         self,
