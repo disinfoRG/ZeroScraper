@@ -3,7 +3,7 @@ DATE=${1:-"yesterday"}
 NS_DUMP=./zs-dump.py
 YESTERDAY=$(date --date=$DATE '+%Y-%m-%d')
 BATCH_SIZE=100
-SNAPSHOT_TABLE=ArticleSnapshot
+SNAPSHOT_TABLE=${2:-"ArticleSnapshot"}
 OUTPUT_FILE="${SNAPSHOT_TABLE}$(echo ${YESTERDAY} | sed -e 's/\-//g').jsonl.bz2"
 S3_DESTINATION="${S3_DESTINATION_DIR}/${OUTPUT_FILE}"
 
