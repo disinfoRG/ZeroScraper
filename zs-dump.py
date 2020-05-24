@@ -93,7 +93,7 @@ def dump_snapshots(queries, fh, date_range=None, batch_size=1000):
                 + "\n"
             )
             i += 1
-        logger.info(f"dumped snapshot #{i}")
+        logger.debug(f"dumped snapshot #{i}")
     logger.info(f"dumped total {i} snapshots")
 
 
