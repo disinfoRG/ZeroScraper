@@ -18,7 +18,7 @@ def make_json_output(args, json_output):
     if args.output:
         json.dump(json_output, open(args.output, "w"))
     else:
-        print(json_output)
+        print(json.dumps(json_output))
 
 
 def load_token():
@@ -58,7 +58,12 @@ def stats(args):
     else:
         r = requests.get(f'{os.getenv("API_URL")}/stats', headers=headers)
 
-    make_json_output(args, r.json()["result"])
+    total = 0
+    result = r.json()["result"]
+    for s in result:
+        total += s["new_article_count"] + s["updated_article_count"]
+
+    make_json_output(args, {"total": total, "result": result})
 
 
 def variables(args):
