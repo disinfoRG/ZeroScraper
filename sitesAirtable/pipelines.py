@@ -24,7 +24,8 @@ def upsert_site(queries, value):
 class SiteItemPipeline(object):
     def process_item(self, item, spider):
         if item["type"] not in site_type_mapping.keys():
-            raise DropItem(f"Unknown site type '{item['type']}'")
+            # raise DropItem(f"Unknown site type '{item['type']}'")
+            pass
         else:
             item["type"] = site_type_mapping[item["type"]]
         return item
