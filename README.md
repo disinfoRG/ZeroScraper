@@ -29,7 +29,7 @@ $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
 ```
 
 ### Running
-1. To find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
+1. Find new articles for a single site listed in Site table in database and store general info to Article and raw html to ArticleSnapshot table:
 
 ```sh
 $ python zs-site.py discover {site-id}
@@ -45,7 +45,7 @@ $ python zs-site.py discover {site-id}
         --article: regex of article url pattern, e.g. '/story/(\d+).html'
         --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
 
-2. To find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
+2. Find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
 ```sh
 $ python zs.py discover
 ```
@@ -56,7 +56,7 @@ $ python zs.py discover
     Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
     Otherwise the default values will be used.
 
-3. Revisit news articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
+3. Revisit articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
 The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
 ```sh
 # update all articles
@@ -66,7 +66,7 @@ $ python zs.py update
             --limit-sec: time limit to run in seconds
 
 
-4. Revisit news articles in a specified site.
+4. Revisit articles in a specified site.
 ```sh
 $ python zs-site.py update {site-id}
 ```
