@@ -37,9 +37,6 @@ def run(runner, site_id, args=None):
         "USER_AGENT": site_conf["ua"],
     }
 
-    if "appledaily" in site_conf["url"]:
-        site_conf["selenium"] = True
-
     if "dcard" in site_conf["url"]:
         crawler = Crawler(DcardDiscoverSpider, settings)
         crawler.stats.set_value("site_id", site_id)
