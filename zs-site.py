@@ -3,6 +3,9 @@
 import argparse
 import pugsql
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 import datetime
 from tabulate import tabulate
 
