@@ -8,7 +8,6 @@ from scrapy.utils.project import get_project_settings
 from newsSpiders.types import SiteConfig
 from newsSpiders.spiders.basic_update_spider import BasicUpdateSpider
 from newsSpiders.spiders.dcard_update_spider import DcardUpdateSpider
-from newsSpiders.spiders.login_update_spider import LoginUpdateSpider
 
 logger = logging.getLogger(__name__)
 queries = pugsql.module("queries/")
@@ -65,21 +64,6 @@ def run(runner, site_id, args=None):
                     site_id=site_id, current_time=current_time
                 ),
             ),
-        )
-
-    elif "appledaily" in site["url"]:
-        crawler = Crawler(LoginUpdateSpider, settings)
-        crawler.stats.set_value("site_id", site_id)
-        runner.crawl(
-            crawler,
-            articles_to_update=queries.get_articles_to_update(
-                site_id=site_id, current_time=current_time
-            ),
-            site_id=site_id,
-            site_url=site["url"],
-            selenium=site_conf["selenium"],
-            login_url=site_conf["login_url"],
-            credential_tag="appledaily",
         )
 
     else:
