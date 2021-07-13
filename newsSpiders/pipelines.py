@@ -5,6 +5,8 @@ import pugsql
 from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
+from kombuqueue import connection, snapshotsQueue
+from types import NewSnapshotMessage, asdict
 
 logger = logging.getLogger(__name__)
 
@@ -130,3 +132,13 @@ class MySqlPipeline(object):
                 if snapshot["article_id"] != article_id:
                     raise InvalidItemsError("Article id mismatch with snapshot")
                 self.queries.insert_snapshot(**snapshot)
+
+
+class KombuPipeline:
+    def process_item(self, item, spider):
+        with connection() as conn:
+            with snapshotsQueue(conn) as queue:
+                message = NewSnapshotMessage(
+                    article_id=item["article_id"], snapshot_at=item["snapshot_at"]
+                )
+                queue.put(asdict(message))

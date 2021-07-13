@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 class SiteConfig(dict):
     def update(self, d, **kwargs):
         filtered_d = {k: v for k, v in d.items() if v is not None}
@@ -14,3 +17,22 @@ class SiteConfig(dict):
                 "selenium": False,
             }
         )
+
+
+@dataclass(frozen=True)
+class ProcessEvent:
+    eventType: str
+    happened_at: int
+    succeeded: bool
+    result: str
+
+
+@dataclass(frozen=True)
+class NewSnapshotMessage:
+    article_id: int
+    article_type: str
+    snapshot_at: int
+    events: List[ProcessEvent]
+
+
+asdict = dataclasses.asdict

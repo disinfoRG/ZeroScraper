@@ -74,6 +74,7 @@ ITEM_PIPELINES = {
     "newsSpiders.pipelines.DuplicatesPipeline": 200,
     "newsSpiders.pipelines.OldArticlesPipeline": 300,
     "newsSpiders.pipelines.MySqlPipeline": 400,
+    "newsSpiders.pipelines.KombuPipeline": 800,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

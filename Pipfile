@@ -11,7 +11,7 @@ invoke = "*"
 mypy = "*"
 
 [packages]
-scrapy="==1.8"
+scrapy = "==1.8"
 pymysql = "*"
 alembic = "*"
 pugsql = "*"
@@ -33,6 +33,7 @@ sqlalchemy = "*"
 flask-cors = "*"
 flask-limiter = "*"
 pytest = "*"
+kombu = "*"
 
 [requires]
 python_version = "3.7"
