@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Optional, List
+import dataclasses
 
 
 class SiteConfig(dict):
@@ -30,9 +32,9 @@ class ProcessEvent:
 @dataclass(frozen=True)
 class NewSnapshotMessage:
     article_id: int
-    article_type: str
     snapshot_at: int
-    events: List[ProcessEvent]
+    article_type: str = "Article"
+    events: List[ProcessEvent] = field(default_factory=list)
 
 
 asdict = dataclasses.asdict

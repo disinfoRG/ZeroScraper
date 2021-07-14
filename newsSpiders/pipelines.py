@@ -5,8 +5,8 @@ import pugsql
 from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
-from kombuqueue import connection, snapshotsQueue
-from types import NewSnapshotMessage, asdict
+from newsSpiders.kombuqueue import connection, snapshotsQueue
+from newsSpiders.types import NewSnapshotMessage, asdict
 
 logger = logging.getLogger(__name__)
 
@@ -127,18 +127,27 @@ class MySqlPipeline(object):
 
         with self.queries.transaction() as t:
             article_id = self.process_article(article)
+            article.setdefault("article_id", article_id)
             if snapshot is not None:
                 snapshot.setdefault("article_id", article_id)
                 if snapshot["article_id"] != article_id:
                     raise InvalidItemsError("Article id mismatch with snapshot")
                 self.queries.insert_snapshot(**snapshot)
+        return item
 
 
 class KombuPipeline:
     def process_item(self, item, spider):
+        article = item["article"]
+        snapshot = item["article_snapshot"]
         with connection() as conn:
             with snapshotsQueue(conn) as queue:
                 message = NewSnapshotMessage(
-                    article_id=item["article_id"], snapshot_at=item["snapshot_at"]
+                    article_id=article["article_id"],
+                    snapshot_at=snapshot["snapshot_at"],
                 )
                 queue.put(asdict(message))
+                logger.debug(
+                    f"putting {article['article_id']} {snapshot['snapshot_at']} in kombu"
+                )
+        return item
