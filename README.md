@@ -4,6 +4,7 @@ Scraper for news websites, content farms, ptt, and dcard forums.
 0archive is scraping websites provided in this [target list](https://airtable.com/tbl3DrYs5mXgl0EV9/viw2cuXweY8OxNkX6?blocks=hide).
 
 You could set up your website list by following the instruction in [AIRTABLE.md](AIRTABLE.md).
+
 ### Setup
 
 We use MySQL.  To setup database connections, copy `.env.default` to `.env`, and set `DB_URL` value.  MySQL connection string should start with `mysql+pymysql://` so that sqlalchemy uses the correct driver.
@@ -15,6 +16,8 @@ $ pip install pipenv
 $ pipenv install
 # start a shell in virtual env
 $ pipenv run alembic upgrade head
+# ...or use pre-defined command in tasks.py
+$ invoke migrate
 ```
 
 Then update your site table.  First, you need an API key from Airtable generated [here](https://airtable.com/account) and the id of your base (see [here](https://airtable.com/api) for info).  Add the following variables to `.env`:
@@ -26,6 +29,8 @@ $ echo SITE_TYPES=["{site_type_1}", "{site_type_2}",...] >> .env
 Afterwards, do the following to update your site table
 ```sh
 $ SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites
+# ...or use pre-defined command in tasks.py
+$ invoke update-sites
 ```
 
 ### Running

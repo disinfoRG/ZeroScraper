@@ -23,7 +23,7 @@ def migrate(c):
 
 @task
 def update_sites(c):
-    c.run("SCRAPY_PROJECT=sitesAirtable pipenv run scrapy crawl updateSites")
+    c.run("SCRAPY_PROJECT=sitesAirtable scrapy crawl updateSites")
 
 
 @task
