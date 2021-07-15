@@ -20,6 +20,7 @@ queries.connect(os.getenv("DB_URL"))
 def main(args):
 
     if args.command == "discover":
+        print("discovering articles from site " + str(args.id))
         process = CrawlerProcess(get_project_settings())
         discover.run(process, args.id, vars(args))
         process.start()
