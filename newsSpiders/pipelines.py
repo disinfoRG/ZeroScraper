@@ -6,7 +6,7 @@ from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
 from newsSpiders.kombuqueue import connection, snapshotsQueue
-from newsSpiders.types import NewSnapshotMessage, asdict
+from newsSpiders.types import NewSnapshotMessage, ProcessEvent, asdict
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +145,14 @@ class KombuPipeline:
                 message = NewSnapshotMessage(
                     article_id=article["article_id"],
                     snapshot_at=snapshot["snapshot_at"],
+                    events=[
+                        ProcessEvent(
+                            event_type="scrape",
+                            happened_at=snapshot["snapshot_at"],
+                            succeeded=True,
+                            result="",
+                        )
+                    ],
                 )
                 queue.put(asdict(message))
                 logger.debug(

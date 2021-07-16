@@ -23,7 +23,7 @@ class SiteConfig(dict):
 
 @dataclass(frozen=True)
 class ProcessEvent:
-    eventType: str
+    event_type: str
     happened_at: int
     succeeded: bool
     result: str
@@ -33,7 +33,6 @@ class ProcessEvent:
 class NewSnapshotMessage:
     article_id: int
     snapshot_at: int
-    article_type: str = "Article"
     events: List[ProcessEvent] = field(default_factory=list)
 
 
