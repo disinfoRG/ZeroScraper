@@ -5,7 +5,7 @@ import pugsql
 from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
-from newsSpiders.kombuqueue import connection, snapshotsQueue
+from newsSpiders.kombuqueue import connection, queue_snapshot
 from newsSpiders.types import NewSnapshotMessage, ProcessEvent, asdict
 
 logger = logging.getLogger(__name__)
@@ -141,21 +141,8 @@ class KombuPipeline:
         article = item["article"]
         snapshot = item["article_snapshot"]
         with connection() as conn:
-            with snapshotsQueue(conn) as queue:
-                message = NewSnapshotMessage(
-                    article_id=article["article_id"],
-                    snapshot_at=snapshot["snapshot_at"],
-                    events=[
-                        ProcessEvent(
-                            event_type="scrape",
-                            happened_at=snapshot["snapshot_at"],
-                            succeeded=True,
-                            result="",
-                        )
-                    ],
-                )
-                queue.put(asdict(message))
-                logger.debug(
-                    f"putting {article['article_id']} {snapshot['snapshot_at']} in kombu"
-                )
+            queue_snapshot(conn, article, snapshot)
+            logger.debug(
+                f"putting {article['article_id']} {snapshot['snapshot_at']} in kombu"
+            )
         return item
