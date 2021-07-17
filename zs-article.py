@@ -13,6 +13,7 @@ import zlib
 import logging
 from newsSpiders import helpers
 from newsSpiders.types import SiteConfig
+from newsSpiders.kombuqueue import connection, queue_snapshot
 
 logging.basicConfig(
     format="[%(levelname)s] %(asctime)s %(filename)s %(funcName)s: %(message)s",
@@ -112,6 +113,8 @@ def update(args):
     queries.insert_snapshot(
         article_id=article_info["article_id"], snapshot_at=now, raw_data=snapshot
     )
+    with connection() as conn:
+        queue_snapshot(conn, article_id=article_info["article_id"], snapshot_at=now)
 
 
 def discover(args):
@@ -167,6 +170,8 @@ def discover(args):
     queries.insert_snapshot(
         article_id=inserted_article_id, snapshot_at=now, raw_data=snapshot
     )
+    with connection() as conn:
+        queue_snapshot(conn, article_id=inserted_article_id, snapshot_at=now)
     logger.info(f"Finish discover {args.url}, new article_id = {inserted_article_id}")
     return inserted_article_id
 
