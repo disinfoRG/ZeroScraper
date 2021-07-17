@@ -21,15 +21,15 @@ def snapshotsQueue(conn):
     return conn.SimpleQueue("newsSpiders.snapshots")
 
 
-def queue_snapshot(conn, article, snapshot):
+def queue_snapshot(conn, article_id, snapshot_at):
     with snapshotsQueue(conn) as queue:
         message = NewSnapshotMessage(
-            article_id=article["article_id"],
-            snapshot_at=snapshot["snapshot_at"],
+            article_id=article_id,
+            snapshot_at=snapshot_at,
             events=[
                 ProcessEvent(
                     event_type="scrape",
-                    happened_at=snapshot["snapshot_at"],
+                    happened_at=snapshot_at,
                     succeeded=True,
                     result="",
                 )

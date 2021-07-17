@@ -141,7 +141,11 @@ class KombuPipeline:
         article = item["article"]
         snapshot = item["article_snapshot"]
         with connection() as conn:
-            queue_snapshot(conn, article, snapshot)
+            queue_snapshot(
+                conn,
+                article_id=article["article_id"],
+                snapshot_at=snapshot["snapshot_at"],
+            )
             logger.debug(
                 f"putting {article['article_id']} {snapshot['snapshot_at']} in kombu"
             )
