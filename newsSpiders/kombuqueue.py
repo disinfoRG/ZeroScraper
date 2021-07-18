@@ -36,3 +36,11 @@ def queue_snapshot(conn, article_id, snapshot_at):
             ],
         )
         queue.put(asdict(message))
+
+
+def get_snapshot(conn, ack=True):
+    with snapshotsQueue(conn) as queue:
+        message = queue.get(block=True, timeout=4)
+        print(message.payload)
+        if ack:
+            message.ack()
