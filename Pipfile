@@ -34,6 +34,7 @@ flask-cors = "*"
 flask-limiter = "*"
 pytest = "*"
 kombu = "*"
+python-jsonschema-objects = "*"
 
 [requires]
 python_version = "3.7"

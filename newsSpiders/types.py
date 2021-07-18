@@ -1,8 +1,3 @@
-from dataclasses import dataclass, field
-from typing import Optional, List
-import dataclasses
-
-
 class SiteConfig(dict):
     def update(self, d, **kwargs):
         filtered_d = {k: v for k, v in d.items() if v is not None}
@@ -19,21 +14,3 @@ class SiteConfig(dict):
                 "selenium": False,
             }
         )
-
-
-@dataclass(frozen=True)
-class ProcessEvent:
-    event_type: str
-    happened_at: int
-    succeeded: bool
-    result: str
-
-
-@dataclass(frozen=True)
-class NewSnapshotMessage:
-    article_id: int
-    snapshot_at: int
-    events: List[ProcessEvent] = field(default_factory=list)
-
-
-asdict = dataclasses.asdict
