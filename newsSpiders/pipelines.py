@@ -6,7 +6,6 @@ from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
 from newsSpiders.kombuqueue import connection, queue_snapshot
-from newsSpiders.types import NewSnapshotMessage, ProcessEvent, asdict
 
 logger = logging.getLogger(__name__)
 
