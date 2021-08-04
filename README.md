@@ -50,16 +50,16 @@ The following commands assume that you're in the virtual env.  Run `pipenv shell
    $ python zs-site.py discover {site-id}
    ```
 
-    Optional Arguments:
-        # crawler config
-        --depth: maximum search depth limit. default = 5.
-        --delay: delay time between each request. default = 1.5 (sec)
-        --ua: user agent string. default is the chrome v78 user-agent string.
-
-        # site config
-        --url: url to start with for this crawl
-        --article: regex of article url pattern, e.g. '/story/(\d+).html'
-        --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
+        Optional Arguments:
+            # crawler config
+            --depth: maximum search depth limit. default = 5.
+            --delay: delay time between each request. default = 1.5 (sec)
+            --ua: user agent string. default is the chrome v78 user-agent string.
+    
+            # site config
+            --url: url to start with for this crawl
+            --article: regex of article url pattern, e.g. '/story/(\d+).html'
+            --following: regex of following url pattern, e.g. 'index/(\d\d+).html'
 
 2. Find new articles for all ACTIVE sites listed in Site table in database. Activity is determined by 'is_active' column in airtable.
 
@@ -67,11 +67,11 @@ The following commands assume that you're in the virtual env.  Run `pipenv shell
    $ python zs.py discover
    ```
 
-    Optional Arguments:
-            --limit-sec: time limit to run in seconds
-
-    Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
-    Otherwise the default values will be used.
+        Optional Arguments:
+                --limit-sec: time limit to run in seconds
+    
+        Site-specific arguments (depth, delay, and ua) should be specified in 'config' column of Site table.
+        Otherwise the default values will be used.
 
 3. Revisit articles in database based on next_snapshot_at parameter in Article Table on the mysql database.
    The function will save new html to ArticleSnapshot table and update the snapshot parameters in Article Table.
@@ -80,8 +80,8 @@ The following commands assume that you're in the virtual env.  Run `pipenv shell
    # update all articles
    $ python zs.py update
    ```
-    Optional Arguments:
-            --limit-sec: time limit to run in seconds
+        Optional Arguments:
+                --limit-sec: time limit to run in seconds
 
 
 4. Revisit articles in a specified site.
@@ -89,26 +89,26 @@ The following commands assume that you're in the virtual env.  Run `pipenv shell
    ```sh
    $ python zs-site.py update {site-id}
    ```
-    Optional Arguments:
-            --delay: delay time between each request. default = 1.5 (sec)
-            --ua: user agent string.
+        Optional Arguments:
+                --delay: delay time between each request. default = 1.5 (sec)
+                --ua: user agent string.
 
 5. Revisit one article regardless of next_snapshot_time or snapshot_count.
 
    ```sh
    $ python zs-article.py update {article-id}
    ```
-    Optional Arguments:
-            --selenium: use selenium to load the article.
+        Optional Arguments:
+                --selenium: use selenium to load the article.
 
 6. Discover a new article that does not exist in DB based on a provided url.
 
    ```sh
    $ python zs-article.py discover {url}
    ```
-    Optional Arguments:
-            --site-id: id of site of which the url belongs to. default = 0
-            --selenium: use selenium to load the article.
+        Optional Arguments:
+                --site-id: id of site of which the url belongs to. default = 0
+                --selenium: use selenium to load the article.
 
 
 ## Hack
