@@ -13,7 +13,7 @@ import zlib
 import logging
 from newsSpiders import helpers
 from newsSpiders.types import SiteConfig
-from newsSpiders.kombuqueue import connection, queue_snapshot
+from jobqueue import connection, queue_snapshot
 
 logging.basicConfig(
     format="[%(levelname)s] %(asctime)s %(filename)s %(funcName)s: %(message)s",

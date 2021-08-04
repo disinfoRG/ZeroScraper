@@ -5,7 +5,7 @@ import pugsql
 from datetime import timedelta
 from scrapy.exceptions import DropItem
 import time
-from newsSpiders.kombuqueue import connection, queue_snapshot
+from jobqueue import connection, queue_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +135,7 @@ class MySqlPipeline(object):
         return item
 
 
-class KombuPipeline:
+class JobQueuePipeline:
     def process_item(self, item, spider):
         article = item["article"]
         snapshot = item["article_snapshot"]
