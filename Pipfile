@@ -11,7 +11,7 @@ invoke = "*"
 mypy = "*"
 
 [packages]
-scrapy="==1.8"
+scrapy="==2.6.2"
 pymysql = "*"
 alembic = "*"
 pugsql = "*"
